@@ -27,6 +27,7 @@ namespace Native
 		DllExport MpiType GetCommWorld() { return MPI_COMM_WORLD; }
 		DllExport MpiType GetMpiInt()	 { return MPI_INT; }
 		DllExport MpiType GetMpiFloat()	 { return MPI_FLOAT; }
+		DllExport MpiType GetMpiDouble()	 { return MPI_DOUBLE; }
 		DllExport MpiType GetMpiDoubleComplex()	 { return MPI_C_DOUBLE_COMPLEX; }
 
 
@@ -86,7 +87,7 @@ namespace Native
 
 		DllExport int Bcast(void *buffer, int count, MPI_Datatype datatype, int root, MPI_Comm comm)
 		{
-			return	MPI_Bcast(buffer, count, MPI_INT, root, comm);
+			return	MPI_Bcast(buffer, count, datatype, root, comm);
 		}
 
 		DllExport int Send(void* data, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
