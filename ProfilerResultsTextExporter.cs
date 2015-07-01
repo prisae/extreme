@@ -76,7 +76,7 @@ namespace Profiling
 
             if (fftB != null)
                 sw.WriteLine("\tbackward fft:     {0}, {1:F1} %", fftB.TotalTime, calcPercent(fftB));
-            
+
 
             //sw.WriteStatus("\tprepare:         {0}, {1:F1} %", prepare.TotalTime, calcPercent(prepare));
 
@@ -101,10 +101,8 @@ namespace Profiling
         private static double WriteInfoAboutScalarAtoA(StreamWriter sw, ProfilerStatistics[] analisisResult)
         {
             var scalarAtoA = analisisResult.First(a => a.Code == (int)ProfilerEvent.GreenScalarAtoA);
-            var scalarAtoAComm = analisisResult.First(a => a.Code == (int)ProfilerEvent.GreenScalarAtoACommunicate);
+            var scalarAtoAComm = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.GreenScalarAtoACommunicate);
             var totalPercent = PercentOfForwardSolving(analisisResult, scalarAtoA);
-
-
 
             double percentSumm = 0;
             Func<ProfilerStatistics, double> calcPercent =
@@ -120,7 +118,8 @@ namespace Profiling
             sw.WriteLine("Scalar A to A:");
             WritePercentOfSolving(sw, scalarAtoA, totalPercent);
 
-            sw.WriteLine("\tcommunication:    {0}, {1:F1} %", scalarAtoAComm.TotalTime, calcPercent(scalarAtoAComm));
+            if (scalarAtoAComm != null)
+                sw.WriteLine("\tcommunication:    {0}, {1:F1} %", scalarAtoAComm.TotalTime, calcPercent(scalarAtoAComm));
 
             return totalPercent;
         }
