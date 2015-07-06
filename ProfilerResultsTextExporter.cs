@@ -147,19 +147,27 @@ namespace Profiling
 
             var totalPercent = PercentOfForwardSolving(analisisResult, tensorFull);
 
-            var tensorCalc = analisisResult.First(a => a.Code == (int)ProfilerEvent.GreenTensorAtoACalc);
-            var tensorFft = analisisResult.First(a => a.Code == (int)ProfilerEvent.GreenTensorAtoAFft);
-            var tensorPopulate = analisisResult.First(a => a.Code == (int)ProfilerEvent.GreenTensorAtoAPopulate);
+            var tensorCalc = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.GreenTensorAtoACalc);
+            var tensorFft = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.GreenTensorAtoAFft);
+            var tensorPopulate = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.GreenTensorAtoAPopulate);
 
             WritePercentOfSolving(sw, tensorFull, totalPercent);
 
-            sw.WriteLine("\tcalc:            {0}, {1:F1} %", tensorCalc.TotalTime, calcPercent(tensorCalc));
-            sw.WriteLine("\tfft:             {0}, {1:F1} %", tensorFft.TotalTime, calcPercent(tensorFft));
-            sw.WriteLine("\tpopulate:        {0}, {1:F1} %", tensorPopulate.TotalTime, calcPercent(tensorPopulate));
+            WriteLine(sw, "calc", tensorCalc, calcPercent);
+            WriteLine(sw, "fft", tensorFft, calcPercent);
+            WriteLine(sw, "populate", tensorPopulate, calcPercent);
 
             sw.WriteLine("\t                                Covered {0:F1} %", percentSumm);
 
             return totalPercent;
+        }
+
+        private static void WriteLine(StreamWriter sw, string text, ProfilerStatistics stat, Func<ProfilerStatistics, double> calcPercent)
+        {
+            if (stat == null)
+                return;
+
+            sw.WriteLine("\t{2} {0}, {1:F1} %", stat.TotalTime, calcPercent(stat), text.PadRight(14));
         }
     }
 }
