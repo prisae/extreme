@@ -172,10 +172,10 @@ namespace Profiling
 
             percent += WriteTopLevelInfo(sw, ProfilerEvent.GreenTensorAtoA,
                    ProfilerEvent.GreenTensorAtoACalc,
-                   ProfilerEvent.GreenTensorAtoAFft,
                    ProfilerEvent.GreenTensorAtoAPopulate);
 
-            percent += WriteTopLevelInfo(sw, ProfilerEvent.GreenTensorAtoAConvert);
+            percent += WriteTopLevelInfo(sw, ProfilerEvent.GreenTensorAtoAConvert,
+                   ProfilerEvent.GreenTensorAtoAFft);
 
             return percent;
         }
