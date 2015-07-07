@@ -83,7 +83,7 @@ namespace Profiling
             var analizer = new ProfilerStatisticsAnalyzer(records);
             var analisisResult = analizer.PerformAnalysis();
 
-            ProfilerResultsTextExporter.SaveProfilingResultsTo(Path.Combine(dir, "profiler_result_type3_1.txt"), analisisResult, model);
+            ProfilerResultsTextExporter.SaveProfilingResultsTo(Path.Combine(dir, "profiler_result_type3_1.txt"), model, analisisResult);
 
             //var str1 = analizer.ConvertToString1(analisisResult);
             //var str2 = analizer.ConvertToString2(analisisResult);

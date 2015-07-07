@@ -6,168 +6,256 @@ using Porvem.Core;
 
 namespace Profiling
 {
-    public static class ProfilerResultsTextExporter
+    public class ProfilerResultsTextExporter
     {
+        private readonly ProfilerStatistics[] _analisisResult;
+        private readonly CartesianModel _model;
+
+        private ProfilerResultsTextExporter(ProfilerStatistics[] analisisResult, CartesianModel model)
+        {
+            _analisisResult = analisisResult;
+            _model = model;
+        }
+
         public static void SaveProfilingResults(string path, CartesianModel cartesianModel, Profiler profiler)
         {
             profiler.GetAllRecords().SaveWithModel(path, cartesianModel);
         }
 
-        public static void SaveProfilingResultsTo(string path, ProfilerStatistics[] analisisResult, CartesianModel model)
+        public static void SaveProfilingResultsTo(string path, CartesianModel model, ProfilerStatistics[] analisisResult)
         {
-            SaveProfilingResultsTo(path, analisisResult, model.LateralDimensions.Nx, model.LateralDimensions.Ny,
-                model.Anomaly.Layers.Count);
+            if (path == null) throw new ArgumentNullException("path");
+            if (analisisResult == null) throw new ArgumentNullException("analisisResult");
+            if (model == null) throw new ArgumentNullException("model");
+
+            new ProfilerResultsTextExporter(analisisResult, model)
+            .SaveProfilingResultsTo(path);
         }
 
-
-        public static void SaveProfilingResultsTo(string path, ProfilerStatistics[] analisisResult, int nx, int ny, int nz)
+        private void SaveProfilingResultsTo(string path)
         {
             double percentSumm = 0;
 
             using (var sw = new StreamWriter(path))
             {
-                sw.WriteLine("DateTime: {0}", DateTime.Now);
-                sw.WriteLine("model parameters:");
-                sw.WriteLine("nx = {0}, ny = {1}, nz = {2}", nx, ny, nz);
+                WriteModelInfo(sw);
+                WriteIterationsInfo(sw);
 
-                percentSumm += WriteInfoAboutScalarAtoA(sw, analisisResult);
-                percentSumm += WriteInfoAboutTensorAtoA(sw, analisisResult);
-                percentSumm += WriteInfoAboutCie(sw, analisisResult);
+                percentSumm += WriteInfoAboutScalarAtoA(sw);
+                percentSumm += WriteInfoAboutTensorAtoA(sw);
+                percentSumm += WriteInfoAboutCie(sw);
+                percentSumm += WriteInfoAboutMisc(sw);
+                percentSumm += WriteInfoObservations(sw);
 
                 sw.WriteLine("\n\n                                               Total Covered: {0:F1} %", percentSumm);
             }
         }
 
-        private static double WriteInfoAboutCie(StreamWriter sw, ProfilerStatistics[] analisisResult)
+        private void WriteIterationsInfo(StreamWriter sw)
         {
-            sw.WriteLine();
-            sw.WriteLine("CIE:");
+            var dotProduct = _analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.CalcDotProduct);
+            var mult = _analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.OperatorAMultiplication);
 
-            var total = analisisResult.First(a => a.Code == (int)ProfilerEvent.ApplyOperatorA);
+            sw.WriteLine();
+            if (mult != null)
+                sw.WriteLine("Total number of multiplications: {0}", mult.TotalNumber);
+
+            if (dotProduct != null)
+                sw.WriteLine("Total number of dot products: {0}", dotProduct.TotalNumber);
+            sw.WriteLine();
+
+            var total = _analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.ForwardSolving);
+
+            if (total != null)
+                sw.WriteLine("Total SOLVING time {0}, {1} times", total.TotalTime, total.TotalNumber);
+        }
+
+        private void WriteModelInfo(StreamWriter sw)
+        {
+            sw.WriteLine("DateTime: {0}", DateTime.Now);
+            sw.WriteLine("model parameters:");
+            sw.WriteLine("nx = {0}, ny = {1}, nz = {2}",
+                _model.LateralDimensions.Nx,
+                _model.LateralDimensions.Ny,
+                _model.Anomaly.Layers.Count);
+        }
+
+        private class SubEvents
+        {
+            private readonly ProfilerEvent _topEvent;
+            private readonly SubEvents[] _events;
+
+            public SubEvents(ProfilerEvent topEvent)
+            {
+                _topEvent = topEvent;
+                _events = new SubEvents[0];
+            }
+
+            public SubEvents(ProfilerEvent topEvent, params SubEvents[] events)
+            {
+                _topEvent = topEvent;
+                _events = events;
+            }
+
+            public SubEvents(ProfilerEvent topEvent, params ProfilerEvent[] events)
+            {
+                _topEvent = topEvent;
+                _events = events.Select(ev => new SubEvents(ev, new SubEvents[0])).ToArray();
+            }
+
+            public ProfilerEvent TopEvent
+            {
+                get { return _topEvent; }
+            }
+
+            public SubEvents[] Events
+            {
+                get { return _events; }
+            }
+        }
+
+        private double WriteTopLevelInfo(StreamWriter sw, ProfilerEvent topEvent, params SubEvents[] events)
+        {
+            return WriteTopLevelInfo(sw, new SubEvents(topEvent, events));
+        }
+
+        private double WriteTopLevelInfo(StreamWriter sw, ProfilerEvent topEvent)
+        {
+            return WriteTopLevelInfo(sw, new SubEvents(topEvent));
+        }
+
+        private double WriteTopLevelInfo(StreamWriter sw, ProfilerEvent topEvent, params ProfilerEvent[] events)
+        {
+            var subEvents = events.Select(ev => new SubEvents(ev)).ToArray();
+
+            return WriteTopLevelInfo(sw, new SubEvents(topEvent, subEvents));
+        }
+
+        private double WriteTopLevelInfo(StreamWriter sw, SubEvents subEvents)
+        {
+            var topEvent = subEvents.TopEvent;
+            var topStat = _analisisResult.FirstOrDefault(a => a.Code == (int)topEvent);
+
+            if (topStat == null)
+                return 0;
+
+            var totalPercent = PercentOfEvent(topStat, ProfilerEvent.ForwardSolving);
+
+            sw.WriteLine();
+            sw.WriteLine();
+            sw.WriteLine("{0}:", topEvent);
+            sw.WriteLine("\tTotal time: {0}, {2} times, \t\t\t\t\tpercent of SOLVING: {1:F1}%", topStat.TotalTime, totalPercent, topStat.TotalNumber);
+            sw.WriteLine();
 
             double percentSumm = 0;
-            Func<ProfilerStatistics, double> calcPercent =
-                (ps =>
-                {
-                    var percent = (ps.TotalTime.TotalSeconds / total.TotalTime.TotalSeconds) * 100;
-                    percentSumm += percent;
-                    return percent;
-                });
 
-            var totalPercent = PercentOfForwardSolving(analisisResult, total);
+            foreach (var profilerEvent in subEvents.Events)
+                percentSumm += WriteIfExist(sw, topEvent, profilerEvent, 1);
 
-            //var prepare = analisisResult.First(a => a.Code == (int)ProfilerEvent.OperatorAPrepare);
-            //var applyR = analisisResult.First(a => a.Code == (int)ProfilerEvent.OperatorAApplyR);
-
-            var fftF = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.OperatorAForwardFft);
-            var fftB = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.OperatorABackwardFft);
-            //var mult = analisisResult.First(a => a.Code == (int)ProfilerEvent.OperatorAMultiplicationLowLevel);
-
-            //var finish = analisisResult.First(a => a.Code == (int)ProfilerEvent.OperatorAFinish);
-            //var clear = analisisResult.First(a => a.Code == (int)ProfilerEvent.OperatorAClearBuffer1);
-
-            WritePercentOfSolving(sw, total, totalPercent);
-
-            sw.WriteLine();
-            //sw.WriteStatus("\tapply R:         {0}, {1:F1} %", applyR.TotalTime, calcPercent(applyR));
-
-            if (fftF != null)
-                sw.WriteLine("\tforward fft:     {0}, {1:F1} %", fftF.TotalTime, calcPercent(fftF));
-
-            if (fftB != null)
-                sw.WriteLine("\tbackward fft:     {0}, {1:F1} %", fftB.TotalTime, calcPercent(fftB));
-
-
-            //sw.WriteStatus("\tprepare:         {0}, {1:F1} %", prepare.TotalTime, calcPercent(prepare));
-
-            //sw.WriteStatus("\tmult LL:         {0}, {1:F1} %", mult.TotalTime, calcPercent(mult));
-
-            //sw.WriteStatus("\tbackward fft:    {0}, {1:F1} %", fftB.TotalTime, calcPercent(fftB));
-            //sw.WriteStatus("\tclear buffer:    {0}, {1:F1} %", clear.TotalTime, calcPercent(clear));
-            //sw.WriteStatus("\tfinish:          {0}, {1:F1} %", finish.TotalTime, calcPercent(finish));
-
-            //sw.WriteStatus("\t                                Covered {0:F1} %", percentSumm);
+            if (percentSumm != 0)
+                sw.WriteLine("\t\t\t\t\t\t\tCovered: {0:F1}%", percentSumm);
 
             return totalPercent;
         }
 
-        private static double PercentOfForwardSolving(ProfilerStatistics[] analisisResult, ProfilerStatistics item)
-        {
-            var totalSolving = analisisResult.First(a => a.Code == (int)ProfilerEvent.ForwardSolving);
 
-            return (item.TotalTime.TotalSeconds / totalSolving.TotalTime.TotalSeconds) * 100;
+        private double WriteInfoAboutScalarAtoA(StreamWriter sw)
+        {
+            return WriteTopLevelInfo(sw, ProfilerEvent.GreenScalarAtoA,
+                ProfilerEvent.GreenScalarAtoACalc,
+                ProfilerEvent.GreenScalarAtoACommunicate);
         }
 
-        private static double WriteInfoAboutScalarAtoA(StreamWriter sw, ProfilerStatistics[] analisisResult)
+        private double WriteInfoAboutTensorAtoA(StreamWriter sw)
         {
-            var scalarAtoA = analisisResult.First(a => a.Code == (int)ProfilerEvent.GreenScalarAtoA);
-            var scalarAtoAComm = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.GreenScalarAtoACommunicate);
-            var totalPercent = PercentOfForwardSolving(analisisResult, scalarAtoA);
+            double percent = 0;
 
-            double percentSumm = 0;
-            Func<ProfilerStatistics, double> calcPercent =
-                (ps =>
-                {
-                    var percent = (ps.TotalTime.TotalSeconds / scalarAtoA.TotalTime.TotalSeconds) * 100;
-                    percentSumm += percent;
-                    return percent;
-                });
+            percent += WriteTopLevelInfo(sw, ProfilerEvent.GreenTensorAtoA,
+                   ProfilerEvent.GreenTensorAtoACalc,
+                   ProfilerEvent.GreenTensorAtoAFft,
+                   ProfilerEvent.GreenTensorAtoAPopulate);
 
+            percent += WriteTopLevelInfo(sw, ProfilerEvent.GreenTensorAtoAConvert);
 
-            sw.WriteLine();
-            sw.WriteLine("Scalar A to A:");
-            WritePercentOfSolving(sw, scalarAtoA, totalPercent);
-
-            if (scalarAtoAComm != null)
-                sw.WriteLine("\tcommunication:    {0}, {1:F1} %", scalarAtoAComm.TotalTime, calcPercent(scalarAtoAComm));
-
-            return totalPercent;
+            return percent;
         }
 
-        private static void WritePercentOfSolving(StreamWriter sw, ProfilerStatistics scalarAtoA, double totalPercent)
+
+        private double WriteInfoAboutMisc(StreamWriter sw)
         {
-            sw.WriteLine("\ttotal time:      {0},               {1:F1}  %", scalarAtoA.TotalTime, totalPercent);
+            double percent = 0;
+
+            percent += WriteTopLevelInfo(sw, ProfilerEvent.CalcChi0);
+            percent += WriteTopLevelInfo(sw, ProfilerEvent.CalcJScattered);
+            percent += WriteTopLevelInfo(sw, ProfilerEvent.CalcEScattered);
+
+            WriteTopLevelInfo(sw, ProfilerEvent.FftwPlanCalculation);
+
+            return percent;
         }
 
-        private static double WriteInfoAboutTensorAtoA(StreamWriter sw, ProfilerStatistics[] analisisResult)
+        private double WriteInfoAboutCie(StreamWriter sw)
         {
-            sw.WriteLine();
-            sw.WriteLine("Tensor:");
-
-            var tensorFull = analisisResult.First(a => a.Code == (int)ProfilerEvent.GreenTensorAtoA);
-
-            double percentSumm = 0;
-            Func<ProfilerStatistics, double> calcPercent =
-                (ps =>
-                {
-                    var percent = (ps.TotalTime.TotalSeconds / tensorFull.TotalTime.TotalSeconds) * 100;
-                    percentSumm += percent;
-                    return percent;
-                });
-
-            var totalPercent = PercentOfForwardSolving(analisisResult, tensorFull);
-
-            var tensorCalc = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.GreenTensorAtoACalc);
-            var tensorFft = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.GreenTensorAtoAFft);
-            var tensorPopulate = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.GreenTensorAtoAPopulate);
-
-            WritePercentOfSolving(sw, tensorFull, totalPercent);
-
-            WriteLine(sw, "calc", tensorCalc, calcPercent);
-            WriteLine(sw, "fft", tensorFft, calcPercent);
-            WriteLine(sw, "populate", tensorPopulate, calcPercent);
-
-            sw.WriteLine("\t                                Covered {0:F1} %", percentSumm);
-
-            return totalPercent;
+            return WriteTopLevelInfo(sw, ProfilerEvent.SolveCie,
+                new SubEvents(ProfilerEvent.ApplyOperatorA,
+                    ProfilerEvent.OperatorAApplyR,
+                    ProfilerEvent.OperatorAPrepareForForwardFft,
+                    ProfilerEvent.OperatorAForwardFft,
+                    ProfilerEvent.OperatorAMultiplication,
+                    ProfilerEvent.OperatorABackwardFft,
+                    ProfilerEvent.OperatorAExtractAfterBackwardFft,
+                    ProfilerEvent.OperatorAFinish),
+                new SubEvents(ProfilerEvent.CalcDotProduct));
         }
 
-        private static void WriteLine(StreamWriter sw, string text, ProfilerStatistics stat, Func<ProfilerStatistics, double> calcPercent)
+        private double WriteInfoObservations(StreamWriter sw)
         {
+            return WriteTopLevelInfo(sw, ProfilerEvent.ObservationsCalculation);
+        }
+
+        private double PercentOfEvent(ProfilerStatistics subStat, ProfilerEvent mainEvent)
+        {
+            var mainStat = _analisisResult.First(a => a.Code == (int)mainEvent);
+
+            return (subStat.TotalTime.TotalSeconds / mainStat.TotalTime.TotalSeconds) * 100;
+        }
+
+        private double WriteIfExist(StreamWriter sw, ProfilerEvent topEvent, SubEvents subEvents, int depth)
+        {
+            var profEvent = subEvents.TopEvent;
+            var stat = _analisisResult.FirstOrDefault(a => a.Code == (int)profEvent);
+
             if (stat == null)
-                return;
+                return 0;
 
-            sw.WriteLine("\t{2} {0}, {1:F1} %", stat.TotalTime, calcPercent(stat), text.PadRight(14));
+            var percent = PercentOfEvent(stat, topEvent);
+
+            for (int i = 0; i < depth; i++)
+                sw.Write("\t");
+
+            sw.WriteLine("{2} {0}, {1:F1} %, {3} times", stat.TotalTime, percent, profEvent.ToString().PadRight(30), stat.TotalNumber);
+
+            if (subEvents.Events.Length != 0)
+            {
+                double subPercentSumm = 0;
+
+                sw.WriteLine();
+
+                foreach (var subEvent in subEvents.Events)
+                    subPercentSumm += WriteIfExist(sw, subEvents.TopEvent, subEvent, depth + 1);
+
+                if (subPercentSumm != 0)
+                {
+                    for (int i = 0; i < depth; i++)
+                        sw.Write("\t");
+
+                    sw.WriteLine("\t\t\t\t\t\t\tCovered: {0:F1}%", subPercentSumm);
+                }
+
+                sw.WriteLine();
+            }
+
+            return percent;
         }
     }
 }
