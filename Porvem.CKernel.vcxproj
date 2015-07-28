@@ -110,6 +110,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="giem2g_mult.cpp" />
+    <ClCompile Include="green_tensor.cpp" />
     <ClCompile Include="wrapper.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

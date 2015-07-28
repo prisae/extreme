@@ -21,5 +21,8 @@
     <ClCompile Include="giem2g_mult.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="green_tensor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
