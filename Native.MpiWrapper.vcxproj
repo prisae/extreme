@@ -109,6 +109,7 @@
       <AdditionalIncludeDirectories>C:\Program Files\Microsoft MPI\Inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MSMPI;WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BrowseInformation>true</BrowseInformation>
+      <Cpp0xSupport>true</Cpp0xSupport>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
