@@ -119,7 +119,7 @@
     <ClCompile Include="giem2g_mult.cpp" />
     <ClCompile Include="green_scalar.cpp" />
     <ClCompile Include="green_tensor.cpp" />
-    <ClCompile Include="wrapper.cpp" />
+    <ClCompile Include="green_conv.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
