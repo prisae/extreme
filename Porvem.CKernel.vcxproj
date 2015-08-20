@@ -81,7 +81,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Full</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -89,11 +89,15 @@
       <UseProcessorExtensions>HOST</UseProcessorExtensions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PreprocessorDefinitions>WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformation>false</BrowseInformation>
       <AdditionalOptions> -I"%MKLROOT%"/include %(AdditionalOptions)</AdditionalOptions>
-      <VectorizerDiagnosticLevel>LoopsSuccessVectorized1</VectorizerDiagnosticLevel>
+      <VectorizerDiagnosticLevel>Default</VectorizerDiagnosticLevel>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <Parallelization>true</Parallelization>
+      <Parallelization>false</Parallelization>
+      <C99Support>false</C99Support>
+      <Cpp0xSupport>true</Cpp0xSupport>
+      <DisablePrecompiledHeaderMessages>false</DisablePrecompiledHeaderMessages>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
