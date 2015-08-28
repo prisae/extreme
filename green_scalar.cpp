@@ -14,7 +14,7 @@
 
 using namespace std;
 
-typedef struct{ double re; double im; } complex16;
+typedef struct { double re; double im; } complex16;
 
 
 namespace Native
@@ -40,12 +40,11 @@ namespace Native
 
 		DllExport void CalcEta(int length, double* lambdas, complex<double>* eta, complex<double> value)
 		{
-#pragma simd
 			for (int i = 0; i < length; i++)
 				eta[i] = sqrt(lambdas[i] * lambdas[i] - value);
 		}
 
-	
+
 		DllExport void CalcExp(int length, complex<double>* eta, double factor, complex<double>* result)
 		{
 #pragma simd
