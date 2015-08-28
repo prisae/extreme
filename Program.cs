@@ -43,8 +43,8 @@ namespace Profiling
             const double frequency = 0.1;
             var project = XProject.NewWithFrequencies(frequency);
 
-            project.NumberOfHankels = 1;
-            project.Residual = 1E-12;
+            project.ForwardSettings.NumberOfHankels = 1;
+            project.ForwardSettings.Residual = 1E-12;
 
             using (INativeMemoryProvider memoryProvider = new MarshalAllocHGlobalMemoryProvider())
             {
