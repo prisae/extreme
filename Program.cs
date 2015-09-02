@@ -50,24 +50,25 @@ namespace Profiling
             {
                 foreach (var freq in project.Frequencies)
                 {
-                    var mesh = new MeshParameters(10, 10, 10);
-                    var cartesianModel = SimpleCommemi3DModelCreater.CreateCartesianModel(1, 0.01, mesh);
-                    var omegaModel = OmegaModelBuilder.BuildOmegaModel(cartesianModel, freq);
+                    throw new NotImplementedException();
+                    //var mesh = new MeshParameters(10, 10, 10);
+                    //var cartesianModel = SimpleCommemi3DModelCreater.CreateCartesianModel(1, 0.01, mesh);
+                    //var omegaModel = OmegaModelBuilder.BuildOmegaModel(cartesianModel, freq);
 
-                    var logger = new ConsoleLogger();
-                    var profiler = new Profiler();
-                    var factory = new MtForwardSolverFactory(logger, profiler, memoryProvider, project, omegaModel);
+                    //var logger = new ConsoleLogger();
+                    //var profiler = new Profiler();
+                    //var factory = new MtForwardSolverFactory(logger, profiler, memoryProvider, project, omegaModel);
 
-                    var fieldReciepient = new FieldRecipientCollector();
-                    var resultsContainer = new ResultsContainer(omegaModel.LateralDimensions);
+                    //var fieldReciepient = new FieldRecipientCollector();
+                    //var resultsContainer = new ResultsContainer(omegaModel.LateralDimensions);
 
-                    var solver = factory.CreateNewForwardSolver(fieldReciepient);
+                    //var solver = factory.CreateNewForwardSolver(fieldReciepient);
 
-                    solver.Solve();
+                    //solver.Solve();
 
-                    ProfilerResultsTextExporter.SaveProfilingResults(ProfilingResultsPath, cartesianModel, profiler);
+                    //ProfilerResultsTextExporter.SaveProfilingResults(ProfilingResultsPath, cartesianModel, profiler);
 
-                    memoryProvider.ReleaseAllMemory();
+                    //memoryProvider.ReleaseAllMemory();
                 }
             }
         }
