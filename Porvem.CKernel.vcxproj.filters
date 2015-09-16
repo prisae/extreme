@@ -27,5 +27,8 @@
     <ClCompile Include="green_conv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lateral_dist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

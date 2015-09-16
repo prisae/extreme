@@ -123,6 +123,7 @@
     <ClCompile Include="green_scalar.cpp" />
     <ClCompile Include="green_tensor.cpp" />
     <ClCompile Include="green_conv.cpp" />
+    <ClCompile Include="lateral_dist.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
