@@ -86,7 +86,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\Program Files\Microsoft MPI\Inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WINDOWS;MSMPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformation>false</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -108,7 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\Program Files\Microsoft MPI\Inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MSMPI;WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformation>false</BrowseInformation>
       <Cpp0xSupport>true</Cpp0xSupport>
     </ClCompile>
     <Link>

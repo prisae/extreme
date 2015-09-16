@@ -1,5 +1,6 @@
 #include <stddef.h>
 
+#include <iostream>
 #include <mpi.h>
 
 #ifdef WINDOWS
@@ -16,6 +17,10 @@
 #define MpiType void*
 #endif
 
+using namespace std;
+
+typedef struct { double re; double im; } complex16;
+
 
 
 namespace Native
@@ -25,14 +30,14 @@ namespace Native
 
 		DllExport MPI_Op GetMpiOpSum() { return MPI_SUM; }
 		DllExport MpiType GetCommWorld() { return MPI_COMM_WORLD; }
-		DllExport MpiType GetMpiInt()	 { return MPI_INT; }
-		DllExport MpiType GetMpiFloat()	 { return MPI_FLOAT; }
-		DllExport MpiType GetMpiDouble()	 { return MPI_DOUBLE; }
-		DllExport MpiType GetMpiDoubleComplex()	 { return MPI_C_DOUBLE_COMPLEX; }
+		DllExport MpiType GetMpiInt() { return MPI_INT; }
+		DllExport MpiType GetMpiFloat() { return MPI_FLOAT; }
+		DllExport MpiType GetMpiDouble() { return MPI_DOUBLE; }
+		DllExport MpiType GetMpiDoubleComplex() { return MPI_C_DOUBLE_COMPLEX; }
 
 
-		DllExport int GetMaxProcessorName()	 { return MPI_MAX_PROCESSOR_NAME; }
-		DllExport int GetMpiAnySource()	 { return MPI_ANY_SOURCE; }
+		DllExport int GetMaxProcessorName() { return MPI_MAX_PROCESSOR_NAME; }
+		DllExport int GetMpiAnySource() { return MPI_ANY_SOURCE; }
 
 
 		DllExport int GetErrorString(int errorcode, char *string, int *resultlen)
@@ -118,6 +123,15 @@ namespace Native
 			return MPI_Gather(sendbuf, sendcount, MPI_DOUBLE_COMPLEX, recvbuf, recvcount, MPI_DOUBLE_COMPLEX, root, comm);
 		}
 
+		DllExport int AllToAllDoubleComplex(complex16 *sendbuf, int sendcount, void *recvbuf, int recvcount, MPI_Comm comm)
+		{
+			return MPI_Alltoall(sendbuf, sendcount, MPI_DOUBLE_COMPLEX, recvbuf, recvcount, MPI_DOUBLE_COMPLEX, comm);
+		}
+
+		DllExport int AllToAllDoubleComplexInPlace(void *recvbuf, int recvcount, MPI_Comm comm)
+		{
+			return MPI_Alltoall(MPI_IN_PLACE, recvcount, MPI_DOUBLE_COMPLEX, recvbuf, recvcount, MPI_DOUBLE_COMPLEX, comm);
+		}
 
 		DllExport void Finalize()
 		{
