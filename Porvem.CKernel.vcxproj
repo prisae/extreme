@@ -68,8 +68,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <AdditionalOptions> mkl_intel_lp64.lib mkl_core.lib mkl_sequential.lib</AdditionalOptions>
       <AdditionalLibraryDirectories>C:\Program Files (x86)\Intel\Composer XE 2015\mkl\lib\intel64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies />
     </Link>

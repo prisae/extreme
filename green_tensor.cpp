@@ -40,7 +40,7 @@ namespace Native
 
 		DllExport void SimplifiedZtrsv(const int n, const void *a, const MKL_INT lda, void *x)
 		{
-			cblas_ztrsv(CblasColMajor, CblasUpper, CblasNoTrans, CblasNonUnit, n, a, lda, x, 1);
+			cblas_ztrsv(CblasColMajor, CblasLower, CblasNoTrans, CblasNonUnit, n, a, lda, x, 1);
 		}
 
 		DllExport void ZgemvNotTrans(int n, int jh, complex16 alpha, void* a, void* input, complex16 beta, void* result)
@@ -50,7 +50,7 @@ namespace Native
 	
 		DllExport double Dznrm2(const MKL_INT n, const void *x)
 		{
-			cblas_dznrm2(n, x, 1);
+			return cblas_dznrm2(n, x, 1);
 		}
 	}
 }
