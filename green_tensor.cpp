@@ -43,12 +43,14 @@ namespace Native
 			cblas_ztrsv(CblasColMajor, CblasUpper, CblasNoTrans, CblasNonUnit, n, a, lda, x, 1);
 		}
 
-		DllExport void SimplifiedFgmresZgemv(int n, int jh, void* a, void* input, void* result)
+		DllExport void ZgemvNotTrans(int n, int jh, complex16 alpha, void* a, void* input, complex16 beta, void* result)
 		{
-			complex16 alpha = { 1, 0 };
-			complex16 beta = { 0, 0 };
-			
 			cblas_zgemv(CblasColMajor, CblasNoTrans, n, jh, &alpha, a, n, input, 1, &beta, result, 1);
+		}
+	
+		DllExport double Dznrm2(const MKL_INT n, const void *x)
+		{
+			cblas_dznrm2(n, x, 1);
 		}
 	}
 }
