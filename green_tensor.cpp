@@ -48,6 +48,13 @@ namespace Native
 			cblas_zgemv(CblasColMajor, CblasNoTrans, n, jh, &alpha, a, n, input, 1, &beta, result, 1);
 		}
 	
+
+		DllExport void ZgemvConjTrans(int m, int n, complex16 alpha, void* a, void* input, complex16 beta, void* result)
+		{
+			cblas_zgemv(CblasRowMajor, CblasConjTrans, m, n, &alpha, a, n, input, 1, &beta, result, 1);
+		}
+
+
 		DllExport double Dznrm2(const MKL_INT n, const void *x)
 		{
 			return cblas_dznrm2(n, x, 1);
