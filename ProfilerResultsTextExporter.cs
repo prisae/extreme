@@ -17,16 +17,16 @@ namespace Profiling
             _model = model;
         }
 
-        public static void SaveProfilingResults(string path, CartesianModel cartesianModel, Profiler profiler)
+        public static void SaveRawProfilingResults(string path, CartesianModel cartesianModel, Profiler profiler)
         {
             profiler.GetAllRecords().SaveWithModel(path, cartesianModel);
         }
 
         public static void SaveProfilingResultsTo(string path, CartesianModel model, ProfilerStatistics[] analisisResult)
         {
-            if (path == null) throw new ArgumentNullException("path");
-            if (analisisResult == null) throw new ArgumentNullException("analisisResult");
-            if (model == null) throw new ArgumentNullException("model");
+            if (path == null) throw new ArgumentNullException(nameof(path));
+            if (analisisResult == null) throw new ArgumentNullException(nameof(analisisResult));
+            if (model == null) throw new ArgumentNullException(nameof(model));
 
             new ProfilerResultsTextExporter(analisisResult, model)
             .SaveProfilingResultsTo(path);
@@ -41,11 +41,11 @@ namespace Profiling
                 WriteModelInfo(sw);
                 WriteIterationsInfo(sw);
 
-                percentSumm += WriteInfoAboutScalarAtoA(sw);
                 percentSumm += WriteInfoAboutTensorAtoA(sw);
                 percentSumm += WriteInfoAboutCie(sw);
-                percentSumm += WriteInfoAboutMisc(sw);
                 percentSumm += WriteInfoObservations(sw);
+                percentSumm += WriteInfoAboutMisc(sw);
+                
 
                 sw.WriteLine("\n\n                                               Total Covered: {0:F1} %", percentSumm);
             }
@@ -82,36 +82,27 @@ namespace Profiling
 
         private class SubEvents
         {
-            private readonly ProfilerEvent _topEvent;
-            private readonly SubEvents[] _events;
-
             public SubEvents(ProfilerEvent topEvent)
             {
-                _topEvent = topEvent;
-                _events = new SubEvents[0];
+                TopEvent = topEvent;
+                Events = new SubEvents[0];
             }
 
             public SubEvents(ProfilerEvent topEvent, params SubEvents[] events)
             {
-                _topEvent = topEvent;
-                _events = events;
+                TopEvent = topEvent;
+                Events = events;
             }
 
             public SubEvents(ProfilerEvent topEvent, params ProfilerEvent[] events)
             {
-                _topEvent = topEvent;
-                _events = events.Select(ev => new SubEvents(ev, new SubEvents[0])).ToArray();
+                TopEvent = topEvent;
+                Events = events.Select(ev => new SubEvents(ev, new SubEvents[0])).ToArray();
             }
 
-            public ProfilerEvent TopEvent
-            {
-                get { return _topEvent; }
-            }
+            public ProfilerEvent TopEvent { get; }
 
-            public SubEvents[] Events
-            {
-                get { return _events; }
-            }
+            public SubEvents[] Events { get; }
         }
 
         private double WriteTopLevelInfo(StreamWriter sw, ProfilerEvent topEvent, params SubEvents[] events)
@@ -159,23 +150,18 @@ namespace Profiling
         }
 
 
-        private double WriteInfoAboutScalarAtoA(StreamWriter sw)
-        {
-            return WriteTopLevelInfo(sw, ProfilerEvent.GreenScalarAtoA,
-                ProfilerEvent.GreenScalarAtoACalc,
-                ProfilerEvent.GreenScalarAtoACommunicate);
-        }
-
         private double WriteInfoAboutTensorAtoA(StreamWriter sw)
         {
             double percent = 0;
 
-            percent += WriteTopLevelInfo(sw, ProfilerEvent.GreenTensorAtoA,
-                   ProfilerEvent.GreenTensorAtoACalc,
-                   ProfilerEvent.GreenTensorAtoAPopulate);
-
-            percent += WriteTopLevelInfo(sw, ProfilerEvent.GreenTensorAtoAConvert,
-                   ProfilerEvent.GreenTensorAtoAFft);
+            percent += WriteTopLevelInfo(sw, ProfilerEvent.GreenAtoATotal,
+                   new SubEvents(ProfilerEvent.GreenTensorAtoAFftCreatePlan),
+                   new SubEvents(ProfilerEvent.GreenScalarAtoA,
+                                 ProfilerEvent.GreenScalarAtoACalc,
+                                 ProfilerEvent.GreenScalarAtoACommunicate),
+                   new SubEvents(ProfilerEvent.GreenTensorAtoA,
+                                 ProfilerEvent.GreenTensorAtoACalc,
+                                 ProfilerEvent.GreenTensorAtoAFft));
 
             return percent;
         }
@@ -188,8 +174,7 @@ namespace Profiling
             percent += WriteTopLevelInfo(sw, ProfilerEvent.CalcChi0);
             percent += WriteTopLevelInfo(sw, ProfilerEvent.CalcJScattered);
             percent += WriteTopLevelInfo(sw, ProfilerEvent.CalcEScattered);
-
-            WriteTopLevelInfo(sw, ProfilerEvent.FftwPlanCalculation);
+            percent += WriteTopLevelInfo(sw, ProfilerEvent.FftwPlanCalculation);
 
             return percent;
         }
