@@ -29,7 +29,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <UseIntelMKL>Parallel</UseIntelMKL>
+    <UseIntelMKL>Sequential</UseIntelMKL>
     <PlatformToolset>Intel C++ Compiler XE 15.0</PlatformToolset>
     <UseMpiLibrary>MSMPI</UseMpiLibrary>
   </PropertyGroup>
