@@ -103,9 +103,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Porvem.Cartesian.Forward.Magnetotellurics\Porvem.Cartesian.Forward.Magnetotellurics.csproj">
+    <ProjectReference Include="..\..\Porvem.Cartesian.Forward.Magnetotellurics\Porvem.Cartesian.Magnetotellurics.csproj">
       <Project>{fb98c663-09d8-4c04-86fd-d70a8228264e}</Project>
-      <Name>Porvem.Cartesian.Forward.Magnetotellurics</Name>
+      <Name>Porvem.Cartesian.Magnetotellurics</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Porvem.Cartesian\Porvem.Cartesian.csproj">
       <Project>{d37795f3-44bd-4103-8f7e-cab1ceba7109}</Project>

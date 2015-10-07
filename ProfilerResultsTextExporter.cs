@@ -182,6 +182,7 @@ namespace Profiling
         private double WriteInfoAboutCie(StreamWriter sw)
         {
             return WriteTopLevelInfo(sw, ProfilerEvent.SolveCie,
+                new SubEvents(ProfilerEvent.CalcDotProduct),
                 new SubEvents(ProfilerEvent.ApplyOperatorA,
                     ProfilerEvent.OperatorAApplyR,
                     ProfilerEvent.OperatorAPrepareForForwardFft,
@@ -189,8 +190,7 @@ namespace Profiling
                     ProfilerEvent.OperatorAMultiplication,
                     ProfilerEvent.OperatorABackwardFft,
                     ProfilerEvent.OperatorAExtractAfterBackwardFft,
-                    ProfilerEvent.OperatorAFinish),
-                new SubEvents(ProfilerEvent.CalcDotProduct));
+                    ProfilerEvent.OperatorAFinish));
         }
 
         private double WriteInfoObservations(StreamWriter sw)

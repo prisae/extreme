@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Office.Interop.Excel;
 using ModelCreaters;
 using Porvem.Cartesian;
-using Porvem.Cartesian.Forward.Magnetotellurics;
+using Porvem.Cartesian.Magnetotellurics;
 using Porvem.Cartesian.Model;
 using Porvem.Cartesian.Project;
 using Porvem.Core;
