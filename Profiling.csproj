@@ -103,7 +103,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Porvem.Cartesian.Forward.Magnetotellurics\Porvem.Cartesian.Magnetotellurics.csproj">
+    <ProjectReference Include="..\..\Porvem.Cartesian.Magnetotellurics\Porvem.Cartesian.Magnetotellurics.csproj">
       <Project>{fb98c663-09d8-4c04-86fd-d70a8228264e}</Project>
       <Name>Porvem.Cartesian.Magnetotellurics</Name>
     </ProjectReference>
