@@ -22,23 +22,23 @@ namespace Profiling
             profiler.GetAllRecords().SaveWithModel(path, cartesianModel);
         }
 
-        public static void SaveProfilingResultsTo(string path, CartesianModel model, ProfilerStatistics[] analisisResult)
+        public static void SaveProfilingResultsTo(string path, CartesianModel model, ProfilerStatistics[] analisisResult, int nMpi, int nThreads)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (analisisResult == null) throw new ArgumentNullException(nameof(analisisResult));
             if (model == null) throw new ArgumentNullException(nameof(model));
 
             new ProfilerResultsTextExporter(analisisResult, model)
-            .SaveProfilingResultsTo(path);
+            .SaveProfilingResultsTo(path, nMpi, nThreads);
         }
 
-        private void SaveProfilingResultsTo(string path)
+        private void SaveProfilingResultsTo(string path, int nMpi, int nThreads)
         {
             double percentSumm = 0;
 
             using (var sw = new StreamWriter(path))
             {
-                WriteModelInfo(sw);
+                WriteModelInfo(sw, nMpi, nThreads);
                 WriteIterationsInfo(sw);
 
                 percentSumm += WriteInfoAboutTensorAtoA(sw);
@@ -70,7 +70,7 @@ namespace Profiling
                 sw.WriteLine("Total SOLVING time {0}, {1} times", total.TotalTime, total.TotalNumber);
         }
 
-        private void WriteModelInfo(StreamWriter sw)
+        private void WriteModelInfo(StreamWriter sw, int nMpi, int nThreads)
         {
             sw.WriteLine("DateTime: {0}", DateTime.Now);
             sw.WriteLine("model parameters:");
@@ -78,6 +78,8 @@ namespace Profiling
                 _model.LateralDimensions.Nx,
                 _model.LateralDimensions.Ny,
                 _model.Anomaly.Layers.Count);
+            sw.WriteLine($"Number of MPI processes = {nMpi}");
+            sw.WriteLine($"Number of threads = {nThreads}");
         }
 
         private class SubEvents
