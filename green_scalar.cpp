@@ -66,7 +66,7 @@ namespace Native
 			return s;
 		}
 
-		DllExport void ClearBuffer(complex16* buffer, int length)
+		DllExport void ClearBuffer(complex16* buffer, size_t length)
 		{
 			memset(buffer, 0, length * 16);
 		}
