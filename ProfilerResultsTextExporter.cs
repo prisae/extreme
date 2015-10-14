@@ -158,9 +158,11 @@ namespace Profiling
 
             percent += WriteTopLevelInfo(sw, ProfilerEvent.GreenAtoATotal,
                    new SubEvents(ProfilerEvent.GreenScalarAtoA,
-                                 ProfilerEvent.GreenScalarAtoACalc,
+                                 ProfilerEvent.GreenScalarAtoACalcCalc,
+                                 ProfilerEvent.GreenScalarAtoAUnion,
                                  ProfilerEvent.GreenScalarAtoACommunicate),
                    new SubEvents(ProfilerEvent.GreenTensorAtoA,
+                                 ProfilerEvent.GreenScalarAtoASegments,
                                  ProfilerEvent.GreenTensorAtoACalc,
                                  ProfilerEvent.GreenTensorAtoAFft));
 
