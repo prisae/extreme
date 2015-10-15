@@ -17,6 +17,10 @@
 #define MpiType void*
 #endif
 
+#ifdef MPICH
+#define MpiType long long
+#endif
+
 using namespace std;
 
 typedef struct { double re; double im; } complex16;
@@ -53,6 +57,16 @@ namespace Native
 		DllExport int Barrier(MPI_Comm comm)
 		{
 			return MPI_Barrier(comm);
+		}
+
+		DllExport int AllGatherV(void* sendbuf, int size, void* rbuf, int *recvcounts, int *displs)
+		{
+			return MPI_Allgatherv(sendbuf, size, MPI_DOUBLE_COMPLEX, rbuf, recvcounts, displs, MPI_DOUBLE_COMPLEX, MPI_COMM_WORLD);
+		}
+
+		DllExport int GatherV(void* sendbuf, int size, void* rbuf, int *recvcounts, int *displs)
+		{
+			return MPI_Gatherv(sendbuf, size, MPI_DOUBLE_COMPLEX, rbuf, recvcounts, displs, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
 		}
 
 		DllExport int AllReduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Comm comm)
@@ -111,11 +125,6 @@ namespace Native
 		DllExport int SendComplexMatrix(void* data, int nx, int ny, int destination, int tag)
 		{
 			return MPI_Send(data, nx*ny, MPI_DOUBLE_COMPLEX, destination, tag, MPI_COMM_WORLD);
-		}
-
-		DllExport int AllGatherVectorComplexMatrix(void* sendbuf, int size, void* rbuf, int *recvcounts, int *displs)
-		{
-			return MPI_Allgatherv(sendbuf, size, MPI_DOUBLE_COMPLEX, rbuf, recvcounts, displs, MPI_DOUBLE_COMPLEX, MPI_COMM_WORLD);
 		}
 
 		DllExport int Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
