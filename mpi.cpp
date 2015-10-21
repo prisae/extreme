@@ -129,7 +129,7 @@ namespace Native
 
 		DllExport int Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 		{
-			return MPI_Gather(sendbuf, sendcount, MPI_DOUBLE_COMPLEX, recvbuf, recvcount, MPI_DOUBLE_COMPLEX, root, comm);
+			return MPI_Gather(sendbuf, sendcount, sendtype, recvbuf, recvcount, sendtype, root, comm);
 		}
 
 		DllExport int AllToAllDoubleComplex(complex16 *sendbuf, int sendcount, void *recvbuf, int recvcount, MPI_Comm comm)
