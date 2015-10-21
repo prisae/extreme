@@ -7,7 +7,7 @@ namespace FftWrap
     [SuppressUnmanagedCodeSecurity]
     public static partial class Fftw
     {
-        private const string NativeDllName = "libfftw3";
+        private const string NativeDllName = "libfftw3_omp";
         [DllImport(NativeDllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "fftw_set_planner_hooks")]
         public static extern void SetPlannerHooks(IntPtr before, IntPtr after);
         [DllImport(NativeDllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "fftw_execute")]
