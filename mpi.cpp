@@ -64,6 +64,11 @@ namespace Native
 			return MPI_Allgatherv(sendbuf, size, MPI_DOUBLE_COMPLEX, rbuf, recvcounts, displs, MPI_DOUBLE_COMPLEX, MPI_COMM_WORLD);
 		}
 
+		DllExport int Gather(void *sendbuf, int sendcount, void *recvbuf, int recvcount, int root, MPI_Comm comm)
+		{
+			return MPI_Gather(sendbuf, sendcount, MPI_DOUBLE_COMPLEX, recvbuf, recvcount, MPI_DOUBLE_COMPLEX, root, comm);
+		}
+
 		DllExport int GatherV(void* sendbuf, int size, void* rbuf, int *recvcounts, int *displs)
 		{
 			return MPI_Gatherv(sendbuf, size, MPI_DOUBLE_COMPLEX, rbuf, recvcounts, displs, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
@@ -125,11 +130,6 @@ namespace Native
 		DllExport int SendComplexMatrix(void* data, int nx, int ny, int destination, int tag)
 		{
 			return MPI_Send(data, nx*ny, MPI_DOUBLE_COMPLEX, destination, tag, MPI_COMM_WORLD);
-		}
-
-		DllExport int Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
-		{
-			return MPI_Gather(sendbuf, sendcount, sendtype, recvbuf, recvcount, sendtype, root, comm);
 		}
 
 		DllExport int AllToAllDoubleComplex(complex16 *sendbuf, int sendcount, void *recvbuf, int recvcount, MPI_Comm comm)
