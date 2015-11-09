@@ -21,7 +21,7 @@ namespace FftWrap
         [DllImport(NativeDllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "fftw_plan_dft_3d")]
         public static extern IntPtr PlanDft3D(int n0, int n1, int n2, IntPtr src, IntPtr dst, int sign, uint flags);
         [DllImport(NativeDllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "fftw_plan_many_dft")]
-        public static extern IntPtr PlanManyDft(int rank, [In] int [ ]  n, int howMany, IntPtr src, [In] IntPtr [ ]  inembed, int istride, int idist, IntPtr dst, [In] IntPtr [ ]  onembed, int ostride, int odist, int sign, uint flags);
+        public static extern IntPtr PlanManyDft(int rank, [In] int [ ]  n, int howMany, IntPtr src, [In] int [ ]  inembed, int istride, int idist, IntPtr dst, [In] int [ ]  onembed, int ostride, int odist, int sign, uint flags);
         [DllImport(NativeDllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "fftw_plan_guru_dft")]
         public static extern IntPtr PlanGuruDft(int rank, [In] IntPtr [ ]  dims, int howManyRank, [In] IntPtr [ ]  howManyDims, IntPtr src, IntPtr dst, int sign, uint flags);
         [DllImport(NativeDllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "fftw_plan_guru_split_dft")]
