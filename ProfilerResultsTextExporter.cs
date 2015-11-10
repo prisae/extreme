@@ -41,11 +41,12 @@ namespace Profiling
                 WriteModelInfo(sw, nMpi, nThreads);
                 WriteIterationsInfo(sw);
 
+                WriteInfoAboutCustomFft(sw);
+
                 percentSumm += WriteInfoAboutTensorAtoA(sw);
                 percentSumm += WriteInfoAboutCie(sw);
                 percentSumm += WriteInfoObservations(sw);
                 percentSumm += WriteInfoAboutMisc(sw);
-                
 
                 sw.WriteLine("\n\n                                               Total Covered: {0:F1} %", percentSumm);
             }
@@ -170,6 +171,22 @@ namespace Profiling
             return percent;
         }
 
+
+        private double WriteInfoAboutCustomFft(StreamWriter sw)
+        {
+            double percent = 0;
+
+            percent += WriteTopLevelInfo(sw, ProfilerEvent.CustomFft,
+                new SubEvents(ProfilerEvent.CustomFftInitialTranspose),
+                new SubEvents(ProfilerEvent.CustomFftDistributedFourierY),
+                new SubEvents(ProfilerEvent.CustomFftBlockTransposeYtoX),
+                new SubEvents(ProfilerEvent.CustomFftDistributedTranspose),
+                new SubEvents(ProfilerEvent.CustomFftDistributedFourierX),
+                new SubEvents(ProfilerEvent.CustomFftBlockTransposeXtoY),
+                new SubEvents(ProfilerEvent.CustomFftFinalTranspose));
+
+            return percent;
+        }
 
         private double WriteInfoAboutMisc(StreamWriter sw)
         {
