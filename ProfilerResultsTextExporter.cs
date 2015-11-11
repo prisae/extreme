@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Porvem.Cartesian.Model;
@@ -213,7 +214,7 @@ namespace Profiling
 
         private double WriteInfoObservations(StreamWriter sw)
         {
-            return WriteTopLevelInfo(sw, ProfilerEvent.ObservationsCalculation);
+            return WriteTopLevelInfo(sw, ProfilerEvent.ObservationsFullCalculation);
         }
 
         private double PercentOfEvent(ProfilerStatistics subStat, ProfilerEvent mainEvent)
@@ -261,33 +262,50 @@ namespace Profiling
             return percent;
         }
 
-        public static void SaveProfilingResultsToCommon(string fileName, string tag, ProfilerStatistics[] analisisResult, int numberOfMpi, int numberOfThreads)
+        public static void SaveProfilingResultsToCommon(string fileName, CartesianModel model, ProfilerStatistics[] analisisResult, int numberOfMpi, int numberOfThreads)
         {
-            Func<string, string> padStr = (str) => str.PadRight(15);
-            Func<TimeSpan, string> toStr = (ts) => padStr(ts.TotalSeconds.ToString("0.00000"));
-
-
-            if (!File.Exists(fileName))
+            try
             {
-                File.AppendAllText(fileName, $"{"tag".PadRight(35)}{padStr("mpi_size")}{padStr("num_threads")}" +
-                                             $"{padStr("AtoA_green")}{padStr("polX")}{padStr("polY")}" +
-                                             $"{padStr("AtoO_green")}{padStr("AtoO_calc")}\n");
+                Func<string, int,string> padStr = (str, p) => str.PadRight(p);
+                Func<string, string> pad = (str) => padStr(str, 15);
+                Func<TimeSpan, string> toStr = (ts) => padStr(ts.TotalSeconds.ToString("0.00000"), 15);
+                
+                if (!File.Exists(fileName))
+                {
+                    File.AppendAllText(fileName, $"{pad("Date")}{padStr("Time", 12)}" +
+                                                 $"{padStr("nx", 6)}{padStr("ny", 6)}{padStr("nz", 6)}" +
+                                                 $"{padStr("mpi_size", 9)}{padStr("nthreads", 9)}" +
+                                                 $"{pad("AtoA_Green")}{pad("polX")}{pad("polY")}" +
+                                                 $"{pad("AtoO_Green")}{pad("AtoO_calc_X")}{pad("AtoO_calc_Y")}\n");
+                }
+
+                var tmp = analisisResult.Where(a => a.Code == (int)ProfilerEvent.SolveCie).ToArray();
+                
+                var pols = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.SolveCie);
+                var atoa = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.GreenAtoATotal).Times[0];
+                var polX = pols.Times[0];
+                var polY = pols.Times[1];
+                var atoo = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.AtoOGreenCalc).TotalTime;
+                var atoc1 = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.AtoOFields).Times[0];
+                var atoc2 = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.AtoOFields).Times[1];
+
+                Console.WriteLine(tmp);
+
+                var now = DateTime.Now;
+
+                var line = $"{pad(now.ToShortDateString())}{padStr(now.ToShortTimeString(), 12)}" +
+                           $"{padStr(model.Nx.ToString(), 6)}{padStr(model.Ny.ToString(), 6)}{padStr(model.Nz.ToString(), 6)}" +
+                           $"{padStr(numberOfMpi.ToString(), 9)}{padStr(numberOfThreads.ToString(), 9)}" +
+                           $"{toStr(atoa)}{toStr(polX)}{toStr(polY)}" +
+                           $"{toStr(atoo)}{toStr(atoc1)}{toStr(atoc2)}\n";
+
+                File.AppendAllText(fileName, line);
             }
 
-
-            var pols = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.ForwardSolvingOneSource);
-            var atoa = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.GreenAtoATotal).Times[0];
-            var polX = pols.Times[0];
-            var polY = pols.Times[1];
-            var atoo = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.ObservationsCalculation).Times[0];
-
-
-
-            var line = $"{tag.PadRight(35)}{padStr(numberOfMpi.ToString())}{padStr(numberOfThreads.ToString())}" +
-                       $"{toStr(atoa)}{toStr(polX)}{toStr(polY)}" +
-                       $"{toStr(atoo)}\n";
-
-            File.AppendAllText(fileName, line);
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
