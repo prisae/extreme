@@ -159,7 +159,7 @@ namespace Profiling
                                  new SubEvents(ProfilerEvent.GreenScalarAtoACalcCalc),
                                  new SubEvents(ProfilerEvent.GreenScalarAtoAUnion),
                                  new SubEvents(ProfilerEvent.GreenScalarAtoASegments),
-                                 new SubEvents (ProfilerEvent.GreenScalarAtoACommunicate,
+                                 new SubEvents(ProfilerEvent.GreenScalarAtoACommunicate,
                                                 ProfilerEvent.GreenScalarAtoATrans)),
                    new SubEvents(ProfilerEvent.GreenTensorAtoA,
                                  ProfilerEvent.GreenTensorAtoACalc,
@@ -259,6 +259,35 @@ namespace Profiling
             }
 
             return percent;
+        }
+
+        public static void SaveProfilingResultsToCommon(string fileName, string tag, ProfilerStatistics[] analisisResult, int numberOfMpi, int numberOfThreads)
+        {
+            Func<string, string> padStr = (str) => str.PadRight(15);
+            Func<TimeSpan, string> toStr = (ts) => padStr(ts.TotalSeconds.ToString("0.00000"));
+
+
+            if (!File.Exists(fileName))
+            {
+                File.AppendAllText(fileName, $"{"tag".PadRight(35)}{padStr("mpi_size")}{padStr("num_threads")}" +
+                                             $"{padStr("AtoA_green")}{padStr("polX")}{padStr("polY")}" +
+                                             $"{padStr("AtoO_green")}{padStr("AtoO_calc")}\n");
+            }
+
+
+            var pols = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.ForwardSolvingOneSource);
+            var atoa = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.GreenAtoATotal).Times[0];
+            var polX = pols.Times[0];
+            var polY = pols.Times[1];
+            var atoo = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.ObservationsCalculation).Times[0];
+
+
+
+            var line = $"{tag.PadRight(35)}{padStr(numberOfMpi.ToString())}{padStr(numberOfThreads.ToString())}" +
+                       $"{toStr(atoa)}{toStr(polX)}{toStr(polY)}" +
+                       $"{toStr(atoo)}\n";
+
+            File.AppendAllText(fileName, line);
         }
     }
 }
