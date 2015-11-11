@@ -262,7 +262,7 @@ namespace Profiling
             return percent;
         }
 
-        public static void SaveProfilingResultsToCommon(string fileName, CartesianModel model, ProfilerStatistics[] analisisResult, int numberOfMpi, int numberOfThreads)
+        public static void SaveProfilingResultsToCommon(string fileName, CartesianModel model, ProfilerStatistics[] analisisResult, int numberOfMpi, int numberOfThreads, int nhank)
         {
             try
             {
@@ -274,13 +274,12 @@ namespace Profiling
                 {
                     File.AppendAllText(fileName, $"{pad("Date")}{padStr("Time", 12)}" +
                                                  $"{padStr("nx", 6)}{padStr("ny", 6)}{padStr("nz", 6)}" +
+                                                 $"{padStr("nhank", 6)}" +
                                                  $"{padStr("mpi_size", 9)}{padStr("nthreads", 9)}" +
                                                  $"{pad("AtoA_Green")}{pad("polX")}{pad("polY")}" +
                                                  $"{pad("AtoO_Green")}{pad("AtoO_calc_X")}{pad("AtoO_calc_Y")}\n");
                 }
 
-                var tmp = analisisResult.Where(a => a.Code == (int)ProfilerEvent.SolveCie).ToArray();
-                
                 var pols = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.SolveCie);
                 var atoa = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.GreenAtoATotal).Times[0];
                 var polX = pols.Times[0];
@@ -289,12 +288,11 @@ namespace Profiling
                 var atoc1 = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.AtoOFields).Times[0];
                 var atoc2 = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.AtoOFields).Times[1];
 
-                Console.WriteLine(tmp);
-
                 var now = DateTime.Now;
 
                 var line = $"{pad(now.ToShortDateString())}{padStr(now.ToShortTimeString(), 12)}" +
                            $"{padStr(model.Nx.ToString(), 6)}{padStr(model.Ny.ToString(), 6)}{padStr(model.Nz.ToString(), 6)}" +
+                           $"{padStr(nhank.ToString(), 6)}" +
                            $"{padStr(numberOfMpi.ToString(), 9)}{padStr(numberOfThreads.ToString(), 9)}" +
                            $"{toStr(atoa)}{toStr(polX)}{toStr(polY)}" +
                            $"{toStr(atoo)}{toStr(atoc1)}{toStr(atoc2)}\n";
@@ -302,9 +300,13 @@ namespace Profiling
                 File.AppendAllText(fileName, line);
             }
 
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+
+                Console.WriteLine($"Scalability profiling export {ex.Message} {ex.StackTrace}");
+                
+                
+                //   throw;
             }
         }
     }
