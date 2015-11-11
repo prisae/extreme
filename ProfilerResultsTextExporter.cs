@@ -178,10 +178,10 @@ namespace Profiling
 
             percent += WriteTopLevelInfo(sw, ProfilerEvent.CustomFft,
                 new SubEvents(ProfilerEvent.CustomFftInitialTranspose),
-                new SubEvents(ProfilerEvent.CustomFftDistributedFourierY),
+                new SubEvents(ProfilerEvent.CustomFftFourierY),
                 new SubEvents(ProfilerEvent.CustomFftBlockTransposeYtoX),
                 new SubEvents(ProfilerEvent.CustomFftDistributedTranspose),
-                new SubEvents(ProfilerEvent.CustomFftDistributedFourierX),
+                new SubEvents(ProfilerEvent.CustomFftFourierX),
                 new SubEvents(ProfilerEvent.CustomFftBlockTransposeXtoY),
                 new SubEvents(ProfilerEvent.CustomFftFinalTranspose));
 
