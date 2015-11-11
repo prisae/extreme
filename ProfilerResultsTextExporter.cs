@@ -59,26 +59,23 @@ namespace Profiling
 
             sw.WriteLine();
             if (mult != null)
-                sw.WriteLine("Total number of multiplications: {0}", mult.TotalNumber);
+                sw.WriteLine($"Total number of multiplications: {mult.TotalNumber}");
 
             if (dotProduct != null)
-                sw.WriteLine("Total number of dot products: {0}", dotProduct.TotalNumber);
+                sw.WriteLine($"Total number of dot products: {dotProduct.TotalNumber}");
             sw.WriteLine();
 
             var total = _analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.ForwardSolving);
 
             if (total != null)
-                sw.WriteLine("Total SOLVING time {0}, {1} times", total.TotalTime, total.TotalNumber);
+                sw.WriteLine($"Total SOLVING time {total.TotalTime.TotalSeconds:0.00000}, {total.TotalNumber} times");
         }
 
         private void WriteModelInfo(StreamWriter sw, int nMpi, int nThreads)
         {
-            sw.WriteLine("DateTime: {0}", DateTime.Now);
+            sw.WriteLine($"DateTime: {DateTime.Now}");
             sw.WriteLine("model parameters:");
-            sw.WriteLine("nx = {0}, ny = {1}, nz = {2}",
-                _model.LateralDimensions.Nx,
-                _model.LateralDimensions.Ny,
-                _model.Anomaly.Layers.Count);
+            sw.WriteLine($"nx = {_model.Nx}, ny = {_model.Ny}, nz = {_model.Nz}");
             sw.WriteLine($"Number of MPI processes = {nMpi}");
             sw.WriteLine($"Number of threads = {nThreads}");
         }
@@ -137,8 +134,8 @@ namespace Profiling
 
             sw.WriteLine();
             sw.WriteLine();
-            sw.WriteLine("{0}:", topEvent);
-            sw.WriteLine("\tTotal time: {0}, {2} times, \t\t\t\t\tpercent of SOLVING: {1:F1}%", topStat.TotalTime, totalPercent, topStat.TotalNumber);
+            sw.WriteLine($"{topEvent}:");
+            sw.WriteLine($"\tTotal time: {topStat.TotalTime.TotalSeconds:0.0000}, {topStat.TotalNumber} times, \t\t\t\t\tpercent of SOLVING: {totalPercent:F1}%");
             sw.WriteLine();
 
             double percentSumm = 0;
@@ -239,7 +236,7 @@ namespace Profiling
             for (int i = 0; i < depth; i++)
                 sw.Write("\t");
 
-            sw.WriteLine("{2} {0}, {1:F1} %, {3} times", stat.TotalTime, percent, profEvent.ToString().PadRight(30), stat.TotalNumber);
+            sw.WriteLine($"{profEvent.ToString().PadRight(30)} {stat.TotalTime.TotalSeconds:0.00000}, {percent:F1} %, {stat.TotalNumber} times");
 
             if (subEvents.Events.Length != 0)
             {
