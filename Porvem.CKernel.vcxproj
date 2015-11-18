@@ -21,7 +21,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Intel C++ Compiler XE 15.0</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <UseIntelMKL>Sequential</UseIntelMKL>
+    <UseIntelMKL>Parallel</UseIntelMKL>
     <UseMpiLibrary>MSMPI</UseMpiLibrary>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -29,7 +29,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <UseIntelMKL>Sequential</UseIntelMKL>
+    <UseIntelMKL>Parallel</UseIntelMKL>
     <PlatformToolset>Intel C++ Compiler XE 15.0</PlatformToolset>
     <UseMpiLibrary>MSMPI</UseMpiLibrary>
   </PropertyGroup>
@@ -59,12 +59,18 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
       <BrowseInformation>false</BrowseInformation>
       <PreprocessorDefinitions>WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions> -I"%MKLROOT%"/include %(AdditionalOptions)</AdditionalOptions>
       <Cpp0xSupport>true</Cpp0xSupport>
+      <OpenMP>GenerateParallelCode</OpenMP>
+      <Parallelization>true</Parallelization>
+      <OptimizationDiagnosticLevel>Disable</OptimizationDiagnosticLevel>
+      <InterproceduralOptimization>MultiFile</InterproceduralOptimization>
+      <LoopUnrolling>0</LoopUnrolling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -83,9 +89,9 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <OptimizeForWindowsApplication>false</OptimizeForWindowsApplication>
       <UseProcessorExtensions>HOST</UseProcessorExtensions>
@@ -100,12 +106,15 @@
       <Cpp0xSupport>true</Cpp0xSupport>
       <DisablePrecompiledHeaderMessages>false</DisablePrecompiledHeaderMessages>
       <ExceptionHandling>false</ExceptionHandling>
+      <OpenMP>None</OpenMP>
+      <OptimizationDiagnosticLevel>Disable</OptimizationDiagnosticLevel>
+      <LoopUnrolling>0</LoopUnrolling>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalOptions> mkl_intel_lp64.lib mkl_core.lib mkl_sequential.lib</AdditionalOptions>
+      <AdditionalOptions> mkl_intel_lp64_dll.lib mkl_core_dll.lib mkl_intel_thread_dll.lib</AdditionalOptions>
       <AdditionalLibraryDirectories>C:\Program Files (x86)\Intel\Composer XE 2015\mkl\lib\intel64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>
       </AdditionalDependencies>
@@ -118,7 +127,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="giem2g_mult.cpp" />
+    <ClCompile Include="full_zgemv.cpp" />
     <ClCompile Include="green_scalar.cpp" />
     <ClCompile Include="green_tensor.cpp" />
     <ClCompile Include="green_conv.cpp" />
