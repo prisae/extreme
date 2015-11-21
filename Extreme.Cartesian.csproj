@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D37795F3-44BD-4103-8F7E-CAB1CEBA7109}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Extreme.Cartesian</RootNamespace>
+    <AssemblyName>Extreme.Cartesian</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseCentOs|AnyCPU'">
+    <OutputPath>bin\ReleaseCentOs\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseCentOs|x64'">
+    <OutputPath>bin\x64\ReleaseCentOs\</OutputPath>
+    <DefineConstants>TRACE;CENTOS</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseDouble|AnyCPU'">
+    <OutputPath>bin\ReleaseDouble\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseDouble|x64'">
+    <OutputPath>bin\x64\ReleaseDouble\</OutputPath>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseSingle|AnyCPU'">
+    <OutputPath>bin\ReleaseSingle\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseSingle|x64'">
+    <OutputPath>bin\x64\ReleaseSingle\</OutputPath>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Fft\CustomFft\CustomDistributedFft.cs" />
+    <Compile Include="Fft\CustomFft\CustomFftPlan.cs" />
+    <Compile Include="Fft\CustomFft\UnsafeArray.cs" />
+    <Compile Include="Fft\FftW\FftwPlan.cs" />
+    <Compile Include="Fft\IFftBufferPlan.cs" />
+    <Compile Include="Forward\EventArgs\AtoAGreenTensorCalculatedEventArgs.cs" />
+    <Compile Include="Forward\EventArgs\CieSolverStartedEventArgs.cs" />
+    <Compile Include="Forward\EventArgs\GreenTensorCalculatedEventArgs.cs" />
+    <Compile Include="Fft\FftBufferPool.cs" />
+    <Compile Include="Forward\ToObs\ToOCalculator.cs" />
+    <Compile Include="Forward\EventArgs\FieldsAtLevelCalculatedEventArgs.cs" />
+    <Compile Include="Forward\EventArgs\FieldsAtSiteCalculatedEventArgs.cs" />
+    <Compile Include="Fft\FftBuffer.cs" />
+    <Compile Include="Forward\ToObs\AtoOCalculator.cs" />
+    <Compile Include="Forward\ToObs\SiteConvolutor.cs" />
+    <Compile Include="Forward\ToObs\StoOCalculator.cs" />
+    <Compile Include="Green\Tensor\Impl\SingleScalarSegment.cs" />
+    <Compile Include="Green\Tensor\TensorPlan.cs" />
+    <Compile Include="Model\LoadAndSave\LinesReader.cs" />
+    <Compile Include="Model\ModelUtils.cs" />
+    <Compile Include="Forward\UnsafeNativeMethods.cs" />
+    <Compile Include="Core\AnomalyCurrent.cs" />
+    <Compile Include="Core\LayerAccessor.cs" />
+    <Compile Include="Core\MultiThreadUtils.cs" />
+    <Compile Include="DebugUtils.cs" />
+    <Compile Include="Fft\FftW\FftWTransform.cs" />
+    <Compile Include="Fft\FftW\FftWMemoryProvider.cs" />
+    <Compile Include="Fft\FftW\DistributedFftWTransform.cs" />
+    <Compile Include="Forward\EventArgs\CieSolverFinishedEventArgs.cs" />
+    <Compile Include="Forward\AtoA\ConvolutionOperator.cs" />
+    <Compile Include="Forward\AtoA\AtoAGreenTensorCalculatorComponent.cs" />
+    <Compile Include="Forward\DistributedUtils.cs" />
+    <Compile Include="Forward\ForwardSolver.cs" />
+    <Compile Include="Forward\ForwardSolverComponent.cs" />
+    <Compile Include="Forward\ForwardSolverGenerics.cs" />
+    <Compile Include="Forward\NewTaskEventArgs.cs" />
+    <Compile Include="Forward\SimpleParallelManager.cs" />
+    <Compile Include="Green\Scalar\GreenScalars.cs" />
+    <Compile Include="Green\Scalar\Impl\AuxContainerFast.cs" />
+    <Compile Include="Green\Scalar\Impl\NativeEnvelop.cs" />
+    <Compile Include="Green\Scalar\Impl\AuxContainer.cs" />
+    <Compile Include="Green\Scalar\Impl\PlanCalculatorFast.cs" />
+    <Compile Include="Green\Scalar\Impl\ScalarMathUtils.cs" />
+    <Compile Include="Green\Scalar\ScalarPlanItem.cs" />
+    <Compile Include="Green\Scalar\ScalarPlan.cs" />
+    <Compile Include="Green\Scalar\ScalarPlansCreater.cs" />
+    <Compile Include="Green\Tensor\GreenTensor.cs" />
+    <Compile Include="Green\Tensor\Impl\AtoOLevelGreenTensorCalculator.cs" />
+    <Compile Include="Green\Tensor\Impl\AtoAGreenTensorCalculator.cs" />
+    <Compile Include="Green\Tensor\Impl\AtoOSiteGreenTensorCalculator.cs" />
+    <Compile Include="Green\Scalar\Impl\VolumeToVolumeCalculatorUFast.cs" />
+    <Compile Include="Green\Scalar\IntegrationType.cs" />
+    <Compile Include="Green\Tensor\Impl\GreenTensorFftPopulator.cs" />
+    <Compile Include="Green\Tensor\Impl\IntegralFactors.cs" />
+    <Compile Include="Green\Tensor\Impl\QBuffer.cs" />
+    <Compile Include="Green\Tensor\Impl\QSign.cs" />
+    <Compile Include="Green\Tensor\Impl\ScalarSegments.cs" />
+    <Compile Include="Green\Tensor\Impl\GreenTensorCalculator.cs" />
+    <Compile Include="Green\Tensor\Impl\GreenTensorKnot.cs" />
+    <Compile Include="Green\Scalar\Impl\UnsafeNativeMethods.cs" />
+    <Compile Include="Green\Tensor\MemoryLayoutOrder.cs" />
+    <Compile Include="Forward\AnomalyCurrentFgmresSolver.cs" />
+    <Compile Include="Forward\AtoA\OperatorType.cs" />
+    <Compile Include="Core\ComplexVector.cs" />
+    <Compile Include="Core\FftDescriptor.cs" />
+    <Compile Include="Green\Scalar\Impl\AlphaBeta.cs" />
+    <Compile Include="Green\Scalar\GreenScalarCalculator.cs" />
+    <Compile Include="Green\Scalar\Impl\PlanCalculator.cs" />
+    <Compile Include="Green\Scalar\Impl\VolumeToVolumeCalculatorU.cs" />
+    <Compile Include="Green\Scalar\Impl\IPlanCalculator.cs" />
+    <Compile Include="Green\Scalar\Impl\VolumeToPointCalculatorU.cs" />
+    <Compile Include="Green\Scalar\Impl\InnerResult.cs" />
+    <Compile Include="Green\Scalar\Impl\InnerResultsCombiner.cs" />
+    <Compile Include="Green\Scalar\SingleGreenScalar.cs" />
+    <Compile Include="HankelResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HankelResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Fft\MklFft\IntelFourierTransform.cs" />
+    <Compile Include="Fft\MklFft\IntelMklMemoryProvider.cs" />
+    <Compile Include="Fft\MklFft\IntelUnm.cs" />
+    <Compile Include="Model\LoadAndSave\AnomalyLoaderUtils.cs" />
+    <Compile Include="Model\LoadAndSave\ModelSaveSerializer.cs" />
+    <Compile Include="Model\LoadAndSave\ModelSerializer.cs" />
+    <Compile Include="Model\Omega\IsotropyLayer.cs" />
+    <Compile Include="Model\Omega\OmegaAnomaly.cs" />
+    <Compile Include="Model\Omega\OmegaAnomalyLayer.cs" />
+    <Compile Include="Model\ResistivityLayer1D.cs" />
+    <Compile Include="Model\LoadAndSave\ModelLoadSerializer.cs" />
+    <Compile Include="Model\TranceiverUtils.cs" />
+    <Compile Include="Model\Omega\OmegaModelUtils.cs" />
+    <Compile Include="Model\CartesianSection1D.cs" />
+    <Compile Include="Model\SigmaLayer1D.cs" />
+    <Compile Include="Model\Omega\OmegaModel.cs" />
+    <Compile Include="Model\CartesianModelLoadException.cs" />
+    <Compile Include="Model\LoadAndSave\XProjectLoadException.cs" />
+    <Compile Include="Project\ForwardSettings.cs" />
+    <Compile Include="Project\XProject.cs" />
+    <Compile Include="Model\CartesianAnomaly.cs" />
+    <Compile Include="Model\CartesianAnomalyLayer.cs" />
+    <Compile Include="Model\CartesianModel.cs" />
+    <Compile Include="Green\Scalar\Impl\HankelCoefficients.cs" />
+    <Compile Include="Model\Omega\OmegaModelBuilder.cs" />
+    <Compile Include="Project\XProjectSerializer.cs" />
+    <Compile Include="Properties\ExceptionMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LoadAndSave\SerializationManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Extreme.Core\Extreme.Core.csproj">
+      <Project>{19ca12f6-2eb8-4ab2-b93f-28fddfe0be3c}</Project>
+      <Name>Extreme.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FftWrap\FftWrap\FftWrap.csproj">
+      <Project>{5cb1047e-437f-4bf3-a2e3-5a43c9cba91e}</Project>
+      <Name>FftWrap</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Extreme.Fgmres\Extreme.Fgmres.csproj">
+      <Project>{628ba123-341c-497c-b6b2-59f0cbebd682}</Project>
+      <Name>Extreme.Fgmres</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Extreme.Mpi\Extreme.Parallel.csproj">
+      <Project>{484d7def-8596-483f-8a39-9c10ba1f6e53}</Project>
+      <Name>Extreme.Parallel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="HankelResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>HankelResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hankelcoeff.xml" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

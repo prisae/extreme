@@ -1,0 +1,425 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
+using Extreme.Cartesian.Convolution;
+using Extreme.Cartesian.Core;
+using Extreme.Cartesian.Fft;
+using Extreme.Cartesian.Green.Tensor;
+using Extreme.Cartesian.Model;
+using Extreme.Cartesian.Project;
+using Extreme.Core;
+using Extreme.Core.Model;
+using Extreme.Parallel;
+
+
+namespace Extreme.Cartesian.Forward
+{
+    public abstract unsafe class ForwardSolver : ForwardSolverGenerics<AnomalyCurrent>, IDisposable
+    {
+        private GreenTensor _greenTensorAtoA;
+        private ConvolutionOperator _convolutionOperator;
+        private AnomalyCurrentFgmresSolver _fgmresSolver;
+
+        private AtoOCalculator _aToOCalculator;
+
+        protected IEnumerable<ObservationLevel> _observationLevels = new ObservationLevel[0];
+        protected IEnumerable<ObservationSite> _observationSites = new ObservationSite[0];
+
+        public ForwardSettings Settings { get; }
+        public OmegaModel Model { get; private set; }
+        public Mpi Mpi { get; private set; }
+
+        public FftBuffer Pool => FftBuffersPool.GetBuffer(Model);
+        public bool IsParallel => Mpi != null && Mpi.IsParallel;
+
+        private int LocalNx => Model.Anomaly.LocalSize.Nx;
+        private int LocalNy => Model.Anomaly.LocalSize.Ny;
+
+        protected ForwardSolver(ILogger logger, INativeMemoryProvider memoryProvider, ForwardSettings settings)
+            : base(logger, memoryProvider)
+        {
+            if (settings == null) throw new ArgumentNullException(nameof(settings));
+            Settings = settings;
+        }
+
+        public ForwardSolver WithMpi(Mpi mpi)
+        {
+            Mpi = mpi;
+            return this;
+        }
+
+        public ForwardSolver With(params ObservationLevel[] levels)
+        {
+            if (levels == null) throw new ArgumentNullException(nameof(levels));
+            _observationLevels = levels;
+            return this;
+        }
+
+        public ForwardSolver With(params ObservationSite[] sites)
+        {
+            if (sites == null) throw new ArgumentNullException(nameof(sites));
+            _observationSites = sites;
+            return this;
+        }
+
+        protected override sealed AnomalyCurrent GetNewAnomalyCurrent()
+            => AnomalyCurrent.AllocateNewLocalSize(MemoryProvider, Model);
+        sealed protected override void ReleaseAnomalyCurrent(AnomalyCurrent current)
+            => current.Dispose();
+
+        public event EventHandler<AtoAGreenTensorCalculatedEventArgs> AtoAGreenTensorCalculated;
+
+        private void OnAtoAGreenTensorCalculated(AtoAGreenTensorCalculatedEventArgs e)
+        {
+            AtoAGreenTensorCalculated?.Invoke(this, e);
+        }
+
+        protected void SetModel(OmegaModel model)
+        {
+            if (IsParallel)
+                Mpi.CheckNumberOfProcesses(model.LateralDimensions);
+
+            Model = model;
+
+            if (_aToOCalculator == null)
+                _aToOCalculator = new AtoOCalculator(this);
+
+            if (_fgmresSolver == null)
+                _fgmresSolver = new AnomalyCurrentFgmresSolver(this);
+
+            if (_convolutionOperator == null)
+                _convolutionOperator = new ConvolutionOperator(this);
+
+            _aToOCalculator.CleanGreenTensors();
+        }
+
+        protected void CalculateGreenTensor()
+        {
+            Logger.WriteStatus("Starting Green Tensor AtoA");
+
+            _greenTensorAtoA?.Dispose();
+
+            var gt = new AtoAGreenTensorCalculatorComponent(this)
+                .CalculateGreenTensor();
+            OnAtoAGreenTensorCalculated(new AtoAGreenTensorCalculatedEventArgs(gt));
+            
+            SetNewGreenTensor(gt);
+        }
+
+        protected void SetNewGreenTensor(GreenTensor gt)
+        {
+            if (gt == null) throw new ArgumentNullException(nameof(gt));
+            _greenTensorAtoA = gt;
+        }
+
+        #region Before CIE
+
+        sealed protected override void CalculateJScattered(AnomalyCurrent field, AnomalyCurrent jScattered)
+        {
+            Clear(jScattered);
+
+            for (int k = 0; k < Model.Anomaly.Layers.Count; k++)
+            {
+                var layer = Model.Anomaly.Layers[k];
+                var corrLayer = ModelUtils.FindCorrespondingBackgroundLayer(Model.Section1D, layer);
+                var zetaBackground = corrLayer.Zeta;
+                int layerIndex = k;
+
+                CalculateScatteredCurrentFromBackgroundField(layer, field, zetaBackground, jScattered, ac => GetLayerAccessorX(ac, layerIndex));
+                CalculateScatteredCurrentFromBackgroundField(layer, field, zetaBackground, jScattered, ac => GetLayerAccessorY(ac, layerIndex));
+                CalculateScatteredCurrentFromBackgroundField(layer, field, zetaBackground, jScattered, ac => GetLayerAccessorZ(ac, layerIndex));
+            }
+        }
+
+
+        /// <summary>
+        /// Calculates scattered current from background field
+        /// jˢ = (σ - σᵇ) * Eᵇ
+        /// </summary>
+        /// <param name="layer">Anomaly layer, contains zeta 3-D (σ)</param>
+        /// <param name="field">background field</param>
+        /// <param name="zeta">Background or Host zeta (1-D, σᵇ)</param>
+        /// <param name="jScattered">result, scattered current</param>
+        /// <param name="getLa"></param>
+        private void CalculateScatteredCurrentFromBackgroundField(IAnomalyLayer layer,
+            AnomalyCurrent field, Complex zeta, AnomalyCurrent jScattered, Func<AnomalyCurrent, ILayerAccessor> getLa)
+        {
+            var nx = LocalNx;
+            var ny = LocalNy;
+
+            var jS = getLa(jScattered);
+            var f = getLa(field);
+
+            for (int i = 0; i < nx; i++)
+                for (int j = 0; j < ny; j++)
+                    jS[i, j] = (layer.GetZeta(i, j) - zeta) * f[i, j];
+        }
+
+
+        #endregion
+
+        #region CIE Solving
+
+        sealed protected override void CalculateChi0From(AnomalyCurrent jScattered, AnomalyCurrent chi0)
+        {
+            _convolutionOperator.PrepareOperator(_greenTensorAtoA, OperatorType.Chi0);
+            _convolutionOperator.Apply(jScattered, chi0);
+        }
+
+        public event EventHandler<CieSolverStartedEventArgs> CieSolverStarted;
+        public event EventHandler<CieSolverFinishedEventArgs> CieSolverFinished;
+
+        private void OnCieSolverStarted(AnomalyCurrent rhs, AnomalyCurrent initialGuess)
+        {
+            CieSolverStarted?.Invoke(this, new CieSolverStartedEventArgs(rhs, initialGuess));
+        }
+
+        private void OnCieSolverFinished(AnomalyCurrent chi)
+        {
+            CieSolverFinished?.Invoke(this, new CieSolverFinishedEventArgs(chi));
+        }
+
+        sealed protected override void SolveEquationFor(AnomalyCurrent chi0, AnomalyCurrent chi)
+        {
+            _convolutionOperator.PrepareOperator(_greenTensorAtoA, OperatorType.A);
+            Copy(chi0, chi);
+            OnCieSolverStarted(chi0, chi);
+            _fgmresSolver.Solve(_convolutionOperator, chi0, chi);
+            OnCieSolverFinished(chi);
+        }
+
+        private void Copy(AnomalyCurrent chi0, AnomalyCurrent chi)
+        {
+            long size = 3L * chi0.Nx * chi0.Ny * chi0.Nz;
+            UnsafeNativeMethods.Zcopy(size, chi0.Ptr, chi.Ptr);
+        }
+
+        #endregion
+
+        #region After CIE, Befor Observations
+
+        sealed protected override void CalculateEScatteredFrom(AnomalyCurrent chi, AnomalyCurrent jScattered, AnomalyCurrent eScattered)
+        {
+            for (int k = 0; k < Model.Anomaly.Layers.Count; k++)
+            {
+                var layer = Model.Anomaly.Layers[k];
+                var corrLayer = ModelUtils.FindCorrespondingBackgroundLayer(Model.Section1D, layer);
+                var zeta = corrLayer.Zeta;
+                int layerIndex = k;
+
+                CalculateScatteredFieldFromChi(chi, jScattered, layer, zeta, eScattered, ac => GetLayerAccessorX(ac, layerIndex));
+                CalculateScatteredFieldFromChi(chi, jScattered, layer, zeta, eScattered, ac => GetLayerAccessorY(ac, layerIndex));
+                CalculateScatteredFieldFromChi(chi, jScattered, layer, zeta, eScattered, ac => GetLayerAccessorZ(ac, layerIndex));
+            }
+
+            OnEScatteredCalculated(eScattered);
+        }
+
+        protected virtual void OnEScatteredCalculated(AnomalyCurrent eScattered) { }
+
+        sealed protected override void CalculateJqFrom(AnomalyCurrent eScattered, AnomalyCurrent jScattered, AnomalyCurrent jQ)
+        {
+            for (int k = 0; k < Model.Anomaly.Layers.Count; k++)
+            {
+                var layer = Model.Anomaly.Layers[k];
+                var corrLayer = ModelUtils.FindCorrespondingBackgroundLayer(Model.Section1D, layer);
+                var zeta = corrLayer.Zeta;
+                int layerIndex = k;
+
+                CalculateJqFromScatteredField(layer, eScattered, jScattered, zeta, jQ, ac => GetLayerAccessorX(ac, layerIndex));
+                CalculateJqFromScatteredField(layer, eScattered, jScattered, zeta, jQ, ac => GetLayerAccessorY(ac, layerIndex));
+                CalculateJqFromScatteredField(layer, eScattered, jScattered, zeta, jQ, ac => GetLayerAccessorZ(ac, layerIndex));
+            }
+        }
+
+        private void CalculateScatteredFieldFromChi(AnomalyCurrent chi, AnomalyCurrent jScattered, IAnomalyLayer layer, Complex zeta, AnomalyCurrent eScattered, Func<AnomalyCurrent, ILayerAccessor> getLa)
+        {
+            var nx = LocalNx;
+            var ny = LocalNy;
+
+            var conjZeta = Complex.Conjugate(zeta);
+            var sqrtReZeta0 = Complex.Sqrt(zeta.Real);
+
+            var laE = getLa(eScattered);
+            var laJ = getLa(jScattered);
+            var laC = getLa(chi);
+
+            for (int i = 0; i < nx; i++)
+                for (int j = 0; j < ny; j++)
+                    laE[i, j] = (2 * sqrtReZeta0 * laC[i, j] - laJ[i, j]) / (layer.GetZeta(i, j) + conjZeta);
+        }
+
+        private void CalculateJqFromScatteredField(IAnomalyLayer layer, AnomalyCurrent eScattered, AnomalyCurrent jScattered, Complex zeta, AnomalyCurrent jQ, Func<AnomalyCurrent, ILayerAccessor> getLa)
+        {
+            var nx = LocalNx;
+            var ny = LocalNy;
+
+            var laE = getLa(eScattered);
+            var laJ = getLa(jScattered);
+            var laQ = getLa(jQ);
+
+            for (int i = 0; i < nx; i++)
+                for (int j = 0; j < ny; j++)
+                    laQ[i, j] = laE[i, j] * (layer.GetZeta(i, j) - zeta) + laJ[i, j];
+        }
+
+        #endregion
+
+        #region Observations
+
+        protected virtual void OnEFieldsAtLevelCalculated(ObservationLevel level,
+            AnomalyCurrent normalField, AnomalyCurrent anomalyField)
+        { }
+
+        protected virtual void OnHFieldsAtLevelCalculated(ObservationLevel level,
+            AnomalyCurrent normalField, AnomalyCurrent anomalyField)
+        { }
+
+        protected virtual void OnEFieldsAtSiteCalculated(ObservationSite site,
+            ComplexVector normalField, ComplexVector anomalyField)
+        { }
+
+        protected virtual void OnHFieldsAtSiteCalculated(ObservationSite site,
+            ComplexVector normalField, ComplexVector anomalyField)
+        { }
+
+
+        protected virtual void OnObservationsCalculating()
+        {
+
+        }
+
+        sealed protected override void CalculateObservations(AnomalyCurrent jQ)
+        {
+            OnObservationsCalculating();
+
+
+            _aToOCalculator.GreenTensorECalculated += AToO_GreenTensorECalculated;
+            _aToOCalculator.GreenTensorHCalculated += AToO_GreenTensorHCalculated;
+
+            CalculateLevelElectric(jQ);
+            CalculateLevelMagnetic(jQ);
+
+            CalculateSiteElectric(_aToOCalculator, jQ);
+            CalculateSiteMagnetic(_aToOCalculator, jQ);
+
+            _aToOCalculator.GreenTensorECalculated -= AToO_GreenTensorECalculated;
+            _aToOCalculator.GreenTensorHCalculated -= AToO_GreenTensorHCalculated;
+        }
+
+        public event EventHandler<GreenTensorCalculatedEventArgs> AtoOGreenTensorECalculated;
+        public event EventHandler<GreenTensorCalculatedEventArgs> AtoOGreenTensorHCalculated;
+
+        private void AToO_GreenTensorHCalculated(object sender, GreenTensorCalculatedEventArgs e)
+        {
+            e.SupressGreenTensorDisposal = true;
+            AtoOGreenTensorHCalculated?.Invoke(this, e);
+        }
+
+        private void AToO_GreenTensorECalculated(object sender, GreenTensorCalculatedEventArgs e)
+        {
+            e.SupressGreenTensorDisposal = true;
+            AtoOGreenTensorECalculated?.Invoke(this, e);
+        }
+
+        #region Site
+
+        private void CalculateSiteElectric(AtoOCalculator aToO, AnomalyCurrent jQ)
+        {
+            foreach (var site in _observationSites)
+            {
+                var normalField = CalculateNormalFieldE(site);
+                // var anomalyField = CalculateAnomalyFieldE(site, jQ);
+
+                // OnEFieldsAtSiteCalculated(site, normalField, anomalyField);
+            }
+        }
+
+        private void CalculateSiteMagnetic(AtoOCalculator aToO, AnomalyCurrent jQ)
+        {
+            foreach (var site in _observationSites)
+            {
+                var normalField = CalculateNormalFieldH(site);
+                // var anomalyField = CalculateAnomalyFieldH(site, jQ);
+
+                //  OnHFieldsAtSiteCalculated(site, normalField, anomalyField);
+            }
+        }
+
+        protected abstract ComplexVector CalculateNormalFieldE(ObservationSite site);
+        protected abstract ComplexVector CalculateNormalFieldH(ObservationSite site);
+
+
+        #endregion
+
+        #region Level
+        private void CalculateLevelElectric(AnomalyCurrent jQ)
+        {
+            foreach (var level in _observationLevels)
+            {
+                var normalField = CalculateNormalFieldE(level);
+                var anomalyField = CalculateAnomalyFieldE(level, jQ);
+
+                OnEFieldsAtLevelCalculated(level, normalField, anomalyField);
+            }
+        }
+
+        private void CalculateLevelMagnetic(AnomalyCurrent jQ)
+        {
+            foreach (var level in _observationLevels)
+            {
+                var normalField = CalculateNormalFieldH(level);
+                var anomalyField = CalculateAnomalyFieldH(level, jQ);
+
+                OnHFieldsAtLevelCalculated(level, normalField, anomalyField);
+            }
+        }
+
+        private AnomalyCurrent CalculateAnomalyFieldH(ObservationLevel level, AnomalyCurrent jQ)
+        {
+            var field = AnomalyCurrent.AllocateNewOneLayer(MemoryProvider, Model);
+            Clear(field);
+            _aToOCalculator.CalculateAnomalyFieldH(level, jQ, field);
+            return field;
+        }
+
+        private AnomalyCurrent CalculateAnomalyFieldE(ObservationLevel level, AnomalyCurrent jQ)
+        {
+            var field = AnomalyCurrent.AllocateNewOneLayer(MemoryProvider, Model);
+            Clear(field);
+            _aToOCalculator.CalculateAnomalyFieldE(level, jQ, field);
+            return field;
+        }
+
+        protected abstract AnomalyCurrent CalculateNormalFieldE(ObservationLevel level);
+        protected abstract AnomalyCurrent CalculateNormalFieldH(ObservationLevel level);
+
+
+        #endregion
+
+        #endregion
+
+        #region Utils
+
+        protected ILayerAccessor GetLayerAccessorX(AnomalyCurrent ac, int k)
+            => VerticalLayerAccessor.NewX(ac, k);
+        protected ILayerAccessor GetLayerAccessorY(AnomalyCurrent ac, int k)
+            => VerticalLayerAccessor.NewY(ac, k);
+        protected ILayerAccessor GetLayerAccessorZ(AnomalyCurrent ac, int k)
+            => VerticalLayerAccessor.NewZ(ac, k);
+
+        #endregion
+
+        protected void Clear(AnomalyCurrent current)
+        {
+            int length = 3 * current.Nx * current.Ny * current.Nz;
+            UnsafeNativeMethods.ClearBuffer(current.Ptr, length);
+        }
+
+        public void Dispose()
+        {
+            _convolutionOperator?.Dispose();
+            _fgmresSolver?.Dispose();
+        }
+    }
+}
