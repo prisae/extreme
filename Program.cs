@@ -5,8 +5,8 @@ using Microsoft.Office.Interop.Excel;
 using ModelCreaters;
 using Porvem.Cartesian;
 using Porvem.Cartesian.Magnetotellurics;
-using Porvem.Cartesian.Model;
-using Porvem.Cartesian.Project;
+using Extreme.Cartesian.Model;
+using Extreme.Cartesian.Project;
 using Extreme.Core;
 
 namespace Profiling
