@@ -7,7 +7,7 @@ using Porvem.Cartesian;
 using Porvem.Cartesian.Magnetotellurics;
 using Porvem.Cartesian.Model;
 using Porvem.Cartesian.Project;
-using Porvem.Core;
+using Extreme.Core;
 
 namespace Profiling
 {

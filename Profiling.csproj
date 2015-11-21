@@ -111,9 +111,9 @@
       <Project>{d37795f3-44bd-4103-8f7e-cab1ceba7109}</Project>
       <Name>Porvem.Cartesian</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Porvem.Core\Porvem.Core.csproj">
+    <ProjectReference Include="..\..\Porvem.Core\Extreme.Core.csproj">
       <Project>{19CA12F6-2EB8-4AB2-B93F-28FDDFE0BE3C}</Project>
-      <Name>Porvem.Core</Name>
+      <Name>Extreme.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\ModelCreaters\ModelCreaters.csproj">
       <Project>{b7d2ec67-13ae-4ec7-af4d-3771e75cb305}</Project>
