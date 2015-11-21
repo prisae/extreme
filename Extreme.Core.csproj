@@ -7,8 +7,8 @@
     <ProjectGuid>{19CA12F6-2EB8-4AB2-B93F-28FDDFE0BE3C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Porvem.Core</RootNamespace>
-    <AssemblyName>Porvem.Core</AssemblyName>
+    <RootNamespace>Extreme.Core</RootNamespace>
+    <AssemblyName>Extreme.Core</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
