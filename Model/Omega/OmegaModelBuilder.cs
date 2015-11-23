@@ -24,12 +24,12 @@ namespace Extreme.Cartesian.Model
             return new OmegaModel(cartesianModel, section1D, anomaly, omega);
         }
         
-        public static OmegaModel BuildOmegaModel(CartesianModel startModel, double[,,] sigmaM, double frequency)
+        public static OmegaModel BuildOmegaModel(CartesianModel startModel, double[,,] sigma, double frequency)
         {
             var omega = OmegaModelUtils.FrequencyToOmega(frequency);
 
             var section1D = ConvertSection1DIntoOmegaDependent(omega, startModel);
-            var anomaly = OmegaAnomaly.CreateFromCartesianAnomaly(omega, startModel.Anomaly, sigmaM);
+            var anomaly = OmegaAnomaly.CreateFromCartesianAnomaly(omega, startModel.Anomaly, sigma);
 
             return new OmegaModel(startModel, section1D, anomaly, omega);
         }

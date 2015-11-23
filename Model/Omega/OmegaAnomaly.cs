@@ -34,9 +34,9 @@ namespace Extreme.Cartesian.Model
             return new OmegaAnomaly(ca.LocalSize, new ReadOnlyCollection<IAnomalyLayer>(layers));
         }
 
-        public static OmegaAnomaly CreateFromCartesianAnomaly(double omega, CartesianAnomaly ca, double[,,] logSigma)
+        public static OmegaAnomaly CreateFromCartesianAnomaly(double omega, CartesianAnomaly ca, double[,,] sigma)
         {
-            var zeta = OmegaModelUtils.ConvertLogSigmaToZeta(omega, logSigma);
+            var zeta = OmegaModelUtils.ConvertSigmaToZeta(omega, sigma);
 
             var layers = ca.Layers
                 .Zip(zeta, (f, s) => new OmegaAnomalyLayer(s, f.Depth, f.Thickness))

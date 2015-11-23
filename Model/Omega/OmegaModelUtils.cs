@@ -28,12 +28,12 @@ namespace Extreme.Cartesian.Model
             return result;
         }
 
-        public static Complex[][,] ConvertLogSigmaToZeta(double omega, double[,,] logSigma)
+        public static Complex[][,] ConvertSigmaToZeta(double omega, double[,,] sigma)
         {
-            var result = new Complex[logSigma.GetLength(2)][,];
+            var result = new Complex[sigma.GetLength(2)][,];
 
-            int nx = logSigma.GetLength(0);
-            int ny = logSigma.GetLength(1);
+            int nx = sigma.GetLength(0);
+            int ny = sigma.GetLength(1);
 
             for (int k = 0; k < result.Length; k++)
             {
@@ -41,7 +41,7 @@ namespace Extreme.Cartesian.Model
 
                 for (int i = 0; i < nx; i++)
                     for (int j = 0; j < ny; j++)
-                        result[k][i, j] = ToZeta(Exp(logSigma[i, j, k]), omega);
+                        result[k][i, j] = ToZeta(sigma[i, j, k], omega);
             }
 
             return result;
