@@ -160,6 +160,7 @@
     <Compile Include="Size2D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OmegaModel\LateralDimensions.cs" />
+    <Compile Include="StrictThreadPool.cs" />
     <Compile Include="Transceiver\ITransceiverElement.cs" />
     <Compile Include="Transceiver\Receiver.cs" />
     <Compile Include="Transceiver\Transceiver.cs" />
