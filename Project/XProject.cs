@@ -12,6 +12,7 @@ namespace Extreme.Cartesian.Project
         private readonly double[] _frequencies;
         private readonly double[] _periods;
 
+
         public IReadOnlyCollection<double> Frequencies => new ReadOnlyCollection<double>(_frequencies);
         public IReadOnlyCollection<double> Periods => new ReadOnlyCollection<double>(_periods);
 
