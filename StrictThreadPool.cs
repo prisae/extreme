@@ -66,7 +66,7 @@ namespace Extreme.Core
             //        _threads.AddLast(Thread.CurrentThread);
             //    }
             //    task = null;
-            }
+            //}
         }
 
 
