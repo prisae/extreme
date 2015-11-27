@@ -11,15 +11,37 @@ namespace Extreme.Core
 
     public class StrictThreadPool
     {
+        private class Task
+        {
+            public int StartInclusive { get; }
+            public int EndExclusive { get; }
+        
+            public Task(int startInclusive, int endExclusive)
+            {
+                StartInclusive = startInclusive;
+                EndExclusive = endExclusive;
+            }
+        }
+
         private readonly Thread[] _threads;
+        private readonly Task[] _tasks;
 
         private bool _disposed = false;
+
+        private readonly object _syncObject = new object();
+
+        private readonly int _numberOfThreads;
+
+        private Action<int> _currentAction;
 
         public StrictThreadPool(int numberOfThreads)
         {
             if (numberOfThreads < 1) throw new ArgumentOutOfRangeException(nameof(numberOfThreads));
 
+            _numberOfThreads = numberOfThreads;
+
             _threads = new Thread[numberOfThreads - 1];
+            _tasks = new Task[numberOfThreads - 1];
 
             for (int i = 0; i < _threads.Length; i++)
             {
@@ -29,44 +51,27 @@ namespace Extreme.Core
         }
 
 
+        public void Run(int startInclusive, int endExclusive, Action<int> action)
+        {
+            if (_numberOfThreads == 1)
+                for (int i = startInclusive; i < endExclusive; i++)
+                    action(i);
+
+            else
+            {
+                _currentAction = action;
+                Monitor.PulseAll(_syncObject);
+            }
+        }
+
         
         private void RunThreadWorkflow()
         {
-            //Action task = null;
-            //while (true) // loop until threadpool is disposed
-            //{
-            //    Task.WaitAll()
-            //    Monitor.Enter();
+            while (true)
+            {
+                Monitor.Wait(_syncObject);
 
-            //    lock (this._tasks) // finding a task needs to be atomic
-            //    {
-            //        while (true) // wait for our turn in _workers queue and an available task
-            //        {
-            //            if (_disposed)
-            //                return;
-
-            //            // we can only claim a task if its our turn (this worker thread is the first entry in _worker queue) and there is a task available
-            //            if (null != _threads.First && object.ReferenceEquals(Thread.CurrentThread, this._workers.First.Value) && this._tasks.Count > 0)
-            //            {
-            //                task = this._tasks.First.Value;
-            //                this._tasks.RemoveFirst();
-            //                this._workers.RemoveFirst();
-            //                // pulse because current (First) worker changed (so that next available sleeping worker will pick up its task)
-            //                Monitor.PulseAll(this._tasks);
-            //                // we found a task to process, break out from the above 'while (true)' loop
-            //                break; 
-            //            }
-            //            Monitor.Wait(this._tasks); // go to sleep, either not our turn or no task to process
-            //        }
-            //    }
-
-            //    task(); // process the found task
-            //    lock (this._tasks)
-            //    {
-            //        _threads.AddLast(Thread.CurrentThread);
-            //    }
-            //    task = null;
-            //}
+            }
         }
 
 

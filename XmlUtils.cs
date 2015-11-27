@@ -87,6 +87,11 @@ namespace Extreme.Core
         {
             return long.Parse(xelem.Value, NumberStyles.Integer, CultureInfo.InvariantCulture);
         }
+        public static int ValueAsInt32(this XElement xelem)
+        {
+            return Int32.Parse(xelem.Value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+        }
+
 
         public static int AttributeAsInt(this XElement xelem, string name)
         {
