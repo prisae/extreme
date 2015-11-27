@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Runtime.InteropServices;
+using System.Linq;
+using Extreme.Cartesian.Forward;
 using Extreme.Core;
 
 namespace Extreme.Cartesian.Project
 {
-    public class XProject
+    public class ExtremeProject
     {
         private readonly double[] _frequencies;
-        private readonly double[] _periods;
-
 
         public IReadOnlyCollection<double> Frequencies => new ReadOnlyCollection<double>(_frequencies);
-        public IReadOnlyCollection<double> Periods => new ReadOnlyCollection<double>(_periods);
 
         public string ResultsPath { get; private set; }
         public string ModelFile { get; private set; }
@@ -24,67 +21,55 @@ namespace Extreme.Cartesian.Project
         public ObservationSite[] ObservationSites { get; private set; } = new ObservationSite[0];
         public SourceLayer[] SourceLayers { get; private set; } = new SourceLayer[0];
 
-        public ForwardSettings ForwardSettings { get; private set; } = new ForwardSettings();
+        public IDictionary<string, ProjectSettings> Settings { get; } = new Dictionary<string, ProjectSettings>();
 
-        public static XProject NewWithFrequencies(params double[] frequencies)
-            => new XProject(frequencies, new double[0]);
+        public ExtremeProject(double[] frequencies)
+            : this(frequencies, new Dictionary<string, ProjectSettings>())
+        {
+        }
 
-        public static XProject NewWithPeriods(params double[] periods)
-            => new XProject(new double[0], periods);
-
-        public static XProject NewWithFrequenciesAndPeriods(double[] frequencies, double[] periods) =>
-         new XProject(frequencies, periods);
-
-        private XProject(double[] frequencies, double[] periods)
+        public ExtremeProject(double[] frequencies, IDictionary<string, ProjectSettings> settings)
         {
             if (frequencies == null) throw new ArgumentNullException(nameof(frequencies));
-            if (periods == null) throw new ArgumentNullException(nameof(periods));
+            if (settings == null) throw new ArgumentNullException(nameof(settings));
 
             _frequencies = frequencies;
-            _periods = periods;
-
+            Settings = settings;
             ResultsPath = @"results";
         }
 
-        public XProject WithResultsPath(string resultsPath)
+        public ExtremeProject WithResultsPath(string resultsPath)
         {
             if (resultsPath == null) throw new ArgumentNullException(nameof(resultsPath));
             ResultsPath = resultsPath;
             return this;
         }
 
-        public XProject WithModelFile(string modelFile)
+        public ExtremeProject WithModelFile(string modelFile)
         {
             if (modelFile == null) throw new ArgumentNullException(nameof(modelFile));
             ModelFile = modelFile;
             return this;
         }
 
-        public XProject WithObservations(params ObservationLevel[] levels)
+        public ExtremeProject WithObservations(params ObservationLevel[] levels)
         {
             if (levels == null) throw new ArgumentNullException(nameof(levels));
             ObservationLevels = levels;
             return this;
         }
 
-        public XProject WithSources(params SourceLayer[] layers)
+        public ExtremeProject WithSources(params SourceLayer[] layers)
         {
             if (layers == null) throw new ArgumentNullException(nameof(layers));
             SourceLayers = layers;
             return this;
         }
 
-        public XProject WithObservations(params ObservationSite[] sites)
+        public ExtremeProject WithObservations(params ObservationSite[] sites)
         {
             if (sites == null) throw new ArgumentNullException(nameof(sites));
             ObservationSites = sites;
-            return this;
-        }
-
-        public XProject WithForwardSettings(ForwardSettings settings)
-        {
-            if (settings == null) throw new ArgumentNullException(nameof(settings));
-            ForwardSettings = settings;
             return this;
         }
     }

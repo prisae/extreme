@@ -129,6 +129,9 @@
     <Compile Include="Forward\EventArgs\CieSolverStartedEventArgs.cs" />
     <Compile Include="Forward\EventArgs\GreenTensorCalculatedEventArgs.cs" />
     <Compile Include="Fft\FftBufferPool.cs" />
+    <Compile Include="Forward\Project\ForwardProject.cs" />
+    <Compile Include="Forward\Project\ForwardSettingsReader.cs" />
+    <Compile Include="Forward\Project\ForwardSettingsWriter.cs" />
     <Compile Include="Forward\ToObs\ToOCalculator.cs" />
     <Compile Include="Forward\EventArgs\FieldsAtLevelCalculatedEventArgs.cs" />
     <Compile Include="Forward\EventArgs\FieldsAtSiteCalculatedEventArgs.cs" />
@@ -217,14 +220,20 @@
     <Compile Include="Model\Omega\OmegaModel.cs" />
     <Compile Include="Model\CartesianModelLoadException.cs" />
     <Compile Include="Model\LoadAndSave\XProjectLoadException.cs" />
-    <Compile Include="Project\ForwardSettings.cs" />
-    <Compile Include="Project\XProject.cs" />
+    <Compile Include="Forward\Project\ForwardProjectSerializer.cs" />
+    <Compile Include="Forward\Project\ForwardSettings.cs" />
+    <Compile Include="Project\IProjectSettingsReader.cs" />
+    <Compile Include="Project\IProjectSettingsWriter.cs" />
+    <Compile Include="Project\ProjectReader.cs" />
+    <Compile Include="Project\ProjectWriter.cs" />
+    <Compile Include="Project\ProjectSettings.cs" />
+    <Compile Include="Project\ExtremeProject.cs" />
     <Compile Include="Model\CartesianAnomaly.cs" />
     <Compile Include="Model\CartesianAnomalyLayer.cs" />
     <Compile Include="Model\CartesianModel.cs" />
     <Compile Include="Green\Scalar\Impl\HankelCoefficients.cs" />
     <Compile Include="Model\Omega\OmegaModelBuilder.cs" />
-    <Compile Include="Project\XProjectSerializer.cs" />
+    <Compile Include="Project\ProjectSerializer.cs" />
     <Compile Include="Properties\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

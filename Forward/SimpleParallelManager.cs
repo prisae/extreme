@@ -9,7 +9,7 @@ namespace Extreme.Cartesian.Forward
     public class SimpleParallelManager
     {
         private readonly Mpi _mpi;
-        private readonly XProject _project;
+        private readonly ExtremeProject _project;
 
         private enum Tag
         {
@@ -35,7 +35,7 @@ namespace Extreme.Cartesian.Forward
                 handler(this, e);
         }
 
-        public SimpleParallelManager(Mpi mpi, XProject project)
+        public SimpleParallelManager(Mpi mpi, ExtremeProject project)
         {
             _mpi = mpi;
             _project = project;
@@ -46,7 +46,7 @@ namespace Extreme.Cartesian.Forward
             get { return _mpi; }
         }
 
-        private XProject Project
+        private ExtremeProject Project
         {
             get { return _project; }
         }
@@ -65,22 +65,13 @@ namespace Extreme.Cartesian.Forward
         }
 
         private IReadOnlyCollection<ParallelTask> PrepareTasks()
-        {
-            var tasks = new List<ParallelTask>();
-
-            foreach (var frequency in Project.Frequencies)
-                tasks.Add(ParallelTask.NewFrequencyTask(frequency, 1));
-
-            foreach (var period in Project.Periods)
-                tasks.Add(ParallelTask.NewPeriodTask(period, 1));
-
-            return tasks;
-        }
+            => Project.Frequencies.Select(frequency
+                => ParallelTask.NewFrequencyTask(frequency, 1)).ToList();
 
         private void RunTasks(IReadOnlyCollection<ParallelTask> tasks)
         {
             var rankRange = Enumerable.Range(1, Mpi.Size - 1).ToList();
-            
+
             var availableMpiProcesses = new Queue<int>(rankRange);
             var inWork = new List<int>();
 
@@ -147,8 +138,7 @@ namespace Extreme.Cartesian.Forward
         private void SendTaskTo(int rank, ParallelTask task)
         {
             Mpi.Send(task.PolarizationIndex, rank, (int)Tag.TaskData, Mpi.CommWorld);
-            Mpi.Send((float)task.Frequency, rank, (int)Tag.TaskData, Mpi.CommWorld);
-            Mpi.Send((float)task.Period, rank, (int)Tag.TaskData, Mpi.CommWorld);
+            Mpi.Send(task.Frequency, rank, (int)Tag.TaskData, Mpi.CommWorld);
         }
 
         private Command RecvCommandFromMaster()
@@ -168,17 +158,10 @@ namespace Extreme.Cartesian.Forward
 
         private ParallelTask RecvTaskFromMaster()
         {
-            int polarization = Mpi.RecvInt(Mpi.Master, (int)Tag.TaskData, Mpi.CommWorld);
-            float frequency = Mpi.RecvFloat(Mpi.Master, (int)Tag.TaskData, Mpi.CommWorld);
-            float period = Mpi.RecvFloat(Mpi.Master, (int)Tag.TaskData, Mpi.CommWorld);
+            var polarization = Mpi.RecvInt(Mpi.Master, (int)Tag.TaskData, Mpi.CommWorld);
+            var frequency = Mpi.RecvDouble(Mpi.Master, (int)Tag.TaskData, Mpi.CommWorld);
 
-            if (frequency < 0)
-                return ParallelTask.NewPeriodTask(period, polarization);
-
-            if (period < 0)
-                return ParallelTask.NewFrequencyTask(frequency, polarization);
-
-            throw new InvalidOperationException();
+            return ParallelTask.NewFrequencyTask(frequency, polarization);
         }
     }
 }
