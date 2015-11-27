@@ -10,20 +10,12 @@ namespace Extreme.Parallel
 
         public static ParallelTask NewFrequencyTask(double frequency, int polarizationIndex)
         {
-            if (frequency <= 0)
-                throw new ArgumentOutOfRangeException("frequency");
+            if (frequency <= 0) throw new ArgumentOutOfRangeException(nameof(frequency));
 
             return new ParallelTask(frequency, -1, polarizationIndex);
         }
 
-        public static ParallelTask NewPeriodTask(double period, int polarizationIndex)
-        {
-            if (period <= 0)
-                throw new ArgumentOutOfRangeException("period");
-
-            return new ParallelTask(-1, period, polarizationIndex);
-        }
-
+     
         private ParallelTask(double frequency, double period, int polarizationIndex)
         {
             _frequency = frequency;
