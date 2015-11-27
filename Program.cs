@@ -1,5 +1,6 @@
 ﻿using System;
 using Extreme.Cartesian.FftW;
+using Extreme.Cartesian.Forward;
 using Extreme.Cartesian.Project;
 using Extreme.Parallel;
 using Porvem.ModelCreaters;
@@ -18,7 +19,7 @@ namespace ExtremeMt
             {
                 string projectFileName = args[0];
 
-                var project = XProjectSerializer.Load(projectFileName);
+                var project = ForwardProjectSerializer.Load(projectFileName);
                 RunFullVersion(project);
             }
         }
@@ -49,7 +50,7 @@ namespace ExtremeMt
             //}
         }
 
-        private static void RunFullVersion(XProject project)
+        private static void RunFullVersion(ForwardProject project)
         {
             using (var mpi = Mpi.Init())
             using (var memoryProvider = new FftWMemoryProvider())

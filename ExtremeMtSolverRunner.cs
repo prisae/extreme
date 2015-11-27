@@ -1,15 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using Porvem.Cartesian;
 using Extreme.Cartesian.Core;
 using Extreme.Cartesian.Fft;
-using Porvem.Cartesian.Magnetotellurics;
+using Extreme.Cartesian.Forward;
 using Extreme.Cartesian.Model;
-using Extreme.Cartesian.Project;
 using Extreme.Core;
 using Extreme.Parallel;
+using Porvem.Cartesian.Magnetotellurics;
 using Profiling;
 
 namespace ExtremeMt
@@ -17,7 +14,7 @@ namespace ExtremeMt
 
     public class ExtremeMtSolverRunner : IDisposable
     {
-        private readonly XProject _project;
+        private readonly ForwardProject _project;
         private readonly INativeMemoryProvider _memoryProvider;
         private readonly Mpi _mpi;
         private readonly ILogger _logger;
@@ -25,7 +22,7 @@ namespace ExtremeMt
 
         private readonly Mt3DForwardSolver _solver;
 
-        public ExtremeMtSolverRunner(XProject project, INativeMemoryProvider memoryProvider, Mpi mpi = null)
+        public ExtremeMtSolverRunner(ForwardProject project, INativeMemoryProvider memoryProvider, Mpi mpi = null)
         {
             if (project == null) throw new ArgumentNullException(nameof(project));
             if (memoryProvider == null) throw new ArgumentNullException(nameof(memoryProvider));
