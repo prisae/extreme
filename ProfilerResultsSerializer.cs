@@ -19,7 +19,7 @@ namespace Profiling
             var xdoc = new XDocument();
 
             xdoc.Add(new XElement("ProfilingResults",
-                ModelSaveSerializer.ToXElement(model),
+                ModelWriter.ToXElement(model),
                 new XElement("Records",
                     profilerRecord.Select(ToXElement))));
 
