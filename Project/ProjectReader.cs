@@ -39,8 +39,8 @@ namespace Extreme.Cartesian.Project
                 .WithSources(srcLayers)
                 .WithObservations(levels)
                 .WithObservations(sites)
-                .WithModelFile(xproj?.Element("ModelFile")?.Value)
-                .WithResultsPath(xproj?.Element("ResultsPath")?.Value);
+                .WithModelFile(xproj?.Element("ModelFile")?.Value.Trim())
+                .WithResultsPath(xproj?.Element("ResultsPath")?.Value.Trim());
         }
 
         private IDictionary<string, ProjectSettings> LoadSettings(XElement xproj)

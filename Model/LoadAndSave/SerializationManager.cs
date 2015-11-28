@@ -144,12 +144,12 @@ namespace Extreme.Cartesian.Model
 
         public static void SaveModel(string path, CartesianModel model)
         {
-            ModelSaveSerializer.Save(path, model);
+            ModelWriter.Save(path, model);
         }
 
         public static void SaveModelWithPlaintTextAnomaly(string path, CartesianModel model)
         {
-            ModelSaveSerializer.SaveWithPlainTextAnomaly(path, model);
+            ModelWriter.SaveWithPlainTextAnomaly(path, model);
         }
     }
 }

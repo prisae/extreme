@@ -206,7 +206,7 @@
     <Compile Include="Fft\MklFft\IntelMklMemoryProvider.cs" />
     <Compile Include="Fft\MklFft\IntelUnm.cs" />
     <Compile Include="Model\LoadAndSave\AnomalyLoaderUtils.cs" />
-    <Compile Include="Model\LoadAndSave\ModelSaveSerializer.cs" />
+    <Compile Include="Model\LoadAndSave\ModelWriter.cs" />
     <Compile Include="Model\LoadAndSave\ModelSerializer.cs" />
     <Compile Include="Model\Omega\IsotropyLayer.cs" />
     <Compile Include="Model\Omega\OmegaAnomaly.cs" />
