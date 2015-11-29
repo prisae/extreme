@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Extreme.Cartesian.Logger;
 using Extreme.Core;
 
 namespace Extreme.Cartesian.Forward

@@ -13,7 +13,6 @@ namespace Extreme.Cartesian.Fft
     public unsafe class FftBuffer //: IDisposable
     {
         private readonly INativeMemoryProvider _memoryProvider;
-        private readonly bool _planForSigma;
         private readonly IProfiler _profiler;
 
         private Complex* _inputBuffer;
@@ -24,8 +23,6 @@ namespace Extreme.Cartesian.Fft
         public IFftBufferPlan Plan3 { get; private set; }
         public IFftBufferPlan Plan1 { get; private set; }
 
-        public IFftBufferPlan PlanSigma { get; private set; }
-
         private CustomDistributedFft CustomFft { get; set; }
         private FftWTransform LocalFft { get; set; }
 
@@ -33,12 +30,11 @@ namespace Extreme.Cartesian.Fft
 
         private bool IsParallel { get; set; }
 
-        public FftBuffer(INativeMemoryProvider memoryProvider, bool planForSigma, IProfiler profiler = null)
+        public FftBuffer(INativeMemoryProvider memoryProvider, IProfiler profiler = null)
         {
             if (memoryProvider == null) throw new ArgumentNullException(nameof(memoryProvider));
 
             _memoryProvider = memoryProvider;
-            _planForSigma = planForSigma;
             _profiler = profiler;
         }
 
@@ -75,10 +71,6 @@ namespace Extreme.Cartesian.Fft
             Plan1Nz = CreatePlan2D(CustomFft, mpi, _inputBuffer, _outputBuffer, nx * 2, ny * 2, 1 * nz);
             Plan3 = CreatePlan2D(CustomFft, mpi, _inputBuffer, _outputBuffer, nx * 2, ny * 2, 3);
             Plan1 = CreatePlan2D(CustomFft, mpi, _inputBuffer, _outputBuffer, nx * 2, ny * 2, 1);
-
-#warning CheckPlan sizes!!!
-            if (_planForSigma)
-                PlanSigma = CreatePlan3D(CustomFft, mpi, _inputBuffer, _outputBuffer, nx * 2, ny * 2, nz);
         }
 
         public void AllocateBuffersAndCreatePlansLocal(int nx, int ny, int nz)
@@ -98,11 +90,6 @@ namespace Extreme.Cartesian.Fft
             Plan1Nz = CreatePlan2D(LocalFft, _inputBuffer, _outputBuffer, nx * 2, ny * 2, 1 * nz);
             Plan3 = CreatePlan2D(LocalFft, _inputBuffer, _outputBuffer, nx * 2, ny * 2, 3);
             Plan1 = CreatePlan2D(LocalFft, _inputBuffer, _outputBuffer, nx * 2, ny * 2, 1);
-
-#warning CheckPlan sizes!!!
-            if (_planForSigma)
-                PlanSigma = CreatePlan3D(LocalFft, _inputBuffer, _outputBuffer, nx * 2, ny * 2, nz);
-
         }
 
         #region  Buffer Plans

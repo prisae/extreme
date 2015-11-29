@@ -141,6 +141,8 @@
     <Compile Include="Forward\ToObs\StoOCalculator.cs" />
     <Compile Include="Green\Tensor\Impl\SingleScalarSegment.cs" />
     <Compile Include="Green\Tensor\TensorPlan.cs" />
+    <Compile Include="Logger\ForwardLogLevel.cs" />
+    <Compile Include="Logger\LoggerHelper.cs" />
     <Compile Include="Model\LoadAndSave\LinesReader.cs" />
     <Compile Include="Model\ModelUtils.cs" />
     <Compile Include="Forward\UnsafeNativeMethods.cs" />

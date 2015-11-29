@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using Extreme.Cartesian.Core;
 using Extreme.Cartesian.Forward;
+using Extreme.Cartesian.Logger;
 using Extreme.Cartesian.Model;
 using Extreme.Core;
 using Extreme.Fgmres;

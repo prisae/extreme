@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
+
+using Extreme.Core;
 using Extreme.Cartesian.Core;
 using Extreme.Cartesian.Green.Scalar;
+using Extreme.Cartesian.Logger;
 using Extreme.Cartesian.Model;
-using Extreme.Core;
+
 using UNM = Extreme.Cartesian.Forward.UnsafeNativeMethods;
 
 namespace Extreme.Cartesian.Green.Tensor.Impl

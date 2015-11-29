@@ -69,20 +69,20 @@ namespace Extreme.Cartesian.Fft
             return Buffers[modelSize];
         }
 
-        public static void PrepareBuffersForModel(CartesianModel model, INativeMemoryProvider memoryProvider, bool planForSigma = false, Mpi mpi = null, IProfiler profiler = null)
+        public static void PrepareBuffersForModel(CartesianModel model, INativeMemoryProvider memoryProvider, Mpi mpi = null, IProfiler profiler = null)
         {
             var modelSize = new ModelSize(model.Nx, model.Ny, model.Nz);
-            PrepareBuffersForModel(modelSize, memoryProvider, planForSigma, mpi, profiler);
+            PrepareBuffersForModel(modelSize, memoryProvider, mpi, profiler);
         }
 
-        private static void PrepareBuffersForModel(ModelSize ms, INativeMemoryProvider memoryProvider, bool planForSigma, Mpi mpi, IProfiler profiler)
+        private static void PrepareBuffersForModel(ModelSize ms, INativeMemoryProvider memoryProvider, Mpi mpi, IProfiler profiler)
         {
             if (Buffers.ContainsKey(ms))
                 throw new InvalidOperationException("Buffer for such model size is already created");
 
             using (profiler?.StartAuto(ProfilerEvent.FftwPlanCalculation))
             {
-                var buffer = new FftBuffer(memoryProvider, planForSigma, profiler);
+                var buffer = new FftBuffer(memoryProvider, profiler);
 
                 if (IsParallel(mpi))
                     buffer.AllocateBuffersAndCreatePlansParallel(ms.Nx, ms.Ny, ms.Nz, mpi);
