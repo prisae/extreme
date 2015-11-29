@@ -105,7 +105,7 @@ namespace Extreme.Cartesian.Forward
 
             var conjZBkg = new Complex[nz];
             var sqrtReZetaBkg = new Complex[nz];
-            var layers = Model.Anomaly.Layers;
+            var zetas = Model.Anomaly.Zeta;
 
             for (int k = 0; k < nz; k++)
             {
@@ -120,7 +120,7 @@ namespace Extreme.Cartesian.Forward
                 for (int j = 0; j < ny; j++)
                     for (int k = 0; k < nz; k++)
                     {
-                        var zeta = layers[k].GetZeta(i, j);
+                        var zeta = zetas[i, j, k];
 
                         if (_operatorType == OperatorType.Chi0)
                             _rFunction[index++] = sqrtReZetaBkg[k] / (zeta + conjZBkg[k]);

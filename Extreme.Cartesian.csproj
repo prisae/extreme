@@ -212,7 +212,6 @@
     <Compile Include="Model\LoadAndSave\ModelSerializer.cs" />
     <Compile Include="Model\Omega\IsotropyLayer.cs" />
     <Compile Include="Model\Omega\OmegaAnomaly.cs" />
-    <Compile Include="Model\Omega\OmegaAnomalyLayer.cs" />
     <Compile Include="Model\ResistivityLayer1D.cs" />
     <Compile Include="Model\LoadAndSave\ModelLoadSerializer.cs" />
     <Compile Include="Model\TranceiverUtils.cs" />

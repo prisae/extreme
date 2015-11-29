@@ -22,8 +22,7 @@ namespace Extreme.Cartesian.Model
         {
             var model = LoadModelWithoutExternFiles(path);
 
-            foreach (var layer in model.Anomaly.Layers)
-                ModelLoadSerializer.PopulateAnomalyLayer(path, model.Anomaly.LocalSize, layer);
+            ModelLoadSerializer.PopulateAnomaly(path, model.Anomaly);
 
             return model;
         }
@@ -64,10 +63,11 @@ namespace Extreme.Cartesian.Model
         {
             var model = LoadModelWithoutExternFiles(path);
 
-            UpdateAnomalyLocalSize(mpi, model);
+            UpdateAnomalyLocalSize(mpi, model.Anomaly);
 
-            foreach (var layer in model.Anomaly.Layers)
+            for (int k = 0; k < model.Anomaly.Layers.Count; k++)
             {
+                var layer = model.Anomaly.Layers[k];
                 var xFromFile = layer.UnderlyingXml.Element(ModelSerializer.AnomalyFromFile);
 
                 var fileType = xFromFile?.Attribute(ModelSerializer.AnomalyFileType).Value;
@@ -76,28 +76,35 @@ namespace Extreme.Cartesian.Model
                 if (fileType == "plain-text" && fileName != null)
                 {
                     var fullPath = Path.Combine(Path.GetDirectoryName(path), fileName.Value);
-                    DistributedLoadModelMaster(mpi, fullPath, model, layer);
+                    DistributedLoadModelMaster(mpi, fullPath, model, k);
                 }
             }
 
             return model;
         }
 
-        private static unsafe void DistributedLoadModelMaster(Mpi mpi, string fullPath, CartesianModel model, CartesianAnomalyLayer layer)
+        private static unsafe void DistributedLoadModelMaster(Mpi mpi, string fullPath, CartesianModel model, int k)
         {
             using (var lr = new LinesReader(fullPath))
             {
-                for (int i = 0; i < mpi.Size; i++)
+                for (int rank = 0; rank < mpi.Size; rank++)
                 {
-                    var nxLength = mpi.CalcLocalHalfNxLength(i, model.LateralDimensions.Nx);
-                    var sigma = new double[nxLength, model.Anomaly.LocalSize.Ny];
+                    var nxLength = mpi.CalcLocalHalfNxLength(rank, model.LateralDimensions.Nx);
+                    var sigma = new double[nxLength, model.Anomaly.LocalSize.Ny, 1];
                     var sendLength = nxLength * model.Anomaly.LocalSize.Ny;
-                    AnomalyLoaderUtils.ReadAnomalyDataFromPlainText(lr, sigma);
-                    if (i == 0)
-                        layer.Sigma = sigma;
+                    AnomalyLoaderUtils.ReadAnomalyDataFromPlainText(lr, model.Anomaly.Sigma, 0);
+
+                    if (rank == 0)
+                    {
+                        for (int i = 0; i < nxLength; i++)
+                            for (int j = 0; j < model.Anomaly.LocalSize.Ny; j++)
+                                model.Anomaly.Sigma[i, j, k] = sigma[i, j, 0];
+                    }
                     else if (nxLength != 0)
-                        fixed (double* data = &sigma[0, 0])
-                            mpi.Send(data, sendLength, Mpi.Double, i, 0, Mpi.CommWorld);
+                    {
+                        fixed (double* data = &sigma[0, 0, 0])
+                            mpi.Send(data, sendLength, Mpi.Double, rank, 0, Mpi.CommWorld);
+                    }
                 }
             }
         }
@@ -105,20 +112,16 @@ namespace Extreme.Cartesian.Model
         private static unsafe CartesianModel DistributedLoadModelSlave(Mpi mpi, string path)
         {
             var model = LoadModelWithoutExternFiles(path);
+            var anomaly = model.Anomaly;
             var nxLength = mpi.CalcLocalHalfNxLength(model.LateralDimensions.Nx);
-            var recvLength = nxLength * model.Anomaly.LocalSize.Ny;
+            var recvLength = nxLength * anomaly.LocalSize.Ny;
 
-            UpdateAnomalyLocalSize(mpi, model);
-
-            foreach (var layer in model.Anomaly.Layers)
-                layer.Sigma = new double[nxLength, model.LateralDimensions.Ny];
+            UpdateAnomalyLocalSize(mpi, anomaly);
 
             if (nxLength != 0)
-                foreach (var layer in model.Anomaly.Layers)
+                for (int k = 0; k < anomaly.Layers.Count; k++)
                 {
-                    var sigma = layer.Sigma;
-
-                    fixed (double* data = &sigma[0, 0])
+                    fixed (double* data = &anomaly.Sigma[0, 0, k])
                     {
                         var actualSourse = 0;
                         mpi.Recv(data, recvLength, Mpi.Double, 0, 0, Mpi.CommWorld, out actualSourse);
@@ -129,10 +132,11 @@ namespace Extreme.Cartesian.Model
         }
 
 
-        private static void UpdateAnomalyLocalSize(Mpi mpi, CartesianModel model)
+        private static void UpdateAnomalyLocalSize(Mpi mpi, CartesianAnomaly anomaly)
         {
-            var localSize = new Size2D(mpi.CalcLocalHalfNxLength(model.Anomaly.LocalSize.Nx), model.Anomaly.LocalSize.Ny);
-            model.Anomaly.ChangeLocalSize(localSize);
+            var localSize = new Size2D(mpi.CalcLocalHalfNxLength(anomaly.LocalSize.Nx), anomaly.LocalSize.Ny);
+            anomaly.ChangeLocalSize(localSize);
+            anomaly.CreateSigma();
         }
 
         private static object LoadPartialAnomaly(int nxStart, int nxLength)

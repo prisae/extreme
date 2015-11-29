@@ -10,21 +10,21 @@ namespace Extreme.Cartesian.Model
 {
     public static class AnomalyLoaderUtils
     {
-        public static void WriteAnomalyDataToPlainText(CartesianAnomalyLayer anomalyLayer, string fileName)
+        public static void WriteAnomalyDataToPlainText(double[,,] sigma, int k, string fileName)
         {
             using (var sw = new StreamWriter(fileName))
             {
-                for (int i = 0; i < anomalyLayer.Sigma.GetLength(0); i++)
+                for (int i = 0; i < sigma.GetLength(0); i++)
                 {
-                    for (int j = 0; j < anomalyLayer.Sigma.GetLength(1); j++)
-                        sw.Write("{0} ", anomalyLayer.Sigma[i, j]);
+                    for (int j = 0; j < sigma.GetLength(1); j++)
+                        sw.Write("{0} ", sigma[i, j, k]);
 
                     sw.WriteLine();
                 }
             }
         }
 
-        public static void ReadAnomalyDataFromPlainText(LinesReader lr,  double[,] sigma)
+        public static void ReadAnomalyDataFromPlainText(LinesReader lr,  double[,,] sigma, int k)
         {
             int nx = sigma.GetLength(0);
             int ny = sigma.GetLength(1);
@@ -46,7 +46,7 @@ namespace Extreme.Cartesian.Model
                         string.Format($"model with illegal Ny value in line {i}"));
 
                 for (int j = 0; j < lineValues.Length; j++)
-                    sigma[i, j] = lineValues[j];
+                    sigma[i, j, k] = lineValues[j];
             }
         }
 
@@ -62,7 +62,7 @@ namespace Extreme.Cartesian.Model
             return values.Select(v => double.Parse(v, NumberStyles.Float, CultureInfo.InvariantCulture)).ToArray();
         }
 
-        public static void ParseApplique(string template, CartesianAnomalyLayer anomalyLayer)
+        public static void ParseApplique(string template, double[,,] sigma, int k)
         {
             var splitted = template
                 .Split('\n')
@@ -77,13 +77,13 @@ namespace Extreme.Cartesian.Model
 
                 List<Tuple<int, float>> values = GetColumnsAndValues(splitted[i]);
 
-                FillSigma(anomalyLayer.Sigma, prevLines, lines, values);
+                FillSigma(sigma, k, prevLines, lines, values);
 
                 prevLines += lines;
             }
         }
 
-        private static void FillSigma(double[,] sigma, int prevLines, int lines, List<Tuple<int, float>> values)
+        private static void FillSigma(double[,,] sigma, int k, int prevLines, int lines, List<Tuple<int, float>> values)
         {
             CheckSizes(sigma, prevLines, lines, values);
 
@@ -97,14 +97,14 @@ namespace Extreme.Cartesian.Model
                     var value = values[index].Item2;
 
                     for (int j = prevColums; j < prevColums + columns; j++)
-                        sigma[j, i] = value;
+                        sigma[j, i, k] = value;
 
                     prevColums += columns;
                 }
             }
         }
 
-        private static void CheckSizes(double[,] sigma, int prevLines, int lines, List<Tuple<int, float>> values)
+        private static void CheckSizes(double[,,] sigma, int prevLines, int lines, List<Tuple<int, float>> values)
         {
             int nx = sigma.GetLength(1);
             int ny = sigma.GetLength(0);

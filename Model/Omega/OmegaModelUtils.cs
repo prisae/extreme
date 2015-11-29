@@ -17,32 +17,19 @@ namespace Extreme.Cartesian.Model
         }
 
 
-        public static Complex[,] ConvertSigmaToZeta(double omega, double[,] sigma)
+        public static Complex[,,] ConvertSigmaToZeta(double omega, double[,,] sigma)
         {
-            var result = new Complex[sigma.GetLength(0), sigma.GetLength(1)];
-
-            for (int i = 0; i < sigma.GetLength(0); i++)
-                for (int j = 0; j < sigma.GetLength(1); j++)
-                    result[i, j] = ToZeta(sigma[i, j], omega);
-
-            return result;
-        }
-
-        public static Complex[][,] ConvertSigmaToZeta(double omega, double[,,] sigma)
-        {
-            var result = new Complex[sigma.GetLength(2)][,];
-
             int nx = sigma.GetLength(0);
             int ny = sigma.GetLength(1);
+            int nz = sigma.GetLength(2);
 
-            for (int k = 0; k < result.Length; k++)
-            {
-                result[k] = new Complex[nx, ny];
+            var result = new Complex[nx,ny,nz];
 
-                for (int i = 0; i < nx; i++)
-                    for (int j = 0; j < ny; j++)
-                        result[k][i, j] = ToZeta(sigma[i, j, k], omega);
-            }
+            for (int i = 0; i < nx; i++)
+                for (int j = 0; j < ny; j++)
+                    for (int k = 0; k < nz; k++)
+                        result[i, j, k] = ToZeta(sigma[i, j, k], omega);
+
 
             return result;
         }

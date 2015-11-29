@@ -123,33 +123,38 @@ namespace Extreme.Cartesian.Model
             return anomalyLayer;
         }
 
-        public static void PopulateAnomalyLayer(string path, Size2D localSize, CartesianAnomalyLayer layer)
+        public static void PopulateAnomaly(string path, CartesianAnomaly anomaly)
         {
-            var xlayer = layer.UnderlyingXml;
+            anomaly.CreateSigma();
+            var sigma = anomaly.Sigma;
 
-            var depth = xlayer.AttributeAsDecimal(AnomalyLayerDepthAttr);
-            var thickness = xlayer.AttributeAsDecimal(AnomalyLayerThicknessAttr);
+            for (int k = 0; k < anomaly.Layers.Count; k++)
+            {
+                var layer = anomaly.Layers[k];
+                var xlayer = layer.UnderlyingXml;
 
-            if (layer.Depth != depth) throw new InvalidOperationException();
-            if (layer.Thickness != thickness) throw new InvalidOperationException();
+                var depth = xlayer.AttributeAsDecimal(AnomalyLayerDepthAttr);
+                var thickness = xlayer.AttributeAsDecimal(AnomalyLayerThicknessAttr);
 
-            layer.Sigma = new double[localSize.Nx, localSize.Ny];
+                if (layer.Depth != depth) throw new InvalidOperationException();
+                if (layer.Thickness != thickness) throw new InvalidOperationException();
 
-            var xfromFile = xlayer.Element(AnomalyFromFile);
-            if (xfromFile != null)
-                LoadAnomalyValuesFromFile(xfromFile, layer, path);
+                var xfromFile = xlayer.Element(AnomalyFromFile);
+                if (xfromFile != null)
+                    LoadAnomalyValuesFromFile(xfromFile, sigma, k, path);
 
-            var xapplique = xlayer.Element(AnomalyApplique);
-            if (xapplique != null)
-                LoadAnomalyValuesFromApplique(xapplique, layer);
+                var xapplique = xlayer.Element(AnomalyApplique);
+                if (xapplique != null)
+                    LoadAnomalyValuesFromApplique(xapplique, sigma, k);
+            }
         }
 
-        public static void LoadAnomalyValuesFromApplique(XElement xapplique, CartesianAnomalyLayer anomalyLayer)
+        public static void LoadAnomalyValuesFromApplique(XElement xapplique, double[,,] sigma, int k)
         {
-            AnomalyLoaderUtils.ParseApplique(xapplique.Value, anomalyLayer);
+            AnomalyLoaderUtils.ParseApplique(xapplique.Value, sigma, k);
         }
 
-        private static void LoadAnomalyValuesFromFile(XElement xFromFile, CartesianAnomalyLayer anomalyLayer, string path)
+        private static void LoadAnomalyValuesFromFile(XElement xFromFile, double[,,] sigma, int k, string path)
         {
             var fileType = xFromFile.Attribute(AnomalyFileType).Value;
             var fileName = xFromFile.Attribute(AnomalyFileName);
@@ -160,7 +165,7 @@ namespace Extreme.Cartesian.Model
 
                 using (var lr = new LinesReader(fullPath))
                 {
-                    AnomalyLoaderUtils.ReadAnomalyDataFromPlainText(lr, anomalyLayer.Sigma);
+                    AnomalyLoaderUtils.ReadAnomalyDataFromPlainText(lr, sigma, k);
                 }
             }
         }

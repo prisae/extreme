@@ -6,7 +6,7 @@ namespace Extreme.Cartesian.Model
 {
     public class OmegaModel
     {
-        public IAnomaly Anomaly { get; }
+        public OmegaAnomaly Anomaly { get; }
         public Section1D<IsotropyLayer> Section1D { get; }
         public LateralDimensions LateralDimensions { get; }
         public double Omega { get; }
@@ -16,7 +16,7 @@ namespace Extreme.Cartesian.Model
 
         private readonly decimal[] _backgroundDepths;
 
-        public OmegaModel(CartesianModel model, Section1D<IsotropyLayer> section1D, IAnomaly anomaly, double omega)
+        public OmegaModel(CartesianModel model, Section1D<IsotropyLayer> section1D, OmegaAnomaly anomaly, double omega)
         {
             LateralDimensions = model.LateralDimensions;
             Section1D = section1D;

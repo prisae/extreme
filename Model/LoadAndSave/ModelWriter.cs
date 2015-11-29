@@ -49,10 +49,10 @@ namespace Extreme.Cartesian.Model
         {
             var fileNames = new string[cartesianAnomaly.Layers.Count];
 
-            for (int i = 0; i < fileNames.Length; i++)
+            for (int k = 0; k < fileNames.Length; k++)
             {
-                fileNames[i] = $"anomaly_layer_{i:0000}.dat";
-                AnomalyLoaderUtils.WriteAnomalyDataToPlainText(cartesianAnomaly.Layers[i], Path.Combine(path, fileNames[i]));
+                fileNames[k] = $"anomaly_layer_{k:0000}.dat";
+                AnomalyLoaderUtils.WriteAnomalyDataToPlainText(cartesianAnomaly.Sigma, k, Path.Combine(path, fileNames[k]));
             }
 
             return fileNames;
