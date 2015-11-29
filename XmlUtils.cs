@@ -183,6 +183,12 @@ namespace Extreme.Core
             return new Complex(re, im);
         }
 
+        public static decimal ElementAsDecimal(this XElement xelem, string name)
+        {
+            var elem = xelem.Element(name);
+            return decimal.Parse(elem.Value);
+        }
+
         public static double? ElementAsDoubleOrNull(this XElement xelem, string name)
         {
             var elem = xelem.Element(name);
