@@ -3,10 +3,13 @@ using System.IO;
 using Extreme.Cartesian.Core;
 using Extreme.Cartesian.Fft;
 using Extreme.Cartesian.Forward;
+using Extreme.Cartesian.Logger;
 using Extreme.Cartesian.Model;
 using Extreme.Core;
+using Extreme.Core.Logger;
 using Extreme.Parallel;
-using Porvem.Cartesian.Magnetotellurics;
+using Extreme.Parallel.Logger;
+using Extreme.Cartesian.Magnetotellurics;
 using Profiling;
 
 namespace ExtremeMt
@@ -38,7 +41,7 @@ namespace ExtremeMt
 
         public void Run(CartesianModel model)
         {
-            FftBuffersPool.PrepareBuffersForModel(model, _memoryProvider, planForSigma: false, mpi: _mpi, profiler: _profiler);
+            FftBuffersPool.PrepareBuffersForModel(model, _memoryProvider, _mpi, _profiler);
 
             LogSettingsInfo();
 
@@ -51,7 +54,7 @@ namespace ExtremeMt
 
             foreach (var frequency in _project.Frequencies)
             {
-                _logger.WriteStatus($"\t\t\tFrequecy {frequency}, {freqCounter++} of {_project.Frequencies.Count}");
+                ForwardLoggerHelper.WriteStatus(_logger, $"\t\t\tFrequecy {frequency}, {freqCounter++} of {_project.Frequencies.Count}");
                 var omegaModel = OmegaModelBuilder.BuildOmegaModel(model, frequency);
                 _profiler.ClearAllRecords();
 
@@ -63,7 +66,7 @@ namespace ExtremeMt
                         Export(rc, frequency);
                     }
 
-                    _logger.WriteStatus("Finish");
+                    ForwardLoggerHelper.WriteStatus(_logger, "Finish");
                     ParallelMemoryUtils.ExportMemoryUsage(_project.ResultsPath, _mpi, _memoryProvider, frequency);
 
                     rc.Dispose();
@@ -73,14 +76,14 @@ namespace ExtremeMt
 
         private void LogSettingsInfo()
         {
-            _logger.WriteStatus($"Number of threads: {MultiThreadUtils.MaxDegreeOfParallelism}");
-            _logger.WriteStatus($"Number of hankels: {_project.ForwardSettings.NumberOfHankels}");
-            _logger.WriteStatus($"Target residual  : {_project.ForwardSettings.Residual}");
+            ForwardLoggerHelper.WriteStatus(_logger, $"Number of threads: {MultiThreadUtils.MaxDegreeOfParallelism}");
+            ForwardLoggerHelper.WriteStatus(_logger, $"Number of hankels: {_project.ForwardSettings.NumberOfHankels}");
+            ForwardLoggerHelper.WriteStatus(_logger, $"Target residual  : {_project.ForwardSettings.Residual}");
         }
 
         private void Export(ResultsContainer rc, double frequency)
         {
-            _logger.WriteStatus("Exporting results...");
+            ForwardLoggerHelper.WriteStatus(_logger, "Exporting results...");
 
             var resultPath = _project.ResultsPath;
             var responsesFileName = PlainTextExporter.GetResponsesFileName(frequency);
@@ -91,16 +94,16 @@ namespace ExtremeMt
 
             var exporter = new PlainTextExporter(rc);
 
-            _logger.WriteStatus("\t Export Raw fields");
+            ForwardLoggerHelper.WriteStatus(_logger, "\t Export Raw fields");
             exporter.ExportRawFields(Path.Combine(resultPath, fieldsFileName));
 
-            _logger.WriteStatus("\t Export MT responses");
+            ForwardLoggerHelper.WriteStatus(_logger, "\t Export MT responses");
             exporter.ExportMtResponses(Path.Combine(resultPath, responsesFileName));
         }
 
         private void ExportProfiling(CartesianModel model, double frequency)
         {
-            _logger.WriteStatus("Exporting profiling results");
+            ForwardLoggerHelper.WriteStatus(_logger, "Exporting profiling results");
             var dir = _project.ResultsPath;
             var freqStr = $"_freq{frequency:####0.0000}";
 
