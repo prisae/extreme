@@ -4,7 +4,7 @@ using System.Xml.Linq;
 using Extreme.Cartesian.Model;
 using Extreme.Core;
 
-namespace Porvem.Cartesian.Magnetotellurics
+namespace Extreme.Cartesian.Magnetotellurics
 {
     public static class ContainerSerializer
     {

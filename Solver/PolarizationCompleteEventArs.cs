@@ -1,15 +1,15 @@
 ﻿using System;
 
-namespace Porvem.Cartesian.Magnetotellurics
+namespace Extreme.Cartesian.Magnetotellurics
 {
 
     public class PolarizationCompleteEventArs : EventArgs
     {
-        public Polarization Polarization1 { get; }
+        public Polarization Polarization { get; }
 
         public PolarizationCompleteEventArs(Polarization polarization)
         {
-            Polarization1 = polarization;
+            Polarization = polarization;
         }
     }
 }

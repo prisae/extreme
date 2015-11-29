@@ -1,7 +1,7 @@
 ﻿using Extreme.Cartesian;
 using Extreme.Core;
 
-namespace Porvem.Cartesian.Magnetotellurics
+namespace Extreme.Cartesian.Magnetotellurics
 {
     public class AllFieldsAtSite
     {

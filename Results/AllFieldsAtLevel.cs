@@ -2,7 +2,7 @@
 using Extreme.Cartesian.Core;
 using Extreme.Core;
 
-namespace Porvem.Cartesian.Magnetotellurics
+namespace Extreme.Cartesian.Magnetotellurics
 {
     public class AllFieldsAtLevel
     {

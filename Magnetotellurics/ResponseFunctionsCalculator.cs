@@ -1,5 +1,5 @@
 ﻿using Extreme.Cartesian;
-using Porvem.Cartesian.Magnetotellurics;
+using Extreme.Cartesian.Magnetotellurics;
 
 namespace Porvem.Magnetotellurics
 {

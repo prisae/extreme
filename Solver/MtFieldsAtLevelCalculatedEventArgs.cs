@@ -3,7 +3,7 @@ using Extreme.Cartesian.Core;
 using Extreme.Cartesian.Forward;
 using Extreme.Core;
 
-namespace Porvem.Cartesian.Magnetotellurics
+namespace Extreme.Cartesian.Magnetotellurics
 {
     public class MtFieldsAtLevelCalculatedEventArgs : FieldsAtLevelCalculatedEventArgs
     {

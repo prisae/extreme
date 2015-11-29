@@ -3,7 +3,7 @@ using Extreme.Cartesian.Green.Scalar;
 using Extreme.Cartesian.Green.Scalar.Impl;
 using Extreme.Cartesian.Model;
 
-namespace Porvem.Cartesian.Magnetotellurics
+namespace Extreme.Cartesian.Magnetotellurics
 {
     public static class PlaneWaveCalculator
     {

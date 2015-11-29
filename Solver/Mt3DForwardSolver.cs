@@ -6,11 +6,12 @@ using Extreme.Cartesian;
 using Extreme.Cartesian.Core;
 using Extreme.Cartesian.Forward;
 using Extreme.Cartesian.Green.Tensor;
+using Extreme.Cartesian.Logger;
 using Extreme.Cartesian.Model;
 using Extreme.Cartesian.Project;
 using Extreme.Core;
 
-namespace Porvem.Cartesian.Magnetotellurics
+namespace Extreme.Cartesian.Magnetotellurics
 {
     public sealed class Mt3DForwardSolver : ForwardSolver
     {

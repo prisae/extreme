@@ -1,4 +1,4 @@
-﻿namespace Porvem.Cartesian.Magnetotellurics
+﻿namespace Extreme.Cartesian.Magnetotellurics
 {
     public enum Polarization
     {

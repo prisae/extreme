@@ -7,7 +7,7 @@ using Extreme.Cartesian.Model;
 using Extreme.Core;
 using Porvem.Magnetotellurics;
 
-namespace Porvem.Cartesian.Magnetotellurics
+namespace Extreme.Cartesian.Magnetotellurics
 {
     public class PlainTextExporter
     {
