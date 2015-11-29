@@ -22,8 +22,7 @@ namespace Extreme.Cartesian.Model
         {
             Sigma = new double[LocalSize.Nx, LocalSize.Ny, Layers.Count];
         }
-
-
+        
         public void ChangeLocalSize(Size2D size)
         {
             LocalSize = size;
