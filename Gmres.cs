@@ -2,7 +2,7 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Extreme.Core;
-
+using Extreme.Core.Logger;
 using static System.Math;
 using static System.Numerics.Complex;
 
