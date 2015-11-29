@@ -1,4 +1,4 @@
-﻿namespace Extreme.Core
+﻿namespace Extreme.Core.Logger
 {
     public static class LoggerHelper
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using Extreme.Core.Logger;
 
 namespace Extreme.Core
 {
@@ -53,7 +54,7 @@ namespace Extreme.Core
 
             var stack = MemoryUtils.ParseStackTrace();
 
-            var gigaBytes = numberOfBytes/(1024.0*1024*1024);
+            var gigaBytes = numberOfBytes / (1024.0 * 1024 * 1024);
 
             _logger?.WriteError($"Allocating {gigaBytes:######0.0000} GiB ({numberOfBytes} bytes), ptr:{ptr} at {stack[7]}");
 
@@ -66,12 +67,12 @@ namespace Extreme.Core
             var disc = _allocated.Find(md => md.Ptr == ptr);
 
             if (disc == null)
-                throw  new InvalidOperationException("The memory was not allocated by this manager");
+                throw new InvalidOperationException("The memory was not allocated by this manager");
 
             _free.Add(disc);
 
             _logger?.WriteWarning($"\t\t\t\t Put in Free {disc.NumberOfBytes} Ptr:{disc.Ptr}");
-            
+
             //ReleaseMemory(ptr);
             //_allocated.RemoveAll(d => d.Ptr == ptr);
         }

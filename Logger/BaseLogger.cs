@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace Extreme.Core
+namespace Extreme.Core.Logger
 {
-    public abstract class Logger : ILogger
+    public abstract class BaseLogger : ILogger
     {
         protected DateTime CreationTime { get; }
 
-        protected Logger()
+        protected BaseLogger()
         {
             CreationTime = DateTime.Now;
         }
@@ -24,6 +24,10 @@ namespace Extreme.Core
                 return "ERR: ";
 
             return string.Empty;
+        }
+
+        public virtual void Dispose()
+        {
         }
     }
 }

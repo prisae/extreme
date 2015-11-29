@@ -1,8 +1,9 @@
 ﻿using System;
+using Extreme.Core.Logger;
 
 namespace Extreme.Core
 {
-    public class ConsoleLogger : Logger
+    public class ConsoleLogger : BaseLogger
     {
         public ConsoleLogger() : this("")
         {

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Extreme.Core.Logger;
 
 namespace Extreme.Core
 {

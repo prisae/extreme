@@ -36,7 +36,7 @@ namespace Extreme.Core
                 {
                     logger.Write(logLevel, message);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     LastExceptions.Add(ex);
                 }
@@ -48,5 +48,8 @@ namespace Extreme.Core
 
         IEnumerator IEnumerable.GetEnumerator()
             => GetEnumerator();
+
+        public void Dispose()
+            => _loggers.ForEach(l => l.Dispose());
     }
 }

@@ -120,7 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Memory\LinuxMemoryFileReader.cs" />
-    <Compile Include="Logger\Logger.cs" />
+    <Compile Include="Logger\BaseLogger.cs" />
     <Compile Include="Logger\MultiLogger.cs" />
     <Compile Include="Logger\ErrorFileLogger.cs" />
     <Compile Include="Logger\WarningFileLogger.cs" />

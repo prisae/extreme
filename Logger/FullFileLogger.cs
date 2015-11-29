@@ -1,16 +1,17 @@
 ﻿using System;
 using System.IO;
+using Extreme.Core.Logger;
 
 namespace Extreme.Core
 {
-    public class FullFileLogger : Logger
+    public class FullFileLogger : BaseLogger
     {
         private readonly string _fileName;
 
         public FullFileLogger(string fileName, bool rewrite)
         {
             _fileName = fileName;
-            
+
             if (rewrite)
                 if (File.Exists(fileName))
                     File.Delete(fileName);

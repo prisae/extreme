@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Extreme.Core
+namespace Extreme.Core.Logger
 {
     public class MemoryConsoleLogger : ILogger
     {
@@ -20,6 +20,10 @@ namespace Extreme.Core
                 return ConsoleColor.Red;
 
             return ConsoleColor.Green;
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Extreme.Core
+namespace Extreme.Core.Logger
 {
     [Flags]
     public enum LogLevel
