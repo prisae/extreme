@@ -1,9 +1,9 @@
 ﻿using System;
-using Extreme.Core;
+using Extreme.Core.Logger;
 
-namespace Extreme.Parallel
+namespace Extreme.Parallel.Logger
 {
-    public class ParallelConsoleLogger : Logger
+    public class ParallelConsoleLogger : BaseLogger
     {
         private readonly Mpi _mpi;
         private readonly string _name;
