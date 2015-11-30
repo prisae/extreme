@@ -8,6 +8,8 @@ namespace Extreme.Core
     {
         private readonly string _fileName;
 
+        private readonly StreamWriter _streamWriter;
+
         public FullFileLogger(string fileName, bool rewrite)
         {
             _fileName = fileName;
@@ -16,8 +18,10 @@ namespace Extreme.Core
                 if (File.Exists(fileName))
                     File.Delete(fileName);
 
-
-            File.AppendAllText(_fileName, $"File logger started at {CreationTime}");
+            _streamWriter = new StreamWriter(fileName);
+            
+            _streamWriter.WriteLine($"File logger started at {CreationTime}");
+            //File.AppendAllText(_fileName, );
         }
 
         private void AppendToFile(string status)
@@ -25,13 +29,14 @@ namespace Extreme.Core
             string str = GetString(status);
 
             if (!string.IsNullOrEmpty(status))
-                File.AppendAllText(_fileName, str);
+                _streamWriter.WriteLine(str);
+                //File.AppendAllText(_fileName, str);
         }
 
         private string GetString(string status)
         {
             var time = (DateTime.Now - CreationTime).TotalSeconds;
-            return string.Format($"[{time:######000.00} s] {status}\n");
+            return string.Format($"[{time:######000.00} s] {status}");
         }
 
         public override void Write(int logLevel, string message)
@@ -45,5 +50,11 @@ namespace Extreme.Core
         }
 
         protected virtual bool Filter(int logLevel) => false;
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _streamWriter.Dispose();
+        }
     }
 }
