@@ -56,7 +56,7 @@ namespace Extreme.Cartesian.Magnetotellurics
                 throw new ArgumentOutOfRangeException("xdoc");
 
             if (lateral == default(LateralDimensions))
-                lateral = ModelLoadSerializer.LateralDimensionsFromXElement(xresult);
+                lateral = ModelReader.LateralDimensionsFromXElement(xresult);
 
             if (lateral == default(LateralDimensions))
                 throw new InvalidOperationException("no lateral dimensions");
