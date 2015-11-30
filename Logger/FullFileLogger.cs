@@ -21,7 +21,10 @@ namespace Extreme.Core
             _streamWriter = new StreamWriter(fileName);
             
             _streamWriter.WriteLine($"File logger started at {CreationTime}");
+<<<<<<< HEAD
             _streamWriter.Flush();
+=======
+>>>>>>> origin/Inversion
             //File.AppendAllText(_fileName, );
         }
 
@@ -30,11 +33,16 @@ namespace Extreme.Core
             string str = GetString(status);
 
             if (!string.IsNullOrEmpty(status))
+<<<<<<< HEAD
             {
                 _streamWriter.WriteLine(str);
                 _streamWriter.Flush();
             }
             //File.AppendAllText(_fileName, str);
+=======
+                _streamWriter.WriteLine(str);
+                //File.AppendAllText(_fileName, str);
+>>>>>>> origin/Inversion
         }
 
         private string GetString(string status)
