@@ -43,7 +43,7 @@ namespace Profiling
             if (xresults == null)
                 throw new FileLoadException("wrong format");
 
-            return ModelLoadSerializer.CartesianModelFromX(xresults);
+            return ModelReader.CartesianModelFromX(xresults);
         }
 
         public static ProfilerRecord[] LoadRecords(string path)
