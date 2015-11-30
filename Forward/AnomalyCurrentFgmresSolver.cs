@@ -77,7 +77,7 @@ namespace Extreme.Cartesian.Convolution
             _numberOfMults = 0;
             _numberOfDotProducts = 0;
 
-            _fgmres.Solve(rhs, rhs, result);
+            _fgmres.Solve(rhs, result, result);
 
             if (_solver.IsParallel)
                 SendCommand(Exit);
