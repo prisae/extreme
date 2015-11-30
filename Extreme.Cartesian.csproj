@@ -44,7 +44,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -213,7 +213,7 @@
     <Compile Include="Model\Omega\IsotropyLayer.cs" />
     <Compile Include="Model\Omega\OmegaAnomaly.cs" />
     <Compile Include="Model\ResistivityLayer1D.cs" />
-    <Compile Include="Model\LoadAndSave\ModelLoadSerializer.cs" />
+    <Compile Include="Model\LoadAndSave\ModelReader.cs" />
     <Compile Include="Model\TranceiverUtils.cs" />
     <Compile Include="Model\Omega\OmegaModelUtils.cs" />
     <Compile Include="Model\CartesianSection1D.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using Extreme.Cartesian.Forward;
@@ -25,6 +26,9 @@ namespace Extreme.Cartesian.Project
         public ExtremeProject FromXDocument(XDocument xdoc)
         {
             var xproj = xdoc.Element("ExtremeProject");
+
+            if (xproj == null)
+                throw new InvalidDataException("No ExtremeProject section in project file");
 
             var xfreqs = xproj?.Element("Frequencies");
             var freqs = xfreqs?.Elements("F").Select(x => x.ValueAsDouble()).ToArray();

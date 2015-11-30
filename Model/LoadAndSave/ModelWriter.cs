@@ -84,7 +84,7 @@ namespace Extreme.Cartesian.Model
                 new XAttribute(LateralDimensionsDyAttr, lateralDimensions.CellSizeY));
         }
 
-        private static void SaveBackground(XElement xmodel, CartesianSection1D section1D)
+        public static void SaveBackground(XElement xmodel, CartesianSection1D section1D)
         {
             var xbackground = new XElement(BackgroundSection,
                                     new XAttribute(BackgroundZeroLevelAttr, section1D.ZeroAirLevelAlongZ));

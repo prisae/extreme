@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using Extreme.Cartesian.Model;
+using Extreme.Cartesian.Properties;
 using Extreme.Core;
 
 namespace Extreme.Cartesian.Model
 {
-    public class ModelLoadSerializer : ModelSerializer
+    public class ModelReader : ModelSerializer
     {
         public static CartesianModel Load(string path)
         {
@@ -22,7 +22,7 @@ namespace Extreme.Cartesian.Model
             var xmodel = xelem.Element(Model);
 
             if (xmodel == null)
-                throw new CartesianModelLoadException(Extreme.Cartesian.Properties.ExceptionMessages.SimpleModelLoader_WrongXmlFormat);
+                throw new CartesianModelLoadException(ExceptionMessages.SimpleModelLoader_WrongXmlFormat);
 
             if (xmodel.Attribute(ModelVersionAttr).Value != SecondVersion)
                 throw new CartesianModelLoadException("Wrong version");
@@ -60,12 +60,12 @@ namespace Extreme.Cartesian.Model
             return new LateralDimensions(nx, ny, dx, dy);
         }
 
-        private static CartesianSection1D LoadBackground(XElement xmodel)
+        public static CartesianSection1D LoadBackground(XElement xmodel)
         {
             var background = xmodel.Element(BackgroundSection);
 
             if (background == null)
-                throw new CartesianModelLoadException(Extreme.Cartesian.Properties.ExceptionMessages.SimpleModelLoader_BackgroundLayersAreNotPresented);
+                throw new CartesianModelLoadException(ExceptionMessages.SimpleModelLoader_BackgroundLayersAreNotPresented);
 
             var zeroLevel = background.AttributeAsDecimalOrNull(BackgroundZeroLevelAttr) ?? 0;
             var xlayers = background.Elements(BackgroundLayer).ToArray();
@@ -75,7 +75,7 @@ namespace Extreme.Cartesian.Model
             foreach (var xlayer in xlayers)
             {
                 var thickness = xlayer.AttributeAsDecimal(BackgroundLayerThicknessAttr);
-                var sigmaReal = xlayer.AttributeAsFloat(BackgroundLayerSigmaRealAttr);
+                var sigmaReal = xlayer.AttributeAsDouble(BackgroundLayerSigmaRealAttr);
 
                 dataLayers.Add(new Sigma1DLayer(thickness, sigmaReal));
             }

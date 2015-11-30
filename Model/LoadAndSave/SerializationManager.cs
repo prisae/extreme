@@ -22,7 +22,7 @@ namespace Extreme.Cartesian.Model
         {
             var model = LoadModelWithoutExternFiles(path);
 
-            ModelLoadSerializer.PopulateAnomaly(path, model.Anomaly);
+            ModelReader.PopulateAnomaly(path, model.Anomaly);
 
             return model;
         }
@@ -42,7 +42,7 @@ namespace Extreme.Cartesian.Model
                 throw new CartesianModelLoadException(Extreme.Cartesian.Properties.ExceptionMessages.SimpleModelLoader_UnknownVersion);
 
             if (version == SecondVersion)
-                return ModelLoadSerializer.Load(path);
+                return ModelReader.Load(path);
 
             throw new CartesianModelLoadException(Extreme.Cartesian.Properties.ExceptionMessages.SimpleModelLoader_UnknownVersion);
         }
