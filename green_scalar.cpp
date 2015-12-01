@@ -3,6 +3,7 @@
 //#include <mkl_service.h>
 //#include <mkl_vml.h>
 #include <mkl.h>
+#include <string.h>
 
 #include <iostream>
 
