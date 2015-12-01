@@ -24,37 +24,13 @@ namespace Extreme.Core
 
         private void AppendToFile(string status)
         {
-            //_streamWriter.WriteLine($"status={status}");
-
-    
-
-            //_streamWriter.WriteLine("Test1");
-            //_streamWriter.WriteLine("Test333");
-            //_streamWriter.WriteLine("Test44444");
-            //_streamWriter.WriteLine($"Test5555555{(DateTime.Now - CreationTime).TotalSeconds} {status}");
-
-            //string str = GetString(status);
-
-            //_streamWriter.WriteLine("Test2");
-
             if (!string.IsNullOrEmpty(status))
             {
                 var time = (DateTime.Now - CreationTime).TotalSeconds;
                 var str = string.Format($"[{time:######000.00} s] {status}");
                 _streamWriter.WriteLine(str);
-                
-              //  _streamWriter.WriteLine(str);
-                //_streamWriter.Flush();
-                //File.AppendAllText(_fileName, str);
+             //   _streamWriter.Flush();
             }
-        }
-
-        private string GetString(string status)
-        {
-            _streamWriter.WriteLine("GetString 1");
-            var time = (DateTime.Now - CreationTime).TotalSeconds;
-            _streamWriter.WriteLine("GetString 2");
-            return string.Format($"[{time:######000.00} s] {status}");
         }
 
         public override void Write(int logLevel, string message)

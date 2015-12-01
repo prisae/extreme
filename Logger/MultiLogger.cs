@@ -10,6 +10,8 @@ namespace Extreme.Core
         public List<Exception> LastExceptions { get; } = new List<Exception>();
         public bool HasExceptions => LastExceptions.Count != 0;
 
+        public bool ReportLoggersExceptionsToConsole { get; } = true;
+
         public MultiLogger()
         {
             _loggers = new List<ILogger>();
@@ -34,13 +36,23 @@ namespace Extreme.Core
             {
                 try
                 {
-                 //   Console.WriteLine($"Write to {logger}");
                     logger.Write(logLevel, message);
                 }
                 catch (Exception ex)
                 {
-                //    Console.WriteLine($"{ex.Message} {ex.StackTrace}");
                     LastExceptions.Add(ex);
+                }
+            }
+
+            if (ReportLoggersExceptionsToConsole && HasExceptions)
+            {
+                Console.WriteLine($"Logger exceptions, {LastExceptions.Count} items:");
+
+                for (int i = 0; i < LastExceptions.Count; i++)
+                {
+                    Console.WriteLine($"{i+1} of {LastExceptions.Count}:\n" +
+                                      $"{LastExceptions[i].Message}\n" +
+                                      $"{LastExceptions[i].StackTrace}");
                 }
             }
         }
