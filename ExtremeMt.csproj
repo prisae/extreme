@@ -90,8 +90,9 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy  $(SolutionDir)Native\bin\*.dll $(TargetDir)
+    <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">copy  $(SolutionDir)Native\bin\*.dll $(TargetDir)
 copy  $(SolutionDir)externlib\*.dll $(TargetDir)</PostBuildEvent>
+  <PostBuildEvent Condition=" '$(OS)' == 'Unix' ">cp  $(SolutionDir)Native\bin\*.dll $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
