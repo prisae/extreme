@@ -19,35 +19,41 @@ namespace Extreme.Core
                     File.Delete(fileName);
 
             _streamWriter = new StreamWriter(fileName);
-            
             _streamWriter.WriteLine($"File logger started at {CreationTime}");
-<<<<<<< HEAD
-            _streamWriter.Flush();
-=======
->>>>>>> origin/Inversion
-            //File.AppendAllText(_fileName, );
         }
 
         private void AppendToFile(string status)
         {
-            string str = GetString(status);
+            //_streamWriter.WriteLine($"status={status}");
+
+    
+
+            //_streamWriter.WriteLine("Test1");
+            //_streamWriter.WriteLine("Test333");
+            //_streamWriter.WriteLine("Test44444");
+            //_streamWriter.WriteLine($"Test5555555{(DateTime.Now - CreationTime).TotalSeconds} {status}");
+
+            //string str = GetString(status);
+
+            //_streamWriter.WriteLine("Test2");
 
             if (!string.IsNullOrEmpty(status))
-<<<<<<< HEAD
             {
+                var time = (DateTime.Now - CreationTime).TotalSeconds;
+                var str = string.Format($"[{time:######000.00} s] {status}");
                 _streamWriter.WriteLine(str);
-                _streamWriter.Flush();
-            }
-            //File.AppendAllText(_fileName, str);
-=======
-                _streamWriter.WriteLine(str);
+                
+              //  _streamWriter.WriteLine(str);
+                //_streamWriter.Flush();
                 //File.AppendAllText(_fileName, str);
->>>>>>> origin/Inversion
+            }
         }
 
         private string GetString(string status)
         {
+            _streamWriter.WriteLine("GetString 1");
             var time = (DateTime.Now - CreationTime).TotalSeconds;
+            _streamWriter.WriteLine("GetString 2");
             return string.Format($"[{time:######000.00} s] {status}");
         }
 

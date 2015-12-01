@@ -34,10 +34,12 @@ namespace Extreme.Core
             {
                 try
                 {
+                 //   Console.WriteLine($"Write to {logger}");
                     logger.Write(logLevel, message);
                 }
                 catch (Exception ex)
                 {
+                //    Console.WriteLine($"{ex.Message} {ex.StackTrace}");
                     LastExceptions.Add(ex);
                 }
             }
