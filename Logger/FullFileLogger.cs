@@ -6,20 +6,17 @@ namespace Extreme.Core
 {
     public class FullFileLogger : BaseLogger
     {
-        private readonly string _fileName;
-
         private readonly StreamWriter _streamWriter;
 
         public FullFileLogger(string fileName, bool rewrite)
         {
-            _fileName = fileName;
-
             if (rewrite)
                 if (File.Exists(fileName))
                     File.Delete(fileName);
 
             _streamWriter = new StreamWriter(fileName);
             _streamWriter.WriteLine($"File logger started at {CreationTime}");
+            _streamWriter.Flush();
         }
 
         private void AppendToFile(string status)
@@ -29,7 +26,7 @@ namespace Extreme.Core
                 var time = (DateTime.Now - CreationTime).TotalSeconds;
                 var str = string.Format($"[{time:######000.00} s] {status}");
                 _streamWriter.WriteLine(str);
-             //   _streamWriter.Flush();
+                _streamWriter.Flush();
             }
         }
 
