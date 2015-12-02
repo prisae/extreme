@@ -2,7 +2,7 @@
 
 namespace Extreme.Core
 {
-    public class ErrorFileLogger : FullFileLogger
+    public class ErrorFileLogger : FileLogger
     {
         public ErrorFileLogger(string fileName, bool rewrite)
             : base(fileName, rewrite)

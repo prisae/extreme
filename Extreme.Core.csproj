@@ -42,7 +42,7 @@
     <Compile Include="Logger\WarningFileLogger.cs" />
     <Compile Include="Logger\ConsoleLogger.cs" />
     <Compile Include="Logger\EmptyLogger.cs" />
-    <Compile Include="Logger\FullFileLogger.cs" />
+    <Compile Include="Logger\FileLogger.cs" />
     <Compile Include="Logger\LoggerHelper.cs" />
     <Compile Include="Logger\LogLevel.cs" />
     <Compile Include="Memory\INativeMemoryProvider.cs" />

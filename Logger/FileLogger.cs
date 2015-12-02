@@ -4,11 +4,11 @@ using Extreme.Core.Logger;
 
 namespace Extreme.Core
 {
-    public class FullFileLogger : BaseLogger
+    public class FileLogger : BaseLogger
     {
         private readonly StreamWriter _streamWriter;
 
-        public FullFileLogger(string fileName, bool rewrite)
+        public FileLogger(string fileName, bool rewrite)
         {
             if (rewrite)
                 if (File.Exists(fileName))
