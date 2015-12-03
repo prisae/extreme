@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ModelSettings model="commemi3d3">
+  <Nx>22</Nx>
+  <Ny>28</Ny>
+  <Nz isGeom="false">59</Nz>
+</ModelSettings>
