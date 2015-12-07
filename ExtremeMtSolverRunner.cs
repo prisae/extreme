@@ -33,8 +33,8 @@ namespace ExtremeMt
             _project = project;
             _memoryProvider = memoryProvider;
             _mpi = mpi;
-            _logger = (_mpi == null || !_mpi.IsParallel) ? 
-                (ILogger)new ConsoleLogger() : 
+            _logger = (_mpi == null || !_mpi.IsParallel) ?
+                (ILogger)new ConsoleLogger() :
                 new ParallelConsoleLogger(_mpi);
 
             _solver = new Mt3DForwardSolver(_logger, memoryProvider, _project.ForwardSettings);
@@ -70,8 +70,6 @@ namespace ExtremeMt
 
                     ForwardLoggerHelper.WriteStatus(_logger, "Finish");
                     ParallelMemoryUtils.ExportMemoryUsage(_project.ResultsPath, _mpi, _memoryProvider, frequency);
-
-                    rc.Dispose();
                 }
             }
         }
