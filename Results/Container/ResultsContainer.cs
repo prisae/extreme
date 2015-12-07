@@ -32,7 +32,7 @@ namespace Extreme.Cartesian.Magnetotellurics
         public void Dispose()
         {
             if (_isDisposed)
-                throw new InvalidOperationException("Object is already disposed");
+                throw new ObjectDisposedException(this.GetType().ToString());
 
             foreach (var value in LevelFields.Values)
                 foreach (var atLevel in value)
