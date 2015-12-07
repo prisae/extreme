@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Xml.Linq;
 using Extreme.Cartesian.Model;
 using Extreme.Core;
@@ -11,6 +12,8 @@ namespace Extreme.Cartesian.Magnetotellurics
     {
         public Dictionary<double, List<AllFieldsAtLevel>> LevelFields { get; }
         public LateralDimensions Lateral { get; }
+
+        private bool _isDisposed = false;
 
         public ResultsContainer(LateralDimensions lateral)
         {
@@ -28,6 +31,9 @@ namespace Extreme.Cartesian.Magnetotellurics
 
         public void Dispose()
         {
+            if (_isDisposed)
+                throw new InvalidOperationException("Object is already disposed");
+
             foreach (var value in LevelFields.Values)
                 foreach (var atLevel in value)
                 {
@@ -41,6 +47,8 @@ namespace Extreme.Cartesian.Magnetotellurics
                     atLevel.AnomalyH1.Dispose();
                     atLevel.AnomalyH2.Dispose();
                 }
+
+            _isDisposed = true;
         }
 
         //     public void SaveToFile(string fileName) => SaveToXDocument().Save(fileName);
