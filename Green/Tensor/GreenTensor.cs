@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Extreme.Core;
 using UNM = Extreme.Cartesian.Forward.UnsafeNativeMethods;
 
@@ -14,6 +15,8 @@ namespace Extreme.Cartesian.Green.Tensor
         private readonly List<IntPtr> _basePtrs = new List<IntPtr>();
         private readonly INativeMemoryProvider _memoryProvider;
         private IReadOnlyDictionary<string, Component> _components = new Dictionary<string, Component>();
+
+        private bool _isDisposed = false;
 
         public int Nx { get; }
         public int Ny { get; }
@@ -170,8 +173,13 @@ namespace Extreme.Cartesian.Green.Tensor
 
         public void Dispose()
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException(this.GetType().ToString());
+
             _basePtrs.ForEach(ptr => _memoryProvider?.ReleaseMemory(ptr));
             _components = null;
+
+            _isDisposed = true;
         }
     }
 }
