@@ -65,9 +65,12 @@ namespace Extreme.Core
         void INativeMemoryProvider.ReleaseMemory(IntPtr ptr)
         {
             var disc = _allocated.Find(md => md.Ptr == ptr);
-
             if (disc == null)
                 throw new InvalidOperationException("The memory was not allocated by this manager");
+
+            var free = _free.Find(md => md.Ptr == ptr);
+            if (free != null)
+                throw new InvalidOperationException("Double memory free");
 
             _free.Add(disc);
 
