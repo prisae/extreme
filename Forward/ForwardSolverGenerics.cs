@@ -26,7 +26,7 @@ namespace Extreme.Cartesian.Forward
             Profiler = profiler;
         }
 
-     protected void SolveForOneSource()
+        protected void SolveForOneSource()
         {
             using (Profiler?.StartAuto(ProfilerEvent.ForwardSolvingOneSource))
             {
@@ -100,7 +100,7 @@ namespace Extreme.Cartesian.Forward
 
                 var chi = GetNewAnomalyCurrentAndCacheIt();
                 SolveEquationFor(chi0, chi);
-                
+
                 return chi;
             }
         }
