@@ -131,8 +131,6 @@ namespace Extreme.Cartesian.Magnetotellurics
             Logger.WriteStatus("Gather results...");
 
             var rc = new ResultsContainer(Model.LateralDimensions);
-            var frequency = Model.GetFrequency();
-
 
             if (!IsParallel || Mpi.Rank < Mpi.Size / 2)
             {
@@ -141,10 +139,9 @@ namespace Extreme.Cartesian.Magnetotellurics
                     var all = GatherAllFieldsAtLevel(observationLevel, _eFields, _hFields);
 
                     if (!IsParallel || Mpi.IsMaster)
-                        rc.Add(frequency, all);
+                        rc.Add(all);
                 }
             }
-
 
             ClearLocalCalculatedFields();
 

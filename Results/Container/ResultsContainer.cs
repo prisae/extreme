@@ -10,7 +10,7 @@ namespace Extreme.Cartesian.Magnetotellurics
 {
     public class ResultsContainer : IDisposable
     {
-        public Dictionary<double, List<AllFieldsAtLevel>> LevelFields { get; }
+        public List<AllFieldsAtLevel> LevelFields { get; }
         public LateralDimensions Lateral { get; }
 
         private bool _isDisposed = false;
@@ -18,15 +18,12 @@ namespace Extreme.Cartesian.Magnetotellurics
         public ResultsContainer(LateralDimensions lateral)
         {
             Lateral = lateral;
-            LevelFields = new Dictionary<double, List<AllFieldsAtLevel>>();
+            LevelFields = new List<AllFieldsAtLevel>();
         }
 
-        public void Add(double frequency, AllFieldsAtLevel levelField)
+        public void Add(AllFieldsAtLevel levelField)
         {
-            if (!LevelFields.ContainsKey(frequency))
-                LevelFields.Add(frequency, new List<AllFieldsAtLevel>());
-
-            LevelFields[frequency].Add(levelField);
+            LevelFields.Add(levelField);
         }
 
         public void Dispose()
@@ -34,19 +31,18 @@ namespace Extreme.Cartesian.Magnetotellurics
             if (_isDisposed)
                 throw new ObjectDisposedException(this.GetType().ToString());
 
-            foreach (var value in LevelFields.Values)
-                foreach (var atLevel in value)
-                {
-                    atLevel.NormalE1.Dispose();
-                    atLevel.NormalE2.Dispose();
-                    atLevel.NormalH1.Dispose();
-                    atLevel.NormalH2.Dispose();
+            foreach (var atLevel in LevelFields)
+            {
+                atLevel.NormalE1.Dispose();
+                atLevel.NormalE2.Dispose();
+                atLevel.NormalH1.Dispose();
+                atLevel.NormalH2.Dispose();
 
-                    atLevel.AnomalyE1.Dispose();
-                    atLevel.AnomalyE2.Dispose();
-                    atLevel.AnomalyH1.Dispose();
-                    atLevel.AnomalyH2.Dispose();
-                }
+                atLevel.AnomalyE1.Dispose();
+                atLevel.AnomalyE2.Dispose();
+                atLevel.AnomalyH1.Dispose();
+                atLevel.AnomalyH2.Dispose();
+            }
 
             _isDisposed = true;
         }

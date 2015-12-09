@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Numerics;
-using Extreme.Cartesian;
 using Extreme.Cartesian.Model;
 using Extreme.Core;
 using Porvem.Magnetotellurics;
@@ -12,14 +10,16 @@ namespace Extreme.Cartesian.Magnetotellurics
     public class PlainTextExporter
     {
         private readonly ResultsContainer _container;
+        private readonly double _frequency;
 
         public bool ExportNames { get; set; }
         public bool PhaseInDegree { get; set; }
         public bool ReversePhaseSign { get; set; }
 
-        public PlainTextExporter(ResultsContainer container)
+        public PlainTextExporter(ResultsContainer container, double frequency)
         {
             _container = container;
+            _frequency = frequency;
         }
 
         public static string FrequencyToString(double frequency)
@@ -31,20 +31,19 @@ namespace Extreme.Cartesian.Magnetotellurics
         public static string GetFieldsFileName(double frequency)
             => $"fields_freq{FrequencyToString(frequency)}";
 
-        private void IterateThroughAll(Action<double, AllFieldsAtSite> action)
+        private void IterateThroughAll(Action<AllFieldsAtSite> action)
         {
             var lat = _container.Lateral;
 
-            foreach (var freq in _container.LevelFields.Keys)
-                foreach (var level in _container.LevelFields[freq])
-                {
-                    for (int i = 0; i < lat.Nx; i++)
-                        for (int j = 0; j < lat.Ny; j++)
-                        {
-                            var value = level.GetSite(lat, i, j);
-                            action(freq, value);
-                        }
-                }
+            foreach (var level in _container.LevelFields)
+            {
+                for (int i = 0; i < lat.Nx; i++)
+                    for (int j = 0; j < lat.Ny; j++)
+                    {
+                        var value = level.GetSite(lat, i, j);
+                        action(value);
+                    }
+            }
         }
 
         private void WriteFreqAndCoordHead(StreamWriter sw)
@@ -63,7 +62,7 @@ namespace Extreme.Cartesian.Magnetotellurics
                 "freq".PadLeft(14, ' '));
         }
 
-        public void ExportRhoPhaseAndTipper(string path, decimal y)
+        public void ExportRhoPhaseAndTipper(string path)
         {
             using (var sw = new StreamWriter(path))
             {
@@ -90,10 +89,10 @@ namespace Extreme.Cartesian.Magnetotellurics
 
                 sw.WriteLine();
 
-                IterateThroughAll((freq, value) =>
+                IterateThroughAll(value =>
                 {
-                    WriteFreqAndCoord(sw, freq, value.Site);
-                    WriteRhoAndPhase(sw, freq, value);
+                    WriteFreqAndCoord(sw, _frequency, value.Site);
+                    WriteRhoAndPhase(sw, _frequency, value);
                     WriteTipperReIm(sw, value);
 
                     sw.WriteLine();
@@ -216,9 +215,9 @@ namespace Extreme.Cartesian.Magnetotellurics
 
                 sw.WriteLine();
 
-                IterateThroughAll((freq, value) =>
+                IterateThroughAll( value =>
                 {
-                    WriteFreqAndCoord(sw, freq, value.Site);
+                    WriteFreqAndCoord(sw, _frequency, value.Site);
                     WriteFullField(sw, value);
 
                     sw.WriteLine();
@@ -278,16 +277,16 @@ namespace Extreme.Cartesian.Magnetotellurics
 
                 sw.WriteLine();
 
-                IterateThroughAll((freq, value) =>
+                IterateThroughAll(value =>
                 {
-                    WriteFreqAndCoord(sw, freq, value.Site);
+                    WriteFreqAndCoord(sw, _frequency, value.Site);
 
                     var impedance = ResponseFunctionsCalculator.CalculateImpedanceTensor(value);
                     var tipper = ResponseFunctionsCalculator.CalculateTipper(value);
                     var eTipper = ResponseFunctionsCalculator.CalculateElectricTipper(value);
 
                     WriteImpedance(sw, impedance);
-                    WriteRhoAndPhase(sw, freq, value);
+                    WriteRhoAndPhase(sw, _frequency, value);
                     WriteTipper(sw, tipper);
                     WriteTipper(sw, eTipper);
 
@@ -355,7 +354,7 @@ namespace Extreme.Cartesian.Magnetotellurics
             var result = value.Phase;
 
             if (PhaseInDegree)
-                result *= (180 / System.Math.PI);
+                result *= (180 / Math.PI);
 
             if (ReversePhaseSign)
                 result = -result;
@@ -405,7 +404,7 @@ namespace Extreme.Cartesian.Magnetotellurics
         }
 
 
-        private const double Mu0 = (4.0 * System.Math.PI * 1.0E-07);
+        private const double Mu0 = (4.0 * Math.PI * 1.0E-07);
 
         private static double CalculateApparentResistivity(Complex z, double omega)
         {
