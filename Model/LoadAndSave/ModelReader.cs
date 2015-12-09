@@ -10,7 +10,7 @@ namespace Extreme.Cartesian.Model
 {
     public class ModelReader : ModelSerializer
     {
-        public static CartesianModel Load(string path)
+        public static CartesianModel LoadWithoutAnomalyData(string path)
         {
             var xdoc = XDocument.Load(path);
 

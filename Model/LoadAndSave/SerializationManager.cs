@@ -42,7 +42,7 @@ namespace Extreme.Cartesian.Model
                 throw new CartesianModelLoadException(Extreme.Cartesian.Properties.ExceptionMessages.SimpleModelLoader_UnknownVersion);
 
             if (version == SecondVersion)
-                return ModelReader.Load(path);
+                return ModelReader.LoadWithoutAnomalyData(path);
 
             throw new CartesianModelLoadException(Extreme.Cartesian.Properties.ExceptionMessages.SimpleModelLoader_UnknownVersion);
         }

@@ -51,15 +51,5 @@ namespace Extreme.Cartesian.Model
         {
             return (2 * Math.PI * frequency);
         }
-
-        public static double OmegaToFrequency(double omega)
-        {
-            return (omega / (2 * Math.PI));
-        }
-
-        public static double GetFrequency(this OmegaModel model)
-        {
-            return OmegaToFrequency(model.Omega);
-        }
     }
 }
