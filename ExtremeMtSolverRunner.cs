@@ -92,7 +92,7 @@ namespace ExtremeMt
             if (!Directory.Exists(resultPath))
                 Directory.CreateDirectory(resultPath);
 
-            var exporter = new PlainTextExporter(rc);
+            var exporter = new PlainTextExporter(rc, frequency);
 
             ForwardLoggerHelper.WriteStatus(_logger, "\t Export Raw fields");
             exporter.ExportRawFields(Path.Combine(resultPath, fieldsFileName));
