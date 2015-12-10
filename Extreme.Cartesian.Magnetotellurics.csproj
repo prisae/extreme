@@ -51,7 +51,7 @@
     <Compile Include="Solver\EScatteredCalculatedEventArgs.cs" />
     <Compile Include="Solver\MtFieldsAtLevelCalculatedEventArgs.cs" />
     <Compile Include="Solver\MtFieldsAtSiteCalculatedEventArgs.cs" />
-    <Compile Include="Results\Exporter\PlainTextExporter.cs" />
+    <Compile Include="Results\PlainTextExporter.cs" />
     <Compile Include="Results\AllFieldsAtLevel.cs" />
     <Compile Include="Results\AllFieldsAtSite.cs" />
     <Compile Include="Results\Container\ResultsContainer.cs" />
