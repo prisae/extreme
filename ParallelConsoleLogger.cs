@@ -19,28 +19,23 @@ namespace Extreme.Parallel.Logger
 
             if (_mpi.IsMaster)
                 Console.WriteLine($"Parallel logger started on [master{_name}] at {CreationTime}");
-
         }
 
-        private void WriteStatus(string message)
+        public override void Write(int logLevel, string message)
         {
             if (_mpi.IsMaster)
             {
                 var time = (DateTime.Now - CreationTime).TotalSeconds;
 
-                Console.WriteLine($"[{time:########000.00} s] {message}");
-            }
-        }
-
-        public override void Write(int logLevel, string message)
-        {
-            if (logLevel == (int)LogLevel.Status)
-                WriteStatus(message);
-
-            else
-            {
-                var prefix = this.GetPrefix(logLevel);
-                Console.WriteLine("[{2}, {3}] {1} {4} {0}", message, DateTime.Now, _name, _rank, prefix);
+                if (logLevel == (int)LogLevel.Status)
+                {
+                    Console.WriteLine($"[{time:########000.00} s] {message}");
+                }
+                else
+                {
+                    var prefix = this.GetPrefix(logLevel);
+                    Console.WriteLine($"[{time:########000.00} s] {prefix} {message}");
+                }
             }
         }
     }
