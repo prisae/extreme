@@ -26,7 +26,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Analytic\AnalyticModel.cs" />
     <Compile Include="Commemi3D3\Commemi3d3ModelSettings.cs" />
+    <Compile Include="Converter\AnalyticToCartesianModelConverter.cs" />
     <Compile Include="Converter\ToCartesianModelConverter.cs" />
     <Compile Include="Converter\NonMeshedToCartesianModelConverter.cs" />
     <Compile Include="ModelGenUtils.cs" />
