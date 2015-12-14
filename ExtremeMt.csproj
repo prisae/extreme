@@ -54,6 +54,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Extreme.Model\Extreme.Model.csproj">
+      <Project>{b7d2ec67-13ae-4ec7-af4d-3771e75cb305}</Project>
+      <Name>Extreme.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\FftWrap\FftWrap\FftWrap.csproj">
       <Project>{5CB1047E-437F-4BF3-A2E3-5A43C9CBA91E}</Project>
       <Name>FftWrap</Name>
@@ -78,10 +82,6 @@
       <Project>{484d7def-8596-483f-8a39-9c10ba1f6e53}</Project>
       <Name>Extreme.Parallel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ModelCreaters\ModelCreaters.csproj">
-      <Project>{b7d2ec67-13ae-4ec7-af4d-3771e75cb305}</Project>
-      <Name>ModelCreaters</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Profiling\Profiling.csproj">
       <Project>{069f4273-d261-46aa-a8c3-3476275aeddd}</Project>
       <Name>Profiling</Name>
@@ -92,7 +92,7 @@
   <PropertyGroup>
     <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">copy  $(SolutionDir)Native\bin\*.dll $(TargetDir)
 copy  $(SolutionDir)externlib\*.dll $(TargetDir)</PostBuildEvent>
-  <PostBuildEvent Condition=" '$(OS)' == 'Unix' ">cp  $(SolutionDir)Native\bin\*.so $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Unix' ">cp  $(SolutionDir)Native\bin\*.so $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
