@@ -50,13 +50,10 @@
     <Compile Include="Logger\MemoryConsoleLogger.cs" />
     <Compile Include="Memory\MemoryProvider.cs" />
     <Compile Include="Memory\MemoryUtils.cs" />
-    <Compile Include="Model\Direction.cs" />
     <Compile Include="Model\IConductivityLayer1D.cs" />
     <Compile Include="Model\IResistivityLayer1D.cs" />
     <Compile Include="Model\ISection1D.cs" />
     <Compile Include="Model\Layer1D.cs" />
-    <Compile Include="Model\NonMeshedAnomaly.cs" />
-    <Compile Include="Model\NonMeshedModel.cs" />
     <Compile Include="Model\Section1D.cs" />
     <Compile Include="Model\AnomalyLayer.cs" />
     <Compile Include="Model\SourceLayer.cs" />
