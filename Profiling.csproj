@@ -96,15 +96,11 @@
       <Project>{19CA12F6-2EB8-4AB2-B93F-28FDDFE0BE3C}</Project>
       <Name>Extreme.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ModelCreaters\ModelCreaters.csproj">
-      <Project>{b7d2ec67-13ae-4ec7-af4d-3771e75cb305}</Project>
-      <Name>ModelCreaters</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">copy  $(SolutionDir)Native\bin\*.dll $(TargetDir)</PostBuildEvent>
-  <PostBuildEvent Condition=" '$(OS)' == 'Unix' ">cp  $(SolutionDir)Native\bin\*.so $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Unix' ">cp  $(SolutionDir)Native\bin\*.so $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
