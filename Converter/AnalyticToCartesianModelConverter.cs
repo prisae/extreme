@@ -30,20 +30,17 @@ namespace Extreme.Model
             SetBoundaries(mb.StartX, mb.EndX, mb.StartY, mb.EndY);
         }
 
-        protected override decimal[] CreateAnomalyFragmentation(MeshParameters mesh)
-        {
-            return CreateAnomalyFragmentation(mesh, _analyticModel.MinZ, _analyticModel.MaxZ);
-        }
+        protected override decimal GetMinZ()
+            => _analyticModel.MinZ;
+
+        protected override decimal GetMaxZ()
+            => _analyticModel.MaxZ;
 
         protected override bool CheckSimpleGriddingPossibility(decimal xCellSize, decimal yCellSize)
-        {
-            return true;
-        }
+            => true;
 
-        protected override CartesianSection1D ConvertSection1D()
-        {
-            return _analyticModel.Section1D;
-        }
+        protected override CartesianSection1D GetSection1D()
+            => _analyticModel.Section1D;
 
         protected override double GetValueFor(decimal xStart, decimal xSize, decimal yStart, decimal ySize, double backgroundConductivity)
         {
@@ -52,7 +49,7 @@ namespace Extreme.Model
             var zStep = _zSize / IntegrateStepsAlongZ;
 
             var values = new List<double>();
-                
+
             for (int i = 0; i < IntegrateStepsAlongX; i++)
                 for (int j = 0; j < IntegrateStepsAlongY; j++)
                     for (int k = 0; k < IntegrateStepsAlongZ; k++)

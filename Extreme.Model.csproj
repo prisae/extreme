@@ -69,7 +69,9 @@
     <Compile Include="Topography\DiscretePhilippineTopographyProvider.cs" />
     <Compile Include="Topography\IDiscreteTopographyProvider.cs" />
     <Compile Include="Topography\Point.cs" />
+    <Compile Include="Topography\TopographyModelConverter.cs" />
     <Compile Include="Topography\TopographyModelCreater.cs" />
+    <Compile Include="Topography\UniformGridTopographyProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

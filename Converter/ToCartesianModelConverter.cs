@@ -44,7 +44,7 @@ namespace ModelCreaters
 
             var anomalyFragmentation = meshParameters.HasPredefinedAnomalyFragmentation ?
                 meshParameters.GetPredefinedAnomalyFragmentation() :
-                CreateAnomalyFragmentation(meshParameters);
+                CreateAnomalyFragmentation(meshParameters, GetMinZ(), GetMaxZ());
 
             return Convert(meshParameters, anomalyFragmentation);
         }
@@ -59,21 +59,22 @@ namespace ModelCreaters
 
             var lateral = new LateralDimensions(mesh.Nx, mesh.Ny, xCellSize, yCellSize);
 
-            var section1D = ConvertSection1D();
+            var section1D = GetSection1D();
             var anomaly = ConvertAnomaly(lateral, section1D, anomalyZSegmentation);
 
             return new CartesianModel(lateral, section1D, anomaly);
         }
 
-        protected abstract decimal[] CreateAnomalyFragmentation(MeshParameters mesh);
+        protected abstract decimal GetMinZ();
+        protected abstract decimal GetMaxZ();
         protected abstract bool CheckSimpleGriddingPossibility(decimal xCellSize, decimal yCellSize);
-        protected abstract CartesianSection1D ConvertSection1D();
+        protected abstract CartesianSection1D GetSection1D();
         protected abstract double GetValueFor(decimal xStart, decimal xSize, decimal yStart, decimal ySize,
             double backgroundConductivity);
 
         protected abstract void PrepareLayer(decimal start, decimal end);
 
-        protected decimal[] CreateAnomalyFragmentation(MeshParameters mesh, decimal minZ, decimal maxZ)
+        private decimal[] CreateAnomalyFragmentation(MeshParameters mesh, decimal minZ, decimal maxZ)
         {
             var anomalyFragmentation = new List<decimal>();
 

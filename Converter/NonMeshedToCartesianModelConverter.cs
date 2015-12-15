@@ -40,12 +40,13 @@ namespace Extreme.Model
             }
         }
 
-        protected override decimal[] CreateAnomalyFragmentation(MeshParameters mesh)
-        {
-            return CreateAnomalyFragmentation(mesh, _model.GetMinZ(), _model.GetMaxZ());
-        }
+        protected override decimal GetMinZ()
+            => _model.GetMinZ();
 
-        protected override CartesianSection1D ConvertSection1D()
+        protected override decimal GetMaxZ()
+            => _model.GetMaxZ();
+
+        protected override CartesianSection1D GetSection1D()
         {
             var section1D = _model.Section1D;
             var layers = new List<Sigma1DLayer>();
@@ -69,7 +70,6 @@ namespace Extreme.Model
 
             return true;
         }
-
 
         protected override void PrepareLayer(decimal start, decimal end)
         {

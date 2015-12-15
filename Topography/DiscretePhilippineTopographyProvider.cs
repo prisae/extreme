@@ -86,12 +86,12 @@ namespace Extreme.Model.Topography
             return max;
         }
 
-        public List<double> GetDepths(double x, double y, double width, double height)
+        public List<double> GetDepths(double x, double y, double xSize, double ySize)
         {
             int xIndexMax = (int)((x + XShift) / XStepAverage) + 1;
-            int xIndexMin = (int)((x + width + XShift) / XStepAverage) - 1;
+            int xIndexMin = (int)((x + xSize + XShift) / XStepAverage) - 1;
             int yIndexMin = (int)((y + YShift) / YStepAverage) - 1;
-            int yIndexMax = (int)((y + height + YShift) / YStepAverage) + 1;
+            int yIndexMax = (int)((y + ySize + YShift) / YStepAverage) + 1;
 
             var result = new List<double>();
 
@@ -107,7 +107,7 @@ namespace Extreme.Model.Topography
                 {
                     KeyValuePair<Point, double> kvp = GetValueForIndecies(i, j);
 
-                    if (Contains(x, y, width, height, kvp.Key.X, kvp.Key.Y))
+                    if (Contains(x, y, xSize, ySize, kvp.Key.X, kvp.Key.Y))
                         result.Add(kvp.Value);
                 }
             }
@@ -152,8 +152,7 @@ namespace Extreme.Model.Topography
 
         public void Dispose()
         {
-            if (_reader != null)
-                _reader.Close();
+            _reader?.Close();
         }
     }
 }
