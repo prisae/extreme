@@ -264,12 +264,15 @@ namespace Profiling
 
         public static void SaveProfilingResultsToCommon(string fileName, CartesianModel model, ProfilerStatistics[] analisisResult, int numberOfMpi, int numberOfThreads, int nhank)
         {
+            if (analisisResult == null)
+                throw new ArgumentNullException();
+
             try
             {
-                Func<string, int,string> padStr = (str, p) => str.PadRight(p);
+                Func<string, int, string> padStr = (str, p) => str.PadRight(p);
                 Func<string, string> pad = (str) => padStr(str, 15);
                 Func<TimeSpan, string> toStr = (ts) => padStr(ts.TotalSeconds.ToString("0.00000"), 15);
-                
+
                 if (!File.Exists(fileName))
                 {
                     File.AppendAllText(fileName, $"{pad("Date")}{padStr("Time", 12)}" +
@@ -280,13 +283,14 @@ namespace Profiling
                                                  $"{pad("AtoO_Green")}{pad("AtoO_calc_X")}{pad("AtoO_calc_Y")}\n");
                 }
 
-                var pols = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.SolveCie);
-                var atoa = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.GreenAtoATotal).Times[0];
-                var polX = pols.Times[0];
-                var polY = pols.Times[1];
-                var atoo = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.AtoOGreenCalc).TotalTime;
-                var atoc1 = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.AtoOFields).Times[0];
-                var atoc2 = analisisResult.FirstOrDefault(a => a.Code == (int)ProfilerEvent.AtoOFields).Times[1];
+
+                var atoa = GetTimeSpan(analisisResult, ProfilerEvent.GreenAtoATotal, 0);
+                var polX = GetTimeSpan(analisisResult, ProfilerEvent.SolveCie, 0);
+                var polY = GetTimeSpan(analisisResult, ProfilerEvent.SolveCie, 1);
+                var atoo =  GetTotalTime(analisisResult, ProfilerEvent.AtoOGreenCalc);
+
+                var atoc1 = GetTimeSpan(analisisResult, ProfilerEvent.AtoOFields, 0);
+                var atoc2 = GetTimeSpan(analisisResult, ProfilerEvent.AtoOFields, 1);
 
                 var now = DateTime.Now;
 
@@ -304,10 +308,20 @@ namespace Profiling
             {
 
                 Console.WriteLine($"Scalability profiling export {ex.Message} {ex.StackTrace}");
-                
-                
+
+
                 //   throw;
             }
+        }
+
+        private static TimeSpan GetTimeSpan(ProfilerStatistics[] analisisResult, ProfilerEvent profEvent, int index)
+        {
+            return analisisResult.FirstOrDefault(a => a.Code == (int)profEvent)?.Times[index] ?? TimeSpan.Zero;
+        }
+
+        private static TimeSpan GetTotalTime(ProfilerStatistics[] analisisResult, ProfilerEvent profEvent)
+        {
+            return analisisResult.FirstOrDefault(a => a.Code == (int)profEvent)?.TotalTime ?? TimeSpan.Zero;
         }
     }
 }
