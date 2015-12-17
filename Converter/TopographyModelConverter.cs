@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using Extreme.Cartesian.Logger;
 using Extreme.Cartesian.Model;
@@ -12,22 +13,22 @@ namespace Extreme.Model.Topography
 {
     public class TopographyModelConverter : ToCartesianModelConverter
     {
-        private readonly ILogger _logger;
         private readonly IDiscreteTopographyProvider _topography;
 
-
-        public static float OceanConductivity = 3.2f;
-        public static float CrustConductivity = 0.01f;
+        public static double AirConductivity = 1E-7;
+        public static double OceanConductivity = 3.2;
+        public static double CrustConductivity = 0.01;
 
         public decimal MinZ { get; set; } = 0;
         public decimal MaxZ { get; set; } = 1000;
-        
+
 
         public TopographyModelConverter(IDiscreteTopographyProvider topo, ManualBoundaries mb, ILogger logger = null)
+            : base(logger)
         {
             if (topo == null) throw new ArgumentNullException(nameof(topo));
 
-            _logger = logger;
+            SetBoundaries(mb.StartX, mb.EndX, mb.StartY, mb.EndY);
             _topography = topo;
         }
 
@@ -42,28 +43,26 @@ namespace Extreme.Model.Topography
             });
         }
 
-        private void FillModelDueToTopography(LateralDimensions lateral, CartesianAnomaly anomaly)
+        protected override void FillSigma(CartesianSection1D section1D, CartesianAnomaly anomaly, LateralDimensions lateral)
         {
-            var shift = _shift;
+            var x0 = (double)StartX;
+            var y0 = (double)StartY;
 
             var xSize = (double)lateral.CellSizeX;
             var ySize = (double)lateral.CellSizeY;
 
             var zLength = anomaly.Layers.Count();
 
-
-            System.Threading.Tasks.Parallel.For(0, lateral.Nx, i =>
-
-            //for (int i = 0; i < lateral.Nx; i++)
+            for (int i = LocalNxStart; i < LocalNxStart + LocalNxLength; i++)
             {
-                _logger.WriteStatus($"nx: {i + 1} of {lateral.Nx}");
+                Logger.WriteStatus($"nx: {i + 1} of {lateral.Nx}");
 
                 for (int j = 0; j < lateral.Ny; j++)
                 {
-                    var x = i * xSize;
-                    var y = j * ySize;
+                    var x = x0 + i * xSize;
+                    var y = y0 + j * ySize;
 
-                    var depths = _topography.GetDepths(x - shift.X, y - shift.Y, xSize, ySize);
+                    var depths = _topography.GetDepths(x, y, xSize, ySize);
 
                     for (int k = 0; k < zLength; k++)
                     {
@@ -78,16 +77,18 @@ namespace Extreme.Model.Topography
                                 anomaly.Sigma[i, j, k2] = CrustConductivity;
                             break;
                         }
+                        
+                        var topCond = z1 > section1D.ZeroAirLevelAlongZ ? OceanConductivity : AirConductivity;
 
                         anomaly.Sigma[i, j, k] = impact == 0
-                            ? OceanConductivity
-                            : CalculateCunductivity(impact, OceanConductivity, CrustConductivity);
+                            ? topCond
+                            : CalculateCunductivity(impact, topCond, CrustConductivity);
                     }
                 }
-            });
+            }
         }
 
-        private double CalculateCunductivity(double impact, float oceanConductivity, float crustConductivity)
+        private double CalculateCunductivity(double impact, double oceanConductivity, double crustConductivity)
         {
             var value = Exp(Log(oceanConductivity, E) * (1 - impact) + Log(crustConductivity, E) * impact);
 
@@ -129,16 +130,6 @@ namespace Extreme.Model.Topography
             => CreateSection1D();
         protected override bool CheckSimpleGriddingPossibility(decimal xCellSize, decimal yCellSize)
             => true;
-        
-        protected override double GetValueFor(decimal xStart, decimal xSize, decimal yStart, decimal ySize, double backgroundConductivity)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void PrepareLayer(decimal start, decimal end)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
 

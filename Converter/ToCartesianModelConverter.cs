@@ -8,8 +8,9 @@ namespace ModelCreaters
 {
     public abstract class ToCartesianModelConverter
     {
-        private int _localNxStart;
-        private int _localNxLength;
+        protected ILogger Logger { get; }
+        protected int LocalNxStart { get; private set; }
+        protected int LocalNxLength { get; private set; }
 
         protected decimal StartX { get; private set; }
         protected decimal EndX { get; private set; }
@@ -17,6 +18,11 @@ namespace ModelCreaters
         protected decimal EndY { get; private set; }
 
         private bool _createSigma = true;
+
+        protected ToCartesianModelConverter(ILogger logger = null)
+        {
+            Logger = logger;
+        }
 
         protected void SetBoundaries(decimal startX, decimal endX, decimal startY, decimal endY)
         {
@@ -39,8 +45,8 @@ namespace ModelCreaters
         {
             _createSigma = createSigma;
 
-            _localNxStart = localNxStart;
-            _localNxLength = localNxLength;
+            LocalNxStart = localNxStart;
+            LocalNxLength = localNxLength;
 
             var anomalyFragmentation = meshParameters.HasPredefinedAnomalyFragmentation ?
                 meshParameters.GetPredefinedAnomalyFragmentation() :
@@ -69,11 +75,9 @@ namespace ModelCreaters
         protected abstract decimal GetMaxZ();
         protected abstract bool CheckSimpleGriddingPossibility(decimal xCellSize, decimal yCellSize);
         protected abstract CartesianSection1D GetSection1D();
-        protected abstract double GetValueFor(decimal xStart, decimal xSize, decimal yStart, decimal ySize,
-            double backgroundConductivity);
-
-        protected abstract void PrepareLayer(decimal start, decimal end);
-
+    
+        protected abstract void FillSigma(CartesianSection1D section1D, CartesianAnomaly anomaly, LateralDimensions lateral);
+        
         private decimal[] CreateAnomalyFragmentation(MeshParameters mesh, decimal minZ, decimal maxZ)
         {
             var anomalyFragmentation = new List<decimal>();
@@ -124,45 +128,15 @@ namespace ModelCreaters
                 allLayers[k] = new CartesianAnomalyLayer(zStart, thickness);
             }
 
-            var anomaly = new CartesianAnomaly(new Size2D(_localNxLength, lateral.Ny), allLayers);
+            var anomaly = new CartesianAnomaly(new Size2D(LocalNxLength, lateral.Ny), allLayers);
 
             if (_createSigma)
             {
                 anomaly.CreateSigma();
-
-                for (int k = 0; k < allLayers.Length; k++)
-                {
-                    var layer = allLayers[k];
-                    decimal zStart = layer.Depth;
-                    decimal zEnd = layer.Depth + layer.Thickness;
-
-                    var index = ModelUtils.FindCorrespondingBackgroundLayerIndex(section1D, layer);
-                    var value = section1D[index].Sigma;
-
-                    PrepareLayer(zStart, zEnd);
-                    FillLateralGriddingFor(anomaly.Sigma, k, lateral, value);
-                }
+                FillSigma(section1D, anomaly, lateral);
             }
 
             return anomaly;
-        }
-
-        private void FillLateralGriddingFor(double[,,] sigma, int k, LateralDimensions lateral, double layer1DValue)
-        {
-            decimal x0 = StartX;
-            decimal y0 = StartY;
-
-            for (int i = _localNxStart; i < _localNxStart + _localNxLength; i++)
-                for (int j = 0; j < lateral.Ny; j++)
-                {
-                    var xStart = x0 + i * lateral.CellSizeX;
-                    var yStart = y0 + j * lateral.CellSizeY;
-
-                    sigma[i - _localNxStart, j, k]
-                        = GetValueFor(xStart, lateral.CellSizeX,
-                                      yStart, lateral.CellSizeY,
-                                      layer1DValue);
-                }
         }
     }
 }

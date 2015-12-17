@@ -49,6 +49,7 @@
     <Compile Include="Converter\AnalyticToCartesianModelConverter.cs" />
     <Compile Include="Converter\ToCartesianModelConverter.cs" />
     <Compile Include="Converter\NonMeshedToCartesianModelConverter.cs" />
+    <Compile Include="Converter\ToCartesianModelConverterAlongLateral.cs" />
     <Compile Include="ModelGenUtils.cs" />
     <Compile Include="Naser\NaserModelSettings.cs" />
     <Compile Include="Naser\NaserModelCreater.cs" />
@@ -69,7 +70,7 @@
     <Compile Include="Topography\DiscretePhilippineTopographyProvider.cs" />
     <Compile Include="Topography\IDiscreteTopographyProvider.cs" />
     <Compile Include="Topography\Point.cs" />
-    <Compile Include="Topography\TopographyModelConverter.cs" />
+    <Compile Include="Converter\TopographyModelConverter.cs" />
     <Compile Include="Topography\TopographyModelCreater.cs" />
     <Compile Include="Topography\UniformGridTopographyProvider.cs" />
   </ItemGroup>

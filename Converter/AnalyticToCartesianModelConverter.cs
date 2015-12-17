@@ -4,11 +4,12 @@ using System.Linq;
 using Extreme.Cartesian.Model;
 using Extreme.Core;
 using Extreme.Core.Logger;
+using Extreme.Model.Converter;
 using ModelCreaters;
 
 namespace Extreme.Model
 {
-    public class AnalyticToCartesianModelConverter : ToCartesianModelConverter
+    public class AnalyticToCartesianModelConverter : ToCartesianModelConverterAlongLateral
     {
         private readonly AnalyticModel _analyticModel;
         private readonly ILogger _logger;

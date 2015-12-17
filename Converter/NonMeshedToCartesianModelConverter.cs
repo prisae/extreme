@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Extreme.Cartesian.Model;
 using Extreme.Core.Model;
+using Extreme.Model.Converter;
 using ModelCreaters;
 
 namespace Extreme.Model
 {
-    public class NonMeshedToCartesianModelConverter : ToCartesianModelConverter
+    public class NonMeshedToCartesianModelConverter : ToCartesianModelConverterAlongLateral
     {
         private readonly NonMeshedModel _model;
         private readonly decimal[] _zBoundaries;

@@ -16,11 +16,11 @@ namespace Extreme.Model.Topography
         private const int NumberOfX = 5401;
         private const int NumberOfY = 10801;
 
-        private const double XStepAverage = -2.23466897f * 1000;
-        private const double YStepAverage = 0.98050175f * 1000;
+        private const double XStepAverage = 2.23466897 * 1000;
+        private const double YStepAverage = 0.98050175 * 1000;
 
-        private const double XShift = -5608.3952585f * 1000;
-        private const double YShift = 5304.45072018f * 1000;
+        private const double XStart = -5608.3952585 * 1000;
+        private const double YStart = -5304.45072018 * 1000;
 
         #endregion
 
@@ -38,6 +38,7 @@ namespace Extreme.Model.Topography
         {
             var provider = new DiscretePhilippineTopographyProvider(fileName);
             provider.PreloadData();
+
             return provider;
         }
 
@@ -88,10 +89,10 @@ namespace Extreme.Model.Topography
 
         public List<double> GetDepths(double x, double y, double xSize, double ySize)
         {
-            int xIndexMax = (int)((x + XShift) / XStepAverage) + 1;
-            int xIndexMin = (int)((x + xSize + XShift) / XStepAverage) - 1;
-            int yIndexMin = (int)((y + YShift) / YStepAverage) - 1;
-            int yIndexMax = (int)((y + ySize + YShift) / YStepAverage) + 1;
+            int xIndexMin = (int)((x - XStart) / XStepAverage) + 1;
+            int xIndexMax = (int)((x + xSize - XStart) / XStepAverage) - 1;
+            int yIndexMin = (int)((y - YStart) / YStepAverage) - 1;
+            int yIndexMax = (int)((y + ySize - YStart) / YStepAverage) + 1;
 
             var result = new List<double>();
 
@@ -130,7 +131,7 @@ namespace Extreme.Model.Topography
             {
                 int offset = (yIndex + xIndex * NumberOfY) * 3;
 
-                var x = _data[offset + 0];
+                var x = -_data[offset + 0];
                 var y = _data[offset + 1];
                 var z = _data[offset + 2];
 
