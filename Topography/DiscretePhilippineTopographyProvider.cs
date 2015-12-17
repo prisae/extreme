@@ -61,10 +61,10 @@ namespace Extreme.Model.Topography
         {
             double min = double.MaxValue;
 
-            for (int i = 0; i < _data.Length; i+=3)
+            for (int i = 0; i < _data.Length; i += 3)
             {
                 var val = _data[i + 2];
-             
+
                 if (val < min)
                     min = val;
             }
@@ -89,8 +89,8 @@ namespace Extreme.Model.Topography
 
         public List<double> GetDepths(double x, double y, double xSize, double ySize)
         {
-            int xIndexMin = (int)((x - XStart) / XStepAverage) + 1;
-            int xIndexMax = (int)((x + xSize - XStart) / XStepAverage) - 1;
+            int xIndexMin = (int)((x - XStart) / XStepAverage) - 1;
+            int xIndexMax = (int)((x + xSize - XStart) / XStepAverage) + 1;
             int yIndexMin = (int)((y - YStart) / YStepAverage) - 1;
             int yIndexMax = (int)((y + ySize - YStart) / YStepAverage) + 1;
 
@@ -106,10 +106,11 @@ namespace Extreme.Model.Topography
             {
                 for (int j = yIndexMin; j <= yIndexMax; j++)
                 {
-                    KeyValuePair<Point, double> kvp = GetValueForIndecies(i, j);
+                    var point = GetValueForIndecies(i, j);
 
-                    if (Contains(x, y, xSize, ySize, kvp.Key.X, kvp.Key.Y))
-                        result.Add(kvp.Value);
+                    // double-check
+                    if (Contains(x, y, xSize, ySize, point.X, point.Y))
+                        result.Add(point.Z);
                 }
             }
 
@@ -125,7 +126,7 @@ namespace Extreme.Model.Topography
         }
 
 
-        private KeyValuePair<Point, double> GetValueForIndecies(int xIndex, int yIndex)
+        private Point GetValueForIndecies(int xIndex, int yIndex)
         {
             if (_preLoaded)
             {
@@ -135,7 +136,7 @@ namespace Extreme.Model.Topography
                 var y = _data[offset + 1];
                 var z = _data[offset + 2];
 
-                return new KeyValuePair<Point, double>(new Point(x * 1000, y * 1000), z);
+                return new Point(x * 1000, y * 1000, z);
             }
             else
             {
@@ -143,11 +144,11 @@ namespace Extreme.Model.Topography
 
                 _reader.BaseStream.Seek(offset, SeekOrigin.Begin);
 
-                var x = _reader.ReadDouble();
+                var x = -_reader.ReadDouble();
                 var y = _reader.ReadDouble();
                 var z = _reader.ReadDouble();
 
-                return new KeyValuePair<Point, double>(new Point(x * 1000, y * 1000), z);
+                return new Point(x * 1000, y * 1000, z);
             }
         }
 

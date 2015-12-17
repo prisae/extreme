@@ -1,82 +1,109 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
 namespace Extreme.Model.Topography
 {
-    public class UniformGridTopographyProvider
+    public class UniformGridTopographyProvider : IDiscreteTopographyProvider
     {
-        public float X0 { get; }
-        public float Y0 { get; }
+        public double StartX { get; }
+        public double StartY { get; }
 
         public int Nx { get; }
         public int Ny { get; }
 
-        public float Dx { get;}
-        public float Dy { get; }
+        public double AverageSizeX { get; }
+        public double AverageSizeY { get; }
 
-        private readonly float[,] _depths;
+        private readonly Point[,] _points;
 
-        public UniformGridTopographyProvider(float[,] depths, float x0, float y0, int nx, int ny, float dx, float dy)
+        public UniformGridTopographyProvider(Point[,] points, int nx, int ny, double averageSizeX, double averageSizeY)
         {
-            _depths = depths;
-            X0 = x0;
-            Y0 = y0;
+            if (points == null) throw new ArgumentNullException(nameof(points));
+            _points = points;
+
             Nx = nx;
             Ny = ny;
-            Dx = dx;
-            Dy = dy;
+            AverageSizeX = averageSizeX;
+            AverageSizeY = averageSizeY;
+
+            StartX = _points[0, 0].X;
+            StartY = _points[0, 0].Y;
         }
 
-        public static UniformGridTopographyProvider LoadFromXyzFile(string fileName, int nx, int ny, float dx, float dy)
+        public double GetMinZ()
         {
-            using (var sr = new StreamReader(fileName))
-                return LoadFromXyzFile(sr, nx, ny, dx, dy);
-        }
+            double min = double.MaxValue;
 
-        private static UniformGridTopographyProvider LoadFromXyzFile(StreamReader sr, int nx, int ny, float dx, float dy)
-        {
-            var depths  = new float[nx, ny];
-
-            var first = true;
-
-            var x0 = 0f;
-            var y0 = 0f; 
-
-            for (int i = 0; i < nx; i++)
+            for (int i = 0; i < Nx; i++)
             {
-                for (int j = 0; j < ny; j++)
+                for (int j = 0; j < Ny; j++)
                 {
-                    var values = ReadLine(sr);
+                    var val = _points[i, j].Z;
 
-                    if (first)
-                    {
-                        x0 = values[0];
-                        y0 = values[1];
-                    }
-                    
-                    depths[i, j] = values[2];
-
-                    first = false;
+                    if (val < min)
+                        min = val;
                 }
             }
 
-            return new UniformGridTopographyProvider(depths, x0, y0, nx, ny, dx, dy);
+            return min;
         }
 
-
-        private static float[] ReadLine(StreamReader sr)
+        public double GetMaxZ()
         {
-            var line = sr.ReadLine();
-            var strs = line.Split(' ').Where(s => !string.IsNullOrEmpty(s)).ToArray();
+            double max = double.MinValue;
 
-            var values = new float[strs.Length];
+            for (int i = 0; i < Nx; i++)
+            {
+                for (int j = 0; j < Ny; j++)
+                {
+                    var val = _points[i, j].Z;
+                    if (val > max)
+                        max = val;
+                }
+            }
 
-            for (int i = 0; i < values.Length; i++)
-                values[i] = float.Parse(strs[i], NumberStyles.Float, CultureInfo.InvariantCulture);
-
-            return values;
+            return max;
         }
 
+        public List<double> GetDepths(double x, double y, double xSize, double ySize)
+        {
+            int xIndexMin = (int)((x - StartX) / AverageSizeX) - 1;
+            int xIndexMax = (int)((x + xSize - StartX) / AverageSizeX) + 1;
+            int yIndexMin = (int)((y - StartY) / AverageSizeY) - 1;
+            int yIndexMax = (int)((y + ySize - StartY) / AverageSizeY) + 1;
+
+            var result = new List<double>();
+
+            if (xIndexMin < 0) xIndexMin = 0;
+            if (yIndexMin < 0) yIndexMin = 0;
+
+            if (xIndexMax >= Nx) xIndexMax = Nx - 1;
+            if (yIndexMax >= Ny) yIndexMax = Ny - 1;
+
+            for (int i = xIndexMin; i <= xIndexMax; i++)
+            {
+                for (int j = yIndexMin; j <= yIndexMax; j++)
+                {
+                    var point = _points[i, j];
+
+                    // double-check
+                    if (Contains(x, y, xSize, ySize, point.X, point.Y))
+                        result.Add(point.Z);
+                }
+            }
+
+            return result;
+        }
+
+        private bool Contains(double thisX, double thisY, double thisWidth, double thisHeight, double x, double y)
+        {
+            return thisX <= x &&
+                   thisY <= y &&
+                   x < thisX + thisWidth &&
+                   y < thisY + thisHeight;
+        }
     }
 }
