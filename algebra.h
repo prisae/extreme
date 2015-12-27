@@ -7,17 +7,19 @@
 #else
 #include <cblas.h>
 #include <f77blas.h>
+
 #ifdef OPENBLAS_NEEDBUNDERSCORE
 #define zspmv zspmv_
-#define zrot zrot_
 #define zrotg zrotg_
+#define zrot zrot_
 #endif
 #define complex_ptr double*
 #define complex_ptr2 openblas_complex_double*
 
 
-extern void zrot(blasint*,double*, blasint*, double*,blasint*, double*,double*);
 #endif
 #define one_int (blasint) 1
 typedef struct { double re; double im; } complex16;
-
+extern "C"{
+void zrot_ (blasint *, double *, blasint *, double *, blasint *, double *, double *);
+}

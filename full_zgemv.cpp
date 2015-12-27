@@ -17,35 +17,35 @@ namespace Native
 {
 	extern "C"
 	{
-		DllExport void ZgemvAsymTrans(blasint nz, complex16* alpha, complex16* beta, complex16* green, complex16* input, complex16* result)
+		DllExport void ZgemvAsymTrans(int nz, complex16* alpha, complex16* beta, complex16* green, complex16* input, complex16* result)
 		{
 			cblas_zgemv(CblasRowMajor, CblasTrans, nz, nz, (complex_ptr) alpha, (complex_ptr)green,
 				       	nz, (complex_ptr)input, one_int, (complex_ptr) beta, (complex_ptr)result, one_int);
 		}
 
-		DllExport void ZgemvAsymNoTrans(blasint nz, complex16* alpha, complex16* beta, complex16* green, complex16* input, complex16* result)
+		DllExport void ZgemvAsymNoTrans(int nz, complex16* alpha, complex16* beta, complex16* green, complex16* input, complex16* result)
 		{
 			cblas_zgemv(CblasRowMajor, CblasNoTrans, nz, nz, (complex_ptr)alpha,(complex_ptr) green,
 				       	nz, (complex_ptr)input, one_int,(complex_ptr) beta,(complex_ptr) result, one_int);
 		}
 
-		DllExport void ZgemvAtoO(blasint n, blasint m, complex16* alpha, complex16* beta, complex16* green, complex16* input, complex16* result)
+		DllExport void ZgemvAtoO(int n, int m, complex16* alpha, complex16* beta, complex16* green, complex16* input, complex16* result)
 		{
 			cblas_zgemv(CblasRowMajor, CblasTrans, n, m, (complex_ptr)alpha, (complex_ptr)green,
 				       	m, (complex_ptr)input, one_int, (complex_ptr)beta, (complex_ptr)result, one_int);
 		}
 
-		DllExport void ZgemvSym(blasint nz, complex16* alpha, complex16* beta, complex16* green, complex16* input, complex16* result)
+		DllExport void ZgemvSym(int nz, complex16* alpha, complex16* beta, complex16* green, complex16* input, complex16* result)
 		{
 			//const char u = 'U';
 			char u = 'U';
 			blasint one = 1;
-
-			zspmv(&u, &nz, (complex_ptr)alpha, (complex_ptr)green, (complex_ptr)input,
+			blasint n=nz;
+			zspmv(&u, &n, (complex_ptr)alpha, (complex_ptr)green, (complex_ptr)input,
 				       	&one, (complex_ptr)beta, (complex_ptr)result, &one);
 		}
 
-		DllExport void FullZgemv(blasint nz, blasint length,
+		DllExport void FullZgemv(int nz, blasint length,
 			complex16* xx,
 			complex16* xy,
 			complex16* xz,
