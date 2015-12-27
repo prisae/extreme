@@ -61,21 +61,42 @@ namespace Native
 			cblas_zcopy((blasint)n, (complex_ptr)src, one_int,(complex_ptr) dst, one_int);
 		}
 
-		DllExport void AddElementwise(const long n, complex16* m1, complex16* m2, complex16* result)
-		{
-			vzAdd(n, (complex_ptr)m1, (complex_ptr)m2, (complex_ptr)result);
+#ifdef _MKL_H_
+		 DllExport void AddElementwise(const long n, MKL_Complex16* m1, MKL_Complex16* m2, MKL_Complex16* result)
+	        {
+		      vzAdd(n, m1, m2, result);
 		}
 
-		DllExport void SubtractElementwise(const long n, complex16* m1, complex16* m2, complex16* result)
+                DllExport void SubtractElementwise(const long n, MKL_Complex16* m1, MKL_Complex16* m2, MKL_Complex16* result)
 		{
-			vzSub(n, (complex_ptr)m1, (complex_ptr)m2, (complex_ptr)result);
+		       vzSub(n, m1, m2, result);
 		}
 
-		DllExport void MultiplyElementwise(const long n, complex16* m1, complex16* m2, complex16* result)
+		DllExport void MultiplyElementwise(const long n, MKL_Complex16* m1, MKL_Complex16* m2, MKL_Complex16* result)
 		{
-			vzMul(n, (complex_ptr)m1, (complex_ptr)m2, (complex_ptr)result);
+		        vzMul(n, m1, m2, result);
 		}
 
+#else
+
+		DllExport void AddElementwise(const long n, complex<double>* m1, complex<double>* m2, complex<double>* result)
+		{
+			for (long i = 0; i < n; i++)
+				result[i]=m1[i]+m2[i];
+		}
+
+		DllExport void SubtractElementwise(const long n, complex<double>* m1, complex<double>* m2, complex<double>* result)
+		{
+			for (long i = 0; i < n; i++)
+				result[i]=m1[i]-m2[i];
+		}
+
+		DllExport void MultiplyElementwise(const long n, complex<double>* m1, complex<double>* m2, complex<double>* result)
+		{
+			for (long i = 0; i < n; i++)
+				result[i]=m1[i]*m2[i];
+		}
+#endif
 		DllExport void CalculateAlphaX(const long n, complex16 alpha, complex16* result)
 		{
 			cblas_zscal((blasint)n,(complex_ptr) &alpha, (complex_ptr)result, one_int);

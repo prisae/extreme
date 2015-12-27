@@ -14,6 +14,9 @@
 #endif
 #define complex_ptr double*
 #define complex_ptr2 openblas_complex_double*
+
+
+extern void zrot(blasint*,double*, blasint*, double*,blasint*, double*,double*);
 #endif
 #define one_int (blasint) 1
 typedef struct { double re; double im; } complex16;
