@@ -1,7 +1,8 @@
-#include <mkl_service.h>
-#include <mkl_vml.h>
-#include <mkl.h>
+//#include <mkl_service.h>
+//#include <mkl_vml.h>
+//#include <mkl.h>
 
+#include "algebra.h"
 #include <iostream>
 
 #ifdef WINDOWS
@@ -12,52 +13,54 @@
 
 using namespace std;
 
-typedef struct { double re; double im; } complex16;
+//typedef struct { double re; double im; } complex16;
 
 namespace Native
 {
 	extern "C"
 	{
-		DllExport void Zaxpy(const long n, MKL_Complex16 alpha, const void *x, int incX, void *y, int incY)
+		DllExport void Zaxpy(const long n, complex16 alpha, complex16 *x, int incX, complex16 *y, int incY)
 		{
-			cblas_zaxpy(n, &alpha, x, incX, y, incY);
+			cblas_zaxpy((blasint)n,(complex_ptr) &alpha,(complex_ptr) x, (blasint)incX,(complex_ptr) y, (blasint)incY);
 		}
 
-		DllExport void Zcopy(const long n, const void *x, void *y)
+		DllExport void Zcopy(const long n,complex16*x, complex16 *y)
 		{
-			cblas_zcopy(n, x, 1, y, 1);
+			cblas_zcopy((blasint)n, (complex_ptr)x, one_int,(complex_ptr) y, one_int);
 		}
 
-		DllExport void Zrot(const int n, MKL_Complex16 *x, int incX, MKL_Complex16 *y, int incY, double c, MKL_Complex16 s)
+		DllExport void Zrot(const int n, complex16*x, blasint incX, complex16*y, blasint incY, double c, complex16 s)
 		{
-			zrot(&n, x, &incX, y, &incY, &c, &s);
+			zrot((blasint*)&n,(complex_ptr*)x, (blasint*)&incX, (complex_ptr*)y,(blasint*) &incY, &c,(complex_ptr*) &s);
 		}
 
-		DllExport void Zrotg(MKL_Complex16 a, MKL_Complex16 b, double* c, MKL_Complex16* s)
+		DllExport void Zrotg(complex16 a,complex16 b, double* c, complex16* s)
 		{
-			zrotg(&a, &b, c, s);
+			zrotg((complex_ptr)&a,(complex_ptr) &b,  c,(complex_ptr) s);
 		}
 
-		DllExport void SimplifiedZtrsv(const int n, const void *a, const MKL_INT lda, void *x)
+		DllExport void SimplifiedZtrsv(const int n, complex16 *a, blasint lda, complex16 *x)
 		{
-			cblas_ztrsv(CblasColMajor, CblasUpper, CblasNoTrans, CblasNonUnit, n, a, lda, x, 1);
+			cblas_ztrsv(CblasColMajor, CblasUpper, CblasNoTrans, CblasNonUnit, (blasint)n, (complex_ptr) a, lda, (complex_ptr)x,one_int);
 		}
 
-		DllExport void ZgemvNotTrans(int n, int jh, complex16 alpha, void* a, void* input, complex16 beta, void* result)
+		DllExport void ZgemvNotTrans(int n, int jh, complex16 alpha, complex16* a, complex16* input, complex16 beta, complex16* result)
 		{
-			cblas_zgemv(CblasColMajor, CblasNoTrans, n, jh, &alpha, a, n, input, 1, &beta, result, 1);
+			cblas_zgemv(CblasColMajor, CblasNoTrans, (blasint)n, (blasint)jh,(complex_ptr) &alpha,
+					(complex_ptr) a,(blasint) n,(complex_ptr) input, one_int,(complex_ptr) &beta,(complex_ptr) result, one_int);
 		}
 	
 
-		DllExport void ZgemvConjTrans(int m, int n, complex16 alpha, void* a, void* input, complex16 beta, void* result)
+		DllExport void ZgemvConjTrans(blasint m, blasint n, complex16 alpha, complex16* a, complex16* input, complex16 beta, complex16* result)
 		{
-			cblas_zgemv(CblasRowMajor, CblasConjTrans, m, n, &alpha, a, n, input, 1, &beta, result, 1);
+			cblas_zgemv(CblasRowMajor, CblasConjTrans, m, n, (complex_ptr)&alpha,(complex_ptr) a, n, (complex_ptr)input, one_int,(complex_ptr) &beta,(complex_ptr) result, one_int);
 		}
 
 
-		DllExport double Dznrm2(const MKL_INT n, const void *x)
+		DllExport double Dznrm2(blasint n, complex16 *x)
 		{
-			return cblas_dznrm2(n, x, 1);
+			return cblas_dznrm2(n,(complex_ptr) x,one_int );
+
 		}
 	}
 }

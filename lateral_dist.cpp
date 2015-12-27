@@ -1,8 +1,6 @@
-#include <mkl_service.h>
-#include <mkl.h>
-
 #include <iostream>
 
+#include "algebra.h"
 #ifdef WINDOWS
 #define DllExport __declspec(dllexport) 
 #else
@@ -15,18 +13,28 @@ namespace Native
 {
 	extern "C"
 	{
-		DllExport void Transpose(size_t rows, size_t cols, MKL_Complex16* data)
+		DllExport void Transpose(size_t rows, size_t cols, complex16* data)
 		{
-			MKL_Complex16 one = { 1, 0 };
-			
-			mkl_zimatcopy('R', 'T', rows, cols, one, data, cols, rows);
+			complex16 one = { 1, 0 };
+#ifdef _MKL_H_	
+                        mkl_zimatcopy('R', 'T', rows, cols, one, data, cols, rows);
+
+#else
+			cblas_zimatcopy(CblasRowMajor, CblasTrans, (blasint)rows, (blasint)cols, (complex_ptr)&one,(complex_ptr) data,(blasint) cols,(blasint) rows);
+#endif
 		}
 
-		DllExport void TransposeBlock(size_t rows, size_t cols, MKL_Complex16* data, size_t lda, size_t ldb)
+		DllExport void TransposeBlock(size_t rows, size_t cols, complex16* data, size_t lda, size_t ldb)
 		{
-			MKL_Complex16 one = { 1, 0 };
+			complex16 one = { 1, 0 };
 
-			mkl_zimatcopy('R', 'T', rows, cols, one, data, lda, ldb);
+#ifdef _MKL_H_	
+                        mkl_zimatcopy('R', 'T', rows, cols, one, data, lda, ldb);
+
+
+#else
+			cblas_zimatcopy(CblasRowMajor, CblasTrans, (blasint)rows,(blasint) cols,(complex_ptr) &one, (complex_ptr) data, (blasint)lda,(blasint) ldb);
+#endif
 		}
 	}
 }

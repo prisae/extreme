@@ -1,9 +1,12 @@
-#include <mkl_service.h>
-#include <mkl_vml.h>
-#include <mkl.h>
+//#include <mkl_service.h>
+//#include <mkl_vml.h>
+//#include <mkl.h>
 
-#include <iostream>
+//#include <iostream>
 #include <complex>
+
+#include "algebra.h"
+
 
 #ifdef WINDOWS
 #define DllExport __declspec(dllexport) 
@@ -19,9 +22,9 @@ namespace Native
 	extern "C"
 	{
 
-		DllExport void Zscal(const long n, complex<double> alpha, complex<double>* result)
+		DllExport void Zscal(const long n, complex16 alpha, complex16* result)
 		{
-			cblas_zscal(n, &alpha, result, 1);
+			cblas_zscal((blasint)n,(complex_ptr) &alpha, (complex_ptr) result, one_int);
 		}
 
 		DllExport void MultiplyElementwiseAndAddToResult(const long n, complex<double>* m1, complex<double>* m2, complex<double>* result)
@@ -39,7 +42,7 @@ namespace Native
 		}
 
 
-		DllExport void SetAllValuesTo(const long n, MKL_Complex16* m, MKL_Complex16 value)
+		DllExport void SetAllValuesTo(const long n, complex<double>* m, complex<double> value)
 		{
 #pragma simd
 			for (long i = 0; i < n; i++)
@@ -53,39 +56,39 @@ namespace Native
 				m[i] += value;
 		}
 
-		DllExport void Copy(const long n, MKL_Complex16* src, MKL_Complex16* dst)
+		DllExport void Copy(const long n, complex16* src, complex16* dst)
 		{
-			cblas_zcopy(n, src, 1, dst, 1);
+			cblas_zcopy((blasint)n, (complex_ptr)src, one_int,(complex_ptr) dst, one_int);
 		}
 
-		DllExport void AddElementwise(const long n, MKL_Complex16* m1, MKL_Complex16* m2, MKL_Complex16* result)
+		DllExport void AddElementwise(const long n, complex16* m1, complex16* m2, complex16* result)
 		{
 			vzAdd(n, m1, m2, result);
 		}
 
-		DllExport void SubtractElementwise(const long n, MKL_Complex16* m1, MKL_Complex16* m2, MKL_Complex16* result)
+		DllExport void SubtractElementwise(const long n, complex16* m1, complex16* m2, complex16* result)
 		{
 			vzSub(n, m1, m2, result);
 		}
 
-		DllExport void MultiplyElementwise(const long n, MKL_Complex16* m1, MKL_Complex16* m2, MKL_Complex16* result)
+		DllExport void MultiplyElementwise(const long n, complex16* m1, complex16* m2, complex16* result)
 		{
 			vzMul(n, m1, m2, result);
 		}
 
-		DllExport void CalculateAlphaX(const long n, MKL_Complex16 alpha, MKL_Complex16* result)
+		DllExport void CalculateAlphaX(const long n, complex16 alpha, complex16* result)
 		{
-			cblas_zscal(n, &alpha, result, 1);
+			cblas_zscal((blasint)n,(complex_ptr) &alpha, (complex_ptr)result, one_int);
 		}
 
-		DllExport void CalculateDotProductConjugatedLeft(const long n, MKL_Complex16* m1, MKL_Complex16* m2, MKL_Complex16* result)
+		DllExport void CalculateDotProductConjugatedLeft(const long n, complex16* m1, complex16* m2, complex16* result)
 		{
-			cblas_zdotc_sub(n, m1, 1, m2, 1, result);
+			cblas_zdotc_sub((blasint)n,(complex_ptr) m1, one_int, (complex_ptr)m2, one_int, (complex_ptr2)result);
 		}
 
-		DllExport void CalculateDotProductNotConjugated(const long n, MKL_Complex16* m1, MKL_Complex16* m2, MKL_Complex16* result)
+		DllExport void CalculateDotProductNotConjugated(const long n, complex16* m1, complex16* m2, complex16* result)
 		{
-			cblas_zdotu_sub(n, m1, 1, m2, 1, result);
+			cblas_zdotu_sub((blasint)n, (complex_ptr)m1, one_int, (complex_ptr)m2, one_int,(complex_ptr2) result);
 		}
 	}
 }

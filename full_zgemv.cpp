@@ -1,8 +1,7 @@
-#include <mkl_service.h>
-#include <mkl.h>
-
 #include <complex>
-#include <iostream>
+//#include <iostream>
+#include "algebra.h"
+
 
 #ifdef WINDOWS
 #define DllExport __declspec(dllexport) 
@@ -13,63 +12,67 @@
 
 using namespace std;
 
-typedef struct { double re; double im; } complex16;
 
 namespace Native
 {
 	extern "C"
 	{
-		DllExport void ZgemvAsymTrans(int nz, MKL_Complex16* alpha, MKL_Complex16* beta, void* green, void* input, void* result)
+		DllExport void ZgemvAsymTrans(blasint nz, complex16* alpha, complex16* beta, complex16* green, complex16* input, complex16* result)
 		{
-			cblas_zgemv(CblasRowMajor, CblasTrans, nz, nz, alpha, green, nz, input, 1, beta, result, 1);
+			cblas_zgemv(CblasRowMajor, CblasTrans, nz, nz, (complex_ptr) alpha, (complex_ptr)green,
+				       	nz, (complex_ptr)input, one_int, (complex_ptr) beta, (complex_ptr)result, one_int);
 		}
 
-		DllExport void ZgemvAsymNoTrans(int nz, MKL_Complex16* alpha, MKL_Complex16* beta, void* green, void* input, void* result)
+		DllExport void ZgemvAsymNoTrans(blasint nz, complex16* alpha, complex16* beta, complex16* green, complex16* input, complex16* result)
 		{
-			cblas_zgemv(CblasRowMajor, CblasNoTrans, nz, nz, alpha, green, nz, input, 1, beta, result, 1);
+			cblas_zgemv(CblasRowMajor, CblasNoTrans, nz, nz, (complex_ptr)alpha,(complex_ptr) green,
+				       	nz, (complex_ptr)input, one_int,(complex_ptr) beta,(complex_ptr) result, one_int);
 		}
 
-		DllExport void ZgemvAtoO(int n, int m, MKL_Complex16* alpha, MKL_Complex16* beta, void* green, void* input, void* result)
+		DllExport void ZgemvAtoO(blasint n, blasint m, complex16* alpha, complex16* beta, complex16* green, complex16* input, complex16* result)
 		{
-			cblas_zgemv(CblasRowMajor, CblasTrans, n, m, alpha, green, m, input, 1, beta, result, 1);
+			cblas_zgemv(CblasRowMajor, CblasTrans, n, m, (complex_ptr)alpha, (complex_ptr)green,
+				       	m, (complex_ptr)input, one_int, (complex_ptr)beta, (complex_ptr)result, one_int);
 		}
 
-		DllExport void ZgemvSym(int nz, MKL_Complex16* alpha, MKL_Complex16* beta, MKL_Complex16* green, MKL_Complex16* input, MKL_Complex16* result)
+		DllExport void ZgemvSym(blasint nz, complex16* alpha, complex16* beta, complex16* green, complex16* input, complex16* result)
 		{
-			const char u = 'U';
-			int one = 1;
+			//const char u = 'U';
+			char u = 'U';
+			blasint one = 1;
 
-			zspmv(&u, &nz, alpha, green, input, &one, beta, result, &one);
+			zspmv(&u, &nz, (complex_ptr)alpha, (complex_ptr)green, (complex_ptr)input,
+				       	&one, (complex_ptr)beta, (complex_ptr)result, &one);
 		}
 
-		DllExport void FullZgemv(int nz, int length,
-			MKL_Complex16* xx,
-			MKL_Complex16* xy,
-			MKL_Complex16* xz,
-			MKL_Complex16* yy,
-			MKL_Complex16* yz,
-			MKL_Complex16* zz,
-			MKL_Complex16* src,
-			MKL_Complex16* dst)
+		DllExport void FullZgemv(blasint nz, blasint length,
+			complex16* xx,
+			complex16* xy,
+			complex16* xz,
+			complex16* yy,
+			complex16* yz,
+			complex16* zz,
+			complex16* src,
+			complex16* dst)
 		{
-			int asymNz = nz * nz;
-			int symmNz = nz + nz * (nz - 1) / 2;
+			blasint asymNz = nz * nz;
+			blasint symmNz = nz + nz * (nz - 1) / 2;
 
-			MKL_Complex16 one = { 1, 0 };
-			MKL_Complex16 minusOne = { -1, 0 };
-			MKL_Complex16 zero = { 0, 0 };
+			complex16 one = { 1, 0 };
+			complex16 minusOne = { -1, 0 };
+			complex16 zero = { 0, 0 };
 
-			int dataShift;
-			int symmShift;
-			int asymShift;
+			blasint dataShift;
+			blasint symmShift;
+			blasint asymShift;
 
-			MKL_Complex16* dstX;
-			MKL_Complex16* dstY;
-			MKL_Complex16* dstZ;
+			complex16* dstX;
+			complex16* dstY;
+			complex16* dstZ;
 
-			MKL_Complex16* srcX;
-			MKL_Complex16* srcY;
-			MKL_Complex16* srcZ;
+			complex16* srcX;
+			complex16* srcY;
+			complex16* srcZ;
 
 			//#pragma omp parallel  for private (dataShift, symmShift, asymShift, dstX, dstY, dstZ, srcX, srcY, srcZ)
 			//#pragma parallel always
@@ -100,5 +103,7 @@ namespace Native
 				ZgemvSym(nz, &one, &one, zz + symmShift, srcZ, dstZ);
 			}
 		}
+
 	}
+	
 }

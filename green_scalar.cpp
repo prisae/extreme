@@ -2,7 +2,8 @@
 #include <vector>
 //#include <mkl_service.h>
 //#include <mkl_vml.h>
-#include <mkl.h>
+//include <mkl.h>
+#include "algebra.h"
 #include <string.h>
 
 #include <iostream>
@@ -15,7 +16,6 @@
 
 using namespace std;
 
-typedef struct { double re; double im; } complex16;
 
 
 namespace Native
@@ -75,12 +75,12 @@ namespace Native
 		void my_zaxpy(int n, double alpha, complex16* x, complex16* y)
 		{
 			complex16 cAlpha = { alpha, 0 };
-			cblas_zaxpy(n, &cAlpha, x, 1, y, 1);
+			cblas_zaxpy((blasint)n, (complex_ptr) &cAlpha, (complex_ptr) x, one_int,(complex_ptr) y, one_int);
 		}
 
 		void my_zcopy(int n, complex16* x, complex16* y)
 		{
-			cblas_zcopy(n, x, 1, y, 1);
+			cblas_zcopy((blasint)n, (complex_ptr)x, one_int, (complex_ptr)y, one_int);
 		}
 
 
