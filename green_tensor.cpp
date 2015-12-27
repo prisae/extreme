@@ -31,7 +31,7 @@ namespace Native
 
 		DllExport void Zrot(const int n, complex16*x, blasint incX, complex16*y, blasint incY, double c, complex16 s)
 		{
-			zrot((blasint*)&n,(complex_ptr*)x, (blasint*)&incX, (complex_ptr*)y,(blasint*) &incY, &c,(complex_ptr*) &s);
+			zrot((blasint*)&n,(complex_ptr)x, (blasint*)&incX, (complex_ptr)y,(blasint*) &incY, &c,(complex_ptr) &s);
 		}
 
 		DllExport void Zrotg(complex16 a,complex16 b, double* c, complex16* s)

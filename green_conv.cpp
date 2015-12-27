@@ -63,17 +63,17 @@ namespace Native
 
 		DllExport void AddElementwise(const long n, complex16* m1, complex16* m2, complex16* result)
 		{
-			vzAdd(n, m1, m2, result);
+			vzAdd(n, (complex_ptr)m1, (complex_ptr)m2, (complex_ptr)result);
 		}
 
 		DllExport void SubtractElementwise(const long n, complex16* m1, complex16* m2, complex16* result)
 		{
-			vzSub(n, m1, m2, result);
+			vzSub(n, (complex_ptr)m1, (complex_ptr)m2, (complex_ptr)result);
 		}
 
 		DllExport void MultiplyElementwise(const long n, complex16* m1, complex16* m2, complex16* result)
 		{
-			vzMul(n, m1, m2, result);
+			vzMul(n, (complex_ptr)m1, (complex_ptr)m2, (complex_ptr)result);
 		}
 
 		DllExport void CalculateAlphaX(const long n, complex16 alpha, complex16* result)
