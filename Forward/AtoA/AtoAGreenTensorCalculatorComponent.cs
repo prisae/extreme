@@ -182,7 +182,6 @@ namespace Extreme.Cartesian.Forward
 
             int layerSize = gt.Nx * gt.Ny;
 
-	    Console.WriteLine(comp);
             for (int i = 0; i < size; i += nz3)
             {
                 int length = i + nz3 <= size ? nz3 : size - i;
@@ -191,8 +190,6 @@ namespace Extreme.Cartesian.Forward
                 Pool.ExecuteForward(Pool.Plan3Nz);
                 CopyFromBuffer(i, length, layerSize, size, ptr);
             }
-	    Console.WriteLine(ptr[0]);
-	    Console.WriteLine(ptr[80*80]);
         }
 
         private void CopyToBuffer(int start, int length, int layerSize, int nzSize, Complex* ptr)
