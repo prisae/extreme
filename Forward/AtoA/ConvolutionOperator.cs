@@ -182,8 +182,8 @@ namespace Extreme.Cartesian.Forward
             {
                 for (int j = 0; j < ny; j++)
                 {
-                    long shiftDst = (i * ny + j) * 3 * nz;
-                    long shiftSrc = (i * ny * 2 + j) * 3 * nz;
+                    long shiftDst = (i * ny + j) * 3L * nz;
+                    long shiftSrc = (i * ny * 2 + j) * 3L * nz;
 
                     UNM.MultiplyElementwise(nz, _backwardFactors, output + shiftSrc, _output.Ptr + shiftDst);
                     UNM.MultiplyElementwise(nz, _backwardFactors, output + shiftSrc + nz,
@@ -201,8 +201,8 @@ namespace Extreme.Cartesian.Forward
 
             Iterate(length, i => //for (int i = 0; i < length; i++)
             {
-                int inz = i * nz;
-                int inz3 = i * nz * 3;
+                long inz = i * nz;
+                long inz3 = i * nz * 3;
 
                 UNM.MultiplyElementwise(nz, _rFunction + inz, _input.Ptr + inz3, _rx.Ptr + inz3);
                 UNM.MultiplyElementwise(nz, _rFunction + inz, _input.Ptr + inz3 + nz, _rx.Ptr + inz3 + nz);
@@ -224,8 +224,8 @@ namespace Extreme.Cartesian.Forward
             {
                 for (int j = 0; j < ny; j++)
                 {
-                    long shiftSrc = (i * ny + j) * 3 * nz;
-                    long shiftDst = (i * ny * 2 + j) * 3 * nz;
+                    long shiftSrc = (i * ny + j) * 3L * nz;
+                    long shiftDst = (i * ny * 2 + j) * 3L * nz;
 
                     UNM.MultiplyElementwise(nz, _forwardFactors, _rx.Ptr + shiftSrc, inputPtr + shiftDst);
                     UNM.MultiplyElementwise(nz, _forwardFactors, _rx.Ptr + shiftSrc + nz, inputPtr + shiftDst + nz);
@@ -241,8 +241,8 @@ namespace Extreme.Cartesian.Forward
             var result = Pool.Plan3Nz.Buffer2Ptr;
 
             int nz = Model.Nz;
-            int asymNz = nz * nz;
-            int symmNz = nz + nz * (nz - 1) / 2;
+            long asymNz = nz * nz;
+            long symmNz = nz + nz * (nz - 1) / 2;
             int length = Pool.Plan3Nz.BufferLength / (3 * nz);
 
             var xx = _greenTensor["xx"].Ptr;
@@ -259,9 +259,9 @@ namespace Extreme.Cartesian.Forward
             {
                 //for (int i = 0; i < length; i++)
                 //  {
-                int dataShift = i * 3 * nz;
-                int symmShift = i * symmNz;
-                int asymShift = i * asymNz;
+                long dataShift = i * 3 * nz;
+                long symmShift = i * symmNz;
+                long asymShift = i * asymNz;
 
                 var dstX = result + dataShift;
                 var dstY = result + dataShift + nz;

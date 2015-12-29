@@ -182,6 +182,7 @@ namespace Extreme.Cartesian.Forward
 
             int layerSize = gt.Nx * gt.Ny;
 
+	    Console.WriteLine(comp);
             for (int i = 0; i < size; i += nz3)
             {
                 int length = i + nz3 <= size ? nz3 : size - i;
@@ -190,6 +191,8 @@ namespace Extreme.Cartesian.Forward
                 Pool.ExecuteForward(Pool.Plan3Nz);
                 CopyFromBuffer(i, length, layerSize, size, ptr);
             }
+	    Console.WriteLine(ptr[0]);
+	    Console.WriteLine(ptr[80*80]);
         }
 
         private void CopyToBuffer(int start, int length, int layerSize, int nzSize, Complex* ptr)
@@ -199,11 +202,12 @@ namespace Extreme.Cartesian.Forward
 
             for (int i = 0; i < layerSize; i++)
             {
-                int srcShift = nzSize * i + start;
-                int dstShift = i * nz3;
+                long srcShift = nzSize * i + start;
+                long dstShift = i * nz3;
 
                 for (int k = 0; k < length; k++)
                     dst[dstShift + k] = ptr[srcShift + k];
+
             }
         }
 
@@ -214,10 +218,10 @@ namespace Extreme.Cartesian.Forward
 
             for (int i = 0; i < layerSize; i++)
             {
-                int dstShift = nzSize * i + start;
-                int srcShift = i * nz3;
-
-                for (int k = 0; k < length; k++)
+                long dstShift = nzSize * i + start;
+                long srcShift = i * nz3;
+		
+                for (int k = 0; k <  length; k++)
                     ptr[dstShift + k] = src[srcShift + k];
             }
         }
@@ -226,8 +230,7 @@ namespace Extreme.Cartesian.Forward
         {
             var ptr = tensor["xz"].Ptr;
             int length = tensor.Ny * tensor.Nx * Model.Nz * Model.Nz;
-
-            for (int i = 0; i < length; i++)
+            for (long i = 0; i < length; i++)
                 ptr[i] = -ptr[i];
         }
 
@@ -237,7 +240,7 @@ namespace Extreme.Cartesian.Forward
             var nz = Model.Nz;
             int length = tensor.Ny * tensor.Nx * (nz + nz * (nz - 1) / 2);
 
-            for (int i = 0; i < length; i++)
+            for (long i = 0; i < length; i++)
                 ptr[i] = -ptr[i];
         }
         #endregion
