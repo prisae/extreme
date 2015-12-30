@@ -19,9 +19,10 @@ namespace Native
 {
 	extern "C"
 	{
-		DllExport void Zaxpy(const long n, complex16 alpha, complex16 *x, int incX, complex16 *y, int incY)
-		{
-			cblas_zaxpy((blasint)n,(complex_ptr) &alpha,(complex_ptr) x, (blasint)incX,(complex_ptr) y, (blasint)incY);
+		DllExport void Zaxpy(const long n, complex16 alpha, complex16 *x, long incX, complex16 *y, long incY)
+		{	
+			complex16 alpha1=alpha;
+			cblas_zaxpy((blasint)n,(complex_ptr) &alpha1,(complex_ptr) x, (blasint)incX,(complex_ptr) y, (blasint)incY);
 		}
 
 		DllExport void Zcopy(const long n,complex16*x, complex16 *y)
