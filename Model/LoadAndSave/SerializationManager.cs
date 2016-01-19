@@ -92,7 +92,11 @@ namespace Extreme.Cartesian.Model
                     var nxLength = mpi.CalcLocalHalfNxLength(rank, model.LateralDimensions.Nx);
                     var sigma = new double[nxLength, model.Anomaly.LocalSize.Ny, 1];
                     var sendLength = nxLength * model.Anomaly.LocalSize.Ny;
-                    AnomalyLoaderUtils.ReadAnomalyDataFromPlainText(lr, model.Anomaly.Sigma, 0);
+
+                    if (nxLength == 0)
+                        continue;
+
+                    AnomalyLoaderUtils.ReadAnomalyDataFromPlainText(lr, sigma, 0);
 
                     if (rank == 0)
                     {
