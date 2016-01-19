@@ -16,11 +16,13 @@
 	<T xShift="20000" yShift="20000" z="0"></T>
     </Tablets>
   </Observations>
-  <ForwardSettings>
-    <Residual>1E-10</Residual>
-    <InnerBufferLength>10</InnerBufferLength>
-    <OuterBufferLength>15</OuterBufferLength>
-    <MaxRepeatsNumber>100</MaxRepeatsNumber>
-    <NumberOfHankels>5</NumberOfHankels>
-  </ForwardSettings>
+  <Settings>
+	  <Forward>
+	    <Residual>1E-10</Residual>
+	    <InnerBufferLength>10</InnerBufferLength>
+	    <OuterBufferLength>15</OuterBufferLength>
+	    <MaxRepeatsNumber>100</MaxRepeatsNumber>
+	    <NumberOfHankels>5</NumberOfHankels>
+	  </Forward>
+  </Settings>
 </ExtremeProject>

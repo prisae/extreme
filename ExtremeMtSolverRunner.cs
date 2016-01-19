@@ -77,8 +77,14 @@ namespace ExtremeMt
         private void LogSettingsInfo()
         {
             ForwardLoggerHelper.WriteStatus(_logger, $"Number of threads: {MultiThreadUtils.MaxDegreeOfParallelism}");
-            ForwardLoggerHelper.WriteStatus(_logger, $"Number of hankels: {_project.ForwardSettings.NumberOfHankels}");
-            ForwardLoggerHelper.WriteStatus(_logger, $"Target residual  : {_project.ForwardSettings.Residual}");
+
+            var fs = _project.ForwardSettings;
+
+            ForwardLoggerHelper.WriteStatus(_logger, $"Number of hankels: {fs.NumberOfHankels}");
+            ForwardLoggerHelper.WriteStatus(_logger, $"Target residual  : {fs.Residual}");
+            ForwardLoggerHelper.WriteStatus(_logger, $"InnerBufferLength: {fs.InnerBufferLength}");
+            ForwardLoggerHelper.WriteStatus(_logger, $"OuterBufferLength: {fs.OuterBufferLength}");
+            ForwardLoggerHelper.WriteStatus(_logger, $"MaxRepeatsNumber: {fs.MaxRepeatsNumber}");
         }
 
         private void Export(ResultsContainer rc, double frequency)

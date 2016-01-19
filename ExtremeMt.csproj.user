@@ -3,7 +3,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files\Microsoft MPI\Bin\mpiexec.exe</StartProgram>
-    <StartArguments>-n 4 ExtremeMt.exe Z:\ETH\Inversion\DEC_11_2015_2\forward.xproj</StartArguments>
+    <StartArguments>-n 1 ExtremeMt.exe Z:\ETH\Inversion\JAN_19_2016\forward.xproj</StartArguments>
     <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
