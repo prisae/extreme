@@ -96,19 +96,20 @@
       <OptimizeForWindowsApplication>false</OptimizeForWindowsApplication>
       <UseProcessorExtensions>HOST</UseProcessorExtensions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PreprocessorDefinitions>WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINDOWS;MKL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BrowseInformation>false</BrowseInformation>
       <AdditionalOptions> -I"%MKLROOT%"/include %(AdditionalOptions)</AdditionalOptions>
       <VectorizerDiagnosticLevel>Default</VectorizerDiagnosticLevel>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <Parallelization>false</Parallelization>
-      <C99Support>false</C99Support>
-      <Cpp0xSupport>true</Cpp0xSupport>
+      <C99Support>true</C99Support>
+      <Cpp0xSupport>false</Cpp0xSupport>
       <DisablePrecompiledHeaderMessages>false</DisablePrecompiledHeaderMessages>
       <ExceptionHandling>false</ExceptionHandling>
       <OpenMP>None</OpenMP>
       <OptimizationDiagnosticLevel>Disable</OptimizationDiagnosticLevel>
       <LoopUnrolling>0</LoopUnrolling>
+      <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -127,10 +128,13 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="full_zgemv.cpp" />
-    <ClCompile Include="green_scalar.cpp" />
-    <ClCompile Include="green_tensor.cpp" />
-    <ClCompile Include="green_conv.cpp" />
+    <ClCompile Include="full_zgemv.c" />
+    <ClCompile Include="green_scalar.c" />
+    <ClCompile Include="green_tensor.c" />
+    <ClCompile Include="green_conv.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="algebra.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

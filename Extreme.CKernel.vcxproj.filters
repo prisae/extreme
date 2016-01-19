@@ -15,17 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="green_tensor.cpp">
+    <ClCompile Include="full_zgemv.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="green_scalar.cpp">
+    <ClCompile Include="green_conv.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="green_conv.cpp">
+    <ClCompile Include="green_scalar.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="full_zgemv.cpp">
+    <ClCompile Include="green_tensor.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="algebra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
