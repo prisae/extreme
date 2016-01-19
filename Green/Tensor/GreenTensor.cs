@@ -79,6 +79,7 @@ namespace Extreme.Cartesian.Green.Tensor
 
             var ptr = memoryProvider.AllocateComplex(fullSize);
             UNM.ClearBuffer(ptr, fullSize);
+	    
 
             var dict = new Dictionary<string, Component>();
 

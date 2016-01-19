@@ -30,7 +30,7 @@ namespace Extreme.Cartesian.Forward
         public static void Zaxpy(long n, Complex alpha, Complex* x, Complex* y) => Zaxpy(n, alpha, x, 1, y, 1);
         public static void Zaxpy(long n, Complex alpha, Complex* x, Complex* y, int incY) => Zaxpy(n, alpha, x, 1, y, incY);
         [DllImport(LibName, EntryPoint = "Zaxpy")]
-        public static extern void Zaxpy(long n, Complex alpha, Complex* x, int incX, Complex* y, int intY);
+        public static extern void Zaxpy(long n, Complex alpha, Complex* x, long incX, Complex* y, long intY);
 
 
         [DllImport(LibName, EntryPoint = "Zcopy")]

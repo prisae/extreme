@@ -462,7 +462,7 @@ namespace Extreme.Cartesian.Green.Tensor.Impl
             j = TransformJ(j);
 
             int lineLength = _greenTensor.Ny;
-            int shift = (i * lineLength + j) * _layoutShiftFactor;
+            long shift = (i * lineLength + j) * _layoutShiftFactor;
 
 
             {
@@ -489,7 +489,7 @@ namespace Extreme.Cartesian.Green.Tensor.Impl
             }
         }
 
-        private void FillGreen(Complex[] buff, GreenTensor.Component ca, int sign, int shift, int step)
+        private void FillGreen(Complex[] buff, GreenTensor.Component ca, int sign, long shift, int step)
         {
             fixed (Complex* q = &buff[0])
                 UNM.Zaxpy(buff.Length, sign, q, ca.Ptr + shift, step);
