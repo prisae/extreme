@@ -1,6 +1,7 @@
 #include <complex.h> 
 #include "algebra.h"
 #include <string.h>
+#include <stdlib.h>
 
 #ifdef WINDOWS
 #define DLLEXPORT __declspec(dllexport)
