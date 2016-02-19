@@ -119,18 +119,21 @@ namespace Extreme.Cartesian.Model
             var anomaly = model.Anomaly;
             var nxLength = mpi.CalcLocalHalfNxLength(model.LateralDimensions.Nx);
             var recvLength = nxLength * anomaly.LocalSize.Ny;
-
+			var sigma = new double[nxLength, model.Anomaly.LocalSize.Ny, 1];
             UpdateAnomalyLocalSize(mpi, anomaly);
 
             if (nxLength != 0)
-                for (int k = 0; k < anomaly.Layers.Count; k++)
-                {
-                    fixed (double* data = &anomaly.Sigma[0, 0, k])
-                    {
-                        var actualSourse = 0;
-                        mpi.Recv(data, recvLength, Mpi.Double, 0, 0, Mpi.CommWorld, out actualSourse);
+				fixed(double* data = &sigma[0, 0, 0]){
+                	for (int k = 0; k < anomaly.Layers.Count; k++)
+                	{
+                        var actualSource = 0;
+                        mpi.Recv(data, recvLength, Mpi.Double, 0, 0, Mpi.CommWorld, out actualSource);
+						for (int i = 0; i < nxLength; i++)
+							for (int j = 0; j < model.Anomaly.LocalSize.Ny; j++)
+								model.Anomaly.Sigma[i, j, k] = sigma[i, j, 0];
                     }
                 }
+
 
             return model;
         }
