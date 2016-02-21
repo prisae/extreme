@@ -120,6 +120,9 @@ namespace Extreme.Cartesian.Forward
 
         private static Tuple<int, int> CalcHalfLocal(this Mpi mpi, int rank, int nx)
         {
+            if (mpi.Size == 1)
+                return new Tuple<int, int>(0, nx);
+
             var halfNx = nx;
             var halfSize = (mpi.Size / 2);
 
