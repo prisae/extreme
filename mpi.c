@@ -67,7 +67,12 @@ DLLEXPORT int GatherV(void* sendbuf, int size, void* rbuf, int *recvcounts, int 
 
 DLLEXPORT int AllReduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Comm comm)
 {
-	return MPI_Allreduce(sendbuf, recvbuf, count, MPI_DOUBLE_COMPLEX, MPI_SUM, comm);
+	return MPI_Allreduce(sendbuf, recvbuf, count, datatype, MPI_SUM, comm);
+}
+
+DLLEXPORT int Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Comm comm)
+{
+	return MPI_Reduce(sendbuf, recvbuf, count, datatype, MPI_SUM, 0, comm);
 }
 
 DLLEXPORT int GetProcessorName(char *name, int *resultlen)
