@@ -85,7 +85,7 @@ namespace Extreme.Cartesian.Magnetotellurics
         public ResultsContainer SolveWithoutGather(OmegaModel model, GreenTensor aToA = null)
         {
             SolvePrivate(model, aToA);
-
+            Console.WriteLine($"{Mpi.Rank}   solve");
             return GatherSolutionLocally();
         }
 
@@ -163,16 +163,17 @@ namespace Extreme.Cartesian.Magnetotellurics
         private ResultsContainer GatherSolutionLocally()
         {
             var rc = new ResultsContainer(Model.LateralDimensions);
-
+          
             foreach (var observationLevel in _observationLevels)
             {
                 var all = GatherAllFieldsAtLevelLocally(observationLevel, _eFields, _hFields);
                 rc.Add(all);
+                
             }
 
             _eFields.Clear();
             _hFields.Clear();
-
+            Console.WriteLine($"{Mpi.Rank}   rc clear");
             return rc;
         }
 
