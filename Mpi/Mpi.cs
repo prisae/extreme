@@ -82,6 +82,18 @@ namespace Extreme.Parallel
             return result;
         }
 
+        public double AllReduce(IntPtr comm, double value)
+        {
+            double result;
+            UnsafeNativeMethods.AllReduce(&value, &result, 1, Double, comm);
+            return result;
+        }
+
+        public void Reduce(IntPtr comm, double* value, double* result, int length)
+        {
+            UnsafeNativeMethods.Reduce(value, result, length, Double, comm);
+        }
+
         public void Barrier(IntPtr comm)
             => WithErrorHandling(UnsafeNativeMethods.Barrier(comm));
 
@@ -114,6 +126,12 @@ namespace Extreme.Parallel
             fixed (Complex* ptr = &values[0])
                 Bcast(ptr, values.Length, Complex, root, comm);
         }
+
+        public void BroadCast(IntPtr comm, int root, double* values, int length)
+        {
+            Bcast(values, length, Double, root, comm);
+        }
+
 
         public void BroadCast(IntPtr comm, int root, Complex* values, int length)
         {

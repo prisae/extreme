@@ -29,6 +29,9 @@ namespace Extreme.Parallel
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "AllReduce")]
         public static extern unsafe int AllReduce(void* sendbuf, void* recvbuf, int count, IntPtr datatype, IntPtr comm);
 
+        [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Reduce")]
+        public static extern unsafe int Reduce(void* sendbuf, void* recvbuf, int count, IntPtr datatype, IntPtr comm);
+
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "CommCreate")]
         public static extern unsafe int CommCreate(IntPtr comm, IntPtr group, IntPtr* newcomm);
 
