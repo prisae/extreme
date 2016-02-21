@@ -7,7 +7,7 @@ namespace Extreme.Cartesian.Magnetotellurics
 {
     public static class AllFieldsUtils
     {
-        public unsafe static AllFieldsAtSite GetSite(this AllFieldsAtLevel level, LateralDimensions lateral, int i, int j)
+        public static unsafe AllFieldsAtSite GetSite(this AllFieldsAtLevel level, LateralDimensions lateral, int i, int j)
         {
             int ny = lateral.Ny;
 

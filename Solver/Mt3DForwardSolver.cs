@@ -77,6 +77,20 @@ namespace Extreme.Cartesian.Magnetotellurics
 
         public ResultsContainer Solve(OmegaModel model, GreenTensor aToA = null)
         {
+            SolvePrivate(model, aToA);
+
+            return GatherSolution();
+        }
+
+        public ResultsContainer SolveWithoutGather(OmegaModel model, GreenTensor aToA = null)
+        {
+            SolvePrivate(model, aToA);
+
+            return GatherSolutionLocally();
+        }
+
+        private void SolvePrivate(OmegaModel model, GreenTensor aToA)
+        {
             Logger.WriteStatus("Starting Cartesian MT Forward solver...");
 
             using (Profiler?.StartAuto(ProfilerEvent.ForwardSolving))
@@ -91,8 +105,6 @@ namespace Extreme.Cartesian.Magnetotellurics
                 SolverPolarizationX();
                 SolverPolarizationY();
             }
-
-            return GatherSolution();
         }
 
 
@@ -148,6 +160,23 @@ namespace Extreme.Cartesian.Magnetotellurics
             return rc;
         }
 
+        private ResultsContainer GatherSolutionLocally()
+        {
+            var rc = new ResultsContainer(Model.LateralDimensions);
+
+            foreach (var observationLevel in _observationLevels)
+            {
+                var all = GatherAllFieldsAtLevelLocally(observationLevel, _eFields, _hFields);
+                rc.Add(all);
+            }
+
+            _eFields.Clear();
+            _hFields.Clear();
+
+            return rc;
+        }
+
+
         private void ClearLocalCalculatedFields()
         {
             if (IsParallel)
@@ -189,6 +218,28 @@ namespace Extreme.Cartesian.Magnetotellurics
                 NormalH2 = DistibutedUtils.GatherFromAllProcesses(this, h2.NormalField),
             };
         }
+
+        private AllFieldsAtLevel GatherAllFieldsAtLevelLocally(ObservationLevel level, List<MtFieldsAtLevelCalculatedEventArgs> eFields, List<MtFieldsAtLevelCalculatedEventArgs> hFields)
+        {
+            var e1 = eFields.First(e => e.Level == level && e.Polarization == Polarization.X);
+            var e2 = eFields.First(e => e.Level == level && e.Polarization == Polarization.Y);
+            var h1 = hFields.First(h => h.Level == level && h.Polarization == Polarization.X);
+            var h2 = hFields.First(h => h.Level == level && h.Polarization == Polarization.Y);
+
+            return new AllFieldsAtLevel(level)
+            {
+                AnomalyE1 = e1.AnomalyField,
+                NormalE1 = e1.NormalField,
+                AnomalyE2 = e2.AnomalyField,
+                NormalE2 = e2.NormalField,
+
+                AnomalyH1 = h1.AnomalyField,
+                NormalH1 = h1.NormalField,
+                AnomalyH2 = h2.AnomalyField,
+                NormalH2 = h2.NormalField,
+            };
+        }
+
 
         #region Source
 
