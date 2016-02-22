@@ -74,8 +74,7 @@ namespace Extreme.Cartesian.Forward
 
 					
                 CalculateJScattered(field, jScattered);
-				Console.WriteLine ("sffff");
-                return jScattered;
+				return jScattered;
             }
         }
 
