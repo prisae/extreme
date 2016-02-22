@@ -31,6 +31,8 @@ namespace Extreme.Cartesian.Forward
             using (Profiler?.StartAuto(ProfilerEvent.ForwardSolvingOneSource))
             {
                 var field = CalculateFieldFromSource();
+
+
                 var jScattered = CalculateJScattered(field);
 
                 var chi0 = CalculateChi0From(jScattered);
@@ -69,8 +71,10 @@ namespace Extreme.Cartesian.Forward
                 Logger.WriteStatus("Calculate J scattered");
 
                 var jScattered = GetNewAnomalyCurrentAndCacheIt();
-                CalculateJScattered(field, jScattered);
 
+					
+                CalculateJScattered(field, jScattered);
+				Console.WriteLine ("sffff");
                 return jScattered;
             }
         }

@@ -97,8 +97,7 @@ namespace Extreme.Cartesian.Forward
         protected void CalculateGreenTensor()
         {
             Logger.WriteStatus("Starting Green Tensor AtoA");
-
-            _greenTensorAtoA?.Dispose();
+			_greenTensorAtoA?.Dispose();
 
             var gt = new AtoAGreenTensorCalculatorComponent(this)
                 .CalculateGreenTensor();
