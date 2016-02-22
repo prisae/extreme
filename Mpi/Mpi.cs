@@ -89,6 +89,14 @@ namespace Extreme.Parallel
             return result;
         }
 
+		public int AllReduce(IntPtr comm, int value)
+		{
+			int result;
+			UnsafeNativeMethods.AllReduce(&value, &result, 1, Int, comm);
+			return result;
+		}
+
+
         public void Reduce(IntPtr comm, double* value, double* result, int length)
         {
             UnsafeNativeMethods.Reduce(value, result, length, Double, comm);
