@@ -85,7 +85,6 @@ namespace Extreme.Cartesian.Magnetotellurics
         public ResultsContainer SolveWithoutGather(OmegaModel model, GreenTensor aToA = null)
         {
             SolvePrivate(model, aToA);
-            Console.WriteLine($"{Mpi.Rank}   solve");
             return GatherSolutionLocally();
         }
 
@@ -97,9 +96,9 @@ namespace Extreme.Cartesian.Magnetotellurics
             {
                 SetModel(model);
 
-                if (aToA == null)
-                    CalculateGreenTensor();
-                else
+				if (aToA == null) 
+					CalculateGreenTensor ();
+				else
                     SetNewGreenTensor(aToA);
 
                 SolverPolarizationX();
@@ -173,7 +172,7 @@ namespace Extreme.Cartesian.Magnetotellurics
 
             _eFields.Clear();
             _hFields.Clear();
-            Console.WriteLine($"{Mpi.Rank}   rc clear");
+            
             return rc;
         }
 
