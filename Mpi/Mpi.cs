@@ -102,6 +102,12 @@ namespace Extreme.Parallel
             UnsafeNativeMethods.Reduce(value, result, length, Double, comm);
         }
 
+		public void LogicalReduce(IntPtr comm, double* value, double* result, int length)
+		{
+			UnsafeNativeMethods.LogicalReduce(value, result, length, comm);
+		}
+
+
         public void Barrier(IntPtr comm)
             => WithErrorHandling(UnsafeNativeMethods.Barrier(comm));
 
