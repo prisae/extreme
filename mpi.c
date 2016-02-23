@@ -75,6 +75,32 @@ DLLEXPORT int Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
 	return MPI_Reduce(sendbuf, recvbuf, count, datatype, MPI_SUM, 0, comm);
 }
 
+//-----------------------------------
+void PositiveDoubleLogicalOr( double *in, double *inout, int *len, MPI_Datatype *dptr )
+    {
+        int i;
+        double c;
+
+    	for (i=0; i< *len; i++) {
+    		c=in[i] < 0 ? inout[i] : in[i];
+            inout[i] = c;
+        }
+    }
+
+//-------------------------------
+DLLEXPORT int LogicalReduce(void *sendbuf, void *recvbuf, int count, MPI_Comm comm)
+{
+	MPI_Op logical_reduce;
+	int error;
+	int commutative=1;
+	MPI_Op_create( PositiveDoubleLogicalOr, commutative, &logical_reduce );
+	
+	error=MPI_Reduce(sendbuf, recvbuf, count, MPI_DOUBLE, logical_reduce, 0, comm);
+	MPI_Op_free(&logical_reduce);
+	return error; 
+}
+
+
 DLLEXPORT int GetProcessorName(char *name, int *resultlen)
 {
 	return MPI_Get_processor_name(name, resultlen);
@@ -142,3 +168,5 @@ DLLEXPORT void Finalize()
 {
 	MPI_Finalize();
 }
+
+    
