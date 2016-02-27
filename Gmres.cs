@@ -100,7 +100,10 @@ namespace Extreme.Fgmres
 
             ApplyPreconditionerLeft(_r0, _w);
             var beta = CalculateVectorNorm(_w);
-            CheckForExactSolution(beta);
+			if (CheckForExactSolution(beta)){
+				UnsafeNativeMethods.Zcopy(_nloc, initialGuess.Ptr, result.Ptr);
+				return ResultInfo.Converged(0, 0, 1);
+			}
 
             double bea = -1;
             double be = -1;
@@ -343,10 +346,12 @@ namespace Extreme.Fgmres
             _givensRotSin[jH] = s;
         }
 
-        private void CheckForExactSolution(double beta)
+		private bool CheckForExactSolution(double beta)
         {
-            if (beta == 0)
-                throw new InvalidOperationException("Why initial guess is exact solution?");
+			bool betazero = beta == 0;
+			if (betazero)
+				Logger.WriteWarning("Why initial guess is exact solution?");
+			return betazero;
         }
 
         private double CalculateVectorNorm(NativeVector vector)
