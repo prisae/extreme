@@ -24,6 +24,20 @@ namespace Extreme.Cartesian.Forward
 
         public AtoAGreenTensorCalculatorComponent(ForwardSolver solver) : base(solver)
         {
+			if (Solver.Engine == ForwardSolverEngine.Giem2g) {
+				if (!Solver.IsParallel) {
+					throw new NotImplementedException ("GIEM2G works only in parallel mode!");
+				}
+				_plan = null;
+				_scalarCalc = null;
+				_tensorCalc = null;
+				_mirroringX = false;
+				_realCalcNxStart = -1;
+				_totalNxLength = -1;
+				_calcNxLength = -1;
+				return;
+			}
+
             _plan = new ScalarPlansCreater(Model.LateralDimensions, HankelCoefficients.LoadN40(), Solver.Settings.NumberOfHankels)
                         .CreateForAnomalyToAnomaly();
 
@@ -55,17 +69,28 @@ namespace Extreme.Cartesian.Forward
         {
             using (Profiler?.StartAuto(ProfilerEvent.GreenAtoATotal))
             {
-                _tensorCalc.SetNxSizes(_realCalcNxStart, _totalNxLength, _calcNxLength);
-
-                var asym = CalculateAsymGreenTensorAtoA();
-                var symm = CalculateSymmGreenTensorAtoA();
-                var tensor = GreenTensor.Merge(asym, symm);
-
+				GreenTensor tensor;
+				if (Solver.Engine!=ForwardSolverEngine.Giem2g)
+					tensor= CalculateExtremeGreenTensorAtoA ();
+				else
+					tensor= CalculateGiem2gGreenTensorAtoA ();
                 return tensor;
             }
         }
 
+		GreenTensor CalculateExtremeGreenTensorAtoA ()
+		{
+			_tensorCalc.SetNxSizes (_realCalcNxStart, _totalNxLength, _calcNxLength);
+			var asym = CalculateAsymGreenTensorAtoA ();
+			var symm = CalculateSymmGreenTensorAtoA ();
+			var tensor = GreenTensor.Merge (asym, symm);
+			return tensor;
+		}
 
+		GreenTensor CalculateGiem2gGreenTensorAtoA ()
+		{
+			throw new NotImplementedException ();
+		}
 
         private GreenTensor CalculateAsymGreenTensorAtoA()
         {

@@ -7,6 +7,7 @@ using Extreme.Cartesian.Model;
 using Extreme.Core;
 using Extreme.Core.Model;
 using UNM = Extreme.Cartesian.Forward.UnsafeNativeMethods;
+using System.Collections.Generic;
 
 namespace Extreme.Cartesian.Forward
 {
@@ -47,8 +48,10 @@ namespace Extreme.Cartesian.Forward
 
             _input = input;
             _output = output;
-
-            CalculateOperatorAorKr();
+			if (_solver.Engine!=ForwardSolverEngine.Giem2g)
+            	CalculateOperatorAorKr();
+			else
+				DoWithProfiling(ApplyGiem2gOperator, ProfilerEvent.OperatorGiem2gApply);
         }
 
         public void PrepareOperator(GreenTensor greenTensor, OperatorType operatorType)
@@ -56,12 +59,16 @@ namespace Extreme.Cartesian.Forward
             if (greenTensor == null) throw new ArgumentNullException(nameof(greenTensor));
             _greenTensor = greenTensor;
             _operatorType = operatorType;
+			if (_solver.Engine != ForwardSolverEngine.Giem2g) {
+				var zeta0 = GetBackgroundZeta (Model.Anomaly, Model.Section1D);
 
-            var zeta0 = GetBackgroundZeta(Model.Anomaly, Model.Section1D);
-
-            PrepareRFunction(zeta0);
-            PrepareBackwardFactors(zeta0);
-            PrepareForwardFactors(zeta0);
+				PrepareRFunction (zeta0);
+				PrepareBackwardFactors (zeta0);
+				PrepareForwardFactors (zeta0);
+			} else {
+				//_rFunction = Model.Anomaly.Zeta;
+				PrepareGiem2gOperator (_greenTensor ["giem2g"].Ptr, _rFunction);
+			}
         }
 
         private static Complex[] GetBackgroundZeta(IAnomaly anomaly, ISection1D<IsotropyLayer> section1D)
@@ -129,6 +136,11 @@ namespace Extreme.Cartesian.Forward
                     }
         }
 
+		void PrepareGiem2gOperator (Complex* giem2g_tensor, Complex*  zeta)
+		{
+			throw new NotImplementedException ();
+		}
+
         private void CalculateOperatorAorKr()
         {
             DoWithProfiling(ApplyOperatorR, ProfilerEvent.OperatorAApplyR);
@@ -139,6 +151,11 @@ namespace Extreme.Cartesian.Forward
             DoWithProfiling(ExtractData, ProfilerEvent.OperatorAExtractAfterBackwardFft);
             DoWithProfiling(PerformLastStep, ProfilerEvent.OperatorAFinish);
         }
+
+		void ApplyGiem2gOperator ()
+		{
+			throw new NotImplementedException ();
+		}
 
         private void DoWithProfiling(Action action, ProfilerEvent profilerEvent)
         {

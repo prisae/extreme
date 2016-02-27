@@ -22,7 +22,7 @@ namespace Extreme.Cartesian.Forward
         private ConvolutionOperator _convolutionOperator;
         private AnomalyCurrentFgmresSolver _fgmresSolver;
 
-		public  ForwardSolverEngine Engine { get; private set; }= ForwardSolverEngine.X3dScattered;
+		public  ForwardSolverEngine Engine { get; private set; }= ForwardSolverEngine.X3dTotal;
 
 
 
@@ -101,10 +101,10 @@ namespace Extreme.Cartesian.Forward
                 _fgmresSolver = new AnomalyCurrentFgmresSolver(this);
 
 			if (_convolutionOperator == null) {
-				//if (_engine==X3d)
+				if (Engine!=ForwardSolverEngine.Giem2g)
 					_convolutionOperator = new ConvolutionOperator (this);
-				//else
-				//	_convolutionOperator = new ConvolutionOperator (this);
+				else
+					_convolutionOperator = new ConvolutionOperator (this);
 			}
 
             _aToOCalculator.CleanGreenTensors();
@@ -115,17 +115,9 @@ namespace Extreme.Cartesian.Forward
             Logger.WriteStatus("Starting Green Tensor AtoA");
 			_greenTensorAtoA?.Dispose();
 
-			GreenTensor gt;
-            //var gt = new AtoAGreenTensorCalculatorComponent(this)
-              //  .CalculateGreenTensor();
-
-			//if (_engine == X3d) {
-				gt = new AtoAGreenTensorCalculatorComponent (this)
+			var	gt = new AtoAGreenTensorCalculatorComponent (this)
 					.CalculateGreenTensor ();
-			//}
-			//else {
-			//}
-
+			
             OnAtoAGreenTensorCalculated(new AtoAGreenTensorCalculatedEventArgs(gt));
 
             SetNewGreenTensor(gt);
