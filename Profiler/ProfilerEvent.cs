@@ -4,6 +4,8 @@ namespace Extreme.Core
 {
     public enum ProfilerEvent
     {
+		
+
         ForwardSolving,
         ForwardSolvingOneSource,
         CalcJScattered,
@@ -35,6 +37,7 @@ namespace Extreme.Core
         CalcDotProduct,
 
         ApplyOperatorA,
+		OperatorGiem2gApply,
         OperatorAMultiplication,
         OperatorAApplyR,
 
