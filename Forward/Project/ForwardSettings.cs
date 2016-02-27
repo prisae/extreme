@@ -9,7 +9,7 @@ namespace Extreme.Cartesian.Forward
         public int NumberOfHankels { get; set; } = 10;
         public int OuterBufferLength { get; set; } = 15;
         public int InnerBufferLength { get; set; } = 10;
-
+		public readonly ForwardSolverEngine _engine = ForwardSolverEngine.X3dScattered;
         public ForwardSettings() : base("Forward")
         {
 

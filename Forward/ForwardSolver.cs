@@ -11,6 +11,7 @@ using Extreme.Cartesian.Project;
 using Extreme.Core;
 using Extreme.Core.Model;
 using Extreme.Parallel;
+using Microsoft.SqlServer.Server;
 
 
 namespace Extreme.Cartesian.Forward
@@ -20,6 +21,10 @@ namespace Extreme.Cartesian.Forward
         private GreenTensor _greenTensorAtoA;
         private ConvolutionOperator _convolutionOperator;
         private AnomalyCurrentFgmresSolver _fgmresSolver;
+
+		public  ForwardSolverEngine Engine { get; private set; }= ForwardSolverEngine.X3dScattered;
+
+
 
         private AtoOCalculator _aToOCalculator;
 
@@ -48,6 +53,13 @@ namespace Extreme.Cartesian.Forward
             Mpi = mpi;
             return this;
         }
+
+		public ForwardSolver With(ForwardSolverEngine engine)
+		{
+			Engine = engine;
+			return this;
+		}
+
 
         public ForwardSolver With(params ObservationLevel[] levels)
         {
@@ -88,8 +100,12 @@ namespace Extreme.Cartesian.Forward
             if (_fgmresSolver == null)
                 _fgmresSolver = new AnomalyCurrentFgmresSolver(this);
 
-            if (_convolutionOperator == null)
-                _convolutionOperator = new ConvolutionOperator(this);
+			if (_convolutionOperator == null) {
+				//if (_engine==X3d)
+					_convolutionOperator = new ConvolutionOperator (this);
+				//else
+				//	_convolutionOperator = new ConvolutionOperator (this);
+			}
 
             _aToOCalculator.CleanGreenTensors();
         }
@@ -99,8 +115,17 @@ namespace Extreme.Cartesian.Forward
             Logger.WriteStatus("Starting Green Tensor AtoA");
 			_greenTensorAtoA?.Dispose();
 
-            var gt = new AtoAGreenTensorCalculatorComponent(this)
-                .CalculateGreenTensor();
+			GreenTensor gt;
+            //var gt = new AtoAGreenTensorCalculatorComponent(this)
+              //  .CalculateGreenTensor();
+
+			//if (_engine == X3d) {
+				gt = new AtoAGreenTensorCalculatorComponent (this)
+					.CalculateGreenTensor ();
+			//}
+			//else {
+			//}
+
             OnAtoAGreenTensorCalculated(new AtoAGreenTensorCalculatedEventArgs(gt));
 
             SetNewGreenTensor(gt);
@@ -117,19 +142,24 @@ namespace Extreme.Cartesian.Forward
         sealed protected override void CalculateJScattered(AnomalyCurrent field, AnomalyCurrent jScattered)
         {
             Clear(jScattered);
+			var anom = Model.Anomaly;
 
-            var anom = Model.Anomaly;
+			for (int k = 0; k < anom.Layers.Count; k++) {
+				var corrLayer = ModelUtils.FindCorrespondingBackgroundLayer (Model.Section1D, anom.Layers [k]);
+				var zetaBackground = corrLayer.Zeta;
+				int layerIndex = k;
 
-            for (int k = 0; k < anom.Layers.Count; k++)
-            {
-                var corrLayer = ModelUtils.FindCorrespondingBackgroundLayer(Model.Section1D, anom.Layers[k]);
-                var zetaBackground = corrLayer.Zeta;
-                int layerIndex = k;
-
-                CalculateScatteredCurrentFromBackgroundField(anom.Zeta, k, field, zetaBackground, jScattered, ac => GetLayerAccessorX(ac, layerIndex));
-                CalculateScatteredCurrentFromBackgroundField(anom.Zeta, k, field, zetaBackground, jScattered, ac => GetLayerAccessorY(ac, layerIndex));
-                CalculateScatteredCurrentFromBackgroundField(anom.Zeta, k, field, zetaBackground, jScattered, ac => GetLayerAccessorZ(ac, layerIndex));
-            }
+				if (Engine == ForwardSolverEngine.X3dScattered) {
+					CalculateScatteredCurrentFromBackgroundField (anom.Zeta, k, field, zetaBackground, jScattered, ac => GetLayerAccessorX (ac, layerIndex));
+					CalculateScatteredCurrentFromBackgroundField (anom.Zeta, k, field, zetaBackground, jScattered, ac => GetLayerAccessorY (ac, layerIndex));
+					CalculateScatteredCurrentFromBackgroundField (anom.Zeta, k, field, zetaBackground, jScattered, ac => GetLayerAccessorZ (ac, layerIndex));
+				} else {
+					CalculateChi0FromBackgroundField (field, zetaBackground, jScattered, ac => GetLayerAccessorX (ac, layerIndex));
+					CalculateChi0FromBackgroundField (field, zetaBackground, jScattered, ac => GetLayerAccessorY (ac, layerIndex));
+					CalculateChi0FromBackgroundField (field, zetaBackground, jScattered, ac => GetLayerAccessorZ (ac, layerIndex));
+				}
+			}
+			
         }
 
 
@@ -143,6 +173,11 @@ namespace Extreme.Cartesian.Forward
         /// <param name="jScattered">result, scattered current</param>
         /// <param name="getLa"></param>
         /// <param name="zetas"></param>
+		/// 
+		/// 
+
+
+
         private void CalculateScatteredCurrentFromBackgroundField(Complex[,,] zetas, int k,
             AnomalyCurrent field, Complex zeta, AnomalyCurrent jScattered, Func<AnomalyCurrent, ILayerAccessor> getLa)
         {
@@ -157,16 +192,35 @@ namespace Extreme.Cartesian.Forward
                     jS[i, j] = (zetas[i,j,k] - zeta) * f[i, j];
         }
 
+		private void CalculateChi0FromBackgroundField(AnomalyCurrent field, Complex zeta, AnomalyCurrent jScattered, Func<AnomalyCurrent, ILayerAccessor> getLa)
+		{
+			var nx = LocalNx;
+			var ny = LocalNy;
 
-        #endregion
+			var jS = getLa(jScattered);
+			var f = getLa(field);
 
-        #region CIE Solving
+			for (int i = 0; i < nx; i++)
+				for (int j = 0; j < ny; j++)
+					jS[i, j] = Complex.Sqrt(zeta.Real) * f[i, j];
+		}
+        
 
         sealed protected override void CalculateChi0From(AnomalyCurrent jScattered, AnomalyCurrent chi0)
         {
-            _convolutionOperator.PrepareOperator(_greenTensorAtoA, OperatorType.Chi0);
-            _convolutionOperator.Apply(jScattered, chi0);
+			if (Engine == ForwardSolverEngine.X3dScattered) {
+				_convolutionOperator.PrepareOperator (_greenTensorAtoA, OperatorType.Chi0);
+				_convolutionOperator.Apply (jScattered, chi0);
+			}else{
+				Copy(jScattered,chi0);	
+			}
         }
+
+
+
+		#endregion
+
+		#region CIE Solving
 
         public event EventHandler<CieSolverStartedEventArgs> CieSolverStarted;
         public event EventHandler<CieSolverFinishedEventArgs> CieSolverFinished;
@@ -209,10 +263,15 @@ namespace Extreme.Cartesian.Forward
                 var corrLayer = ModelUtils.FindCorrespondingBackgroundLayer(Model.Section1D, layer);
                 var zeta = corrLayer.Zeta;
                 int layerIndex = k;
-
-                CalculateScatteredFieldFromChi(chi, jScattered, zetas, k, zeta, eScattered, ac => GetLayerAccessorX(ac, layerIndex));
-                CalculateScatteredFieldFromChi(chi, jScattered, zetas, k, zeta, eScattered, ac => GetLayerAccessorY(ac, layerIndex));
-                CalculateScatteredFieldFromChi(chi, jScattered, zetas, k, zeta, eScattered, ac => GetLayerAccessorZ(ac, layerIndex));
+				if (Engine == ForwardSolverEngine.X3dScattered) {
+					CalculateScatteredFieldFromChi (chi, jScattered, zetas, k, zeta, eScattered, ac => GetLayerAccessorX (ac, layerIndex));
+					CalculateScatteredFieldFromChi (chi, jScattered, zetas, k, zeta, eScattered, ac => GetLayerAccessorY (ac, layerIndex));
+					CalculateScatteredFieldFromChi (chi, jScattered, zetas, k, zeta, eScattered, ac => GetLayerAccessorZ (ac, layerIndex));
+				}else{
+					CalculateTotalFieldFromChi (chi,  zetas, k, zeta, eScattered, ac => GetLayerAccessorX (ac, layerIndex));
+					CalculateTotalFieldFromChi (chi,  zetas, k, zeta, eScattered, ac => GetLayerAccessorY (ac, layerIndex));
+					CalculateTotalFieldFromChi (chi,  zetas, k, zeta, eScattered, ac => GetLayerAccessorZ (ac, layerIndex));
+				}
             }
 
             OnEScatteredCalculated(eScattered);
@@ -229,10 +288,15 @@ namespace Extreme.Cartesian.Forward
                 var corrLayer = ModelUtils.FindCorrespondingBackgroundLayer(Model.Section1D, anom.Layers[k]);
                 var zeta = corrLayer.Zeta;
                 int layerIndex = k;
-
-                CalculateJqFromScatteredField(anom.Zeta, k, eScattered, jScattered, zeta, jQ, ac => GetLayerAccessorX(ac, layerIndex));
-                CalculateJqFromScatteredField(anom.Zeta, k, eScattered, jScattered, zeta, jQ, ac => GetLayerAccessorY(ac, layerIndex));
-                CalculateJqFromScatteredField(anom.Zeta, k, eScattered, jScattered, zeta, jQ, ac => GetLayerAccessorZ(ac, layerIndex));
+				if (Engine == ForwardSolverEngine.X3dScattered) {
+                	CalculateJqFromScatteredField(anom.Zeta, k, eScattered, jScattered, zeta, jQ, ac => GetLayerAccessorX(ac, layerIndex));
+                	CalculateJqFromScatteredField(anom.Zeta, k, eScattered, jScattered, zeta, jQ, ac => GetLayerAccessorY(ac, layerIndex));
+                	CalculateJqFromScatteredField(anom.Zeta, k, eScattered, jScattered, zeta, jQ, ac => GetLayerAccessorZ(ac, layerIndex));
+				}else{
+					CalculateJqFromTotalField(anom.Zeta, k, eScattered,  zeta, jQ, ac => GetLayerAccessorX(ac, layerIndex));
+					CalculateJqFromTotalField(anom.Zeta, k, eScattered,  zeta, jQ, ac => GetLayerAccessorY(ac, layerIndex));
+					CalculateJqFromTotalField(anom.Zeta, k, eScattered,  zeta, jQ, ac => GetLayerAccessorZ(ac, layerIndex));
+				}
             }
         }
 
@@ -253,6 +317,22 @@ namespace Extreme.Cartesian.Forward
                     laE[i, j] = (2 * sqrtReZeta0 * laC[i, j] - laJ[i, j]) / (zetas[i, j, k] + conjZeta);
         }
 
+		private void CalculateTotalFieldFromChi(AnomalyCurrent chi,  Complex[,,] zetas, int k, Complex zeta, AnomalyCurrent eScattered, Func<AnomalyCurrent, ILayerAccessor> getLa)
+		{
+			var nx = LocalNx;
+			var ny = LocalNy;
+
+			var conjZeta = Complex.Conjugate(zeta);
+			var sqrtReZeta0 = Complex.Sqrt(zeta.Real);
+
+			var laE = getLa(eScattered);
+			var laC = getLa(chi);
+
+			for (int i = 0; i < nx; i++)
+				for (int j = 0; j < ny; j++)
+					laE[i, j] = (2 * sqrtReZeta0 * laC[i, j] ) / (zetas[i, j, k] + conjZeta);
+		}
+
         private void CalculateJqFromScatteredField(Complex[,,] zetas, int k, AnomalyCurrent eScattered, AnomalyCurrent jScattered, Complex zeta, AnomalyCurrent jQ, Func<AnomalyCurrent, ILayerAccessor> getLa)
         {
             var nx = LocalNx;
@@ -266,6 +346,19 @@ namespace Extreme.Cartesian.Forward
                 for (int j = 0; j < ny; j++)
                     laQ[i, j] = laE[i, j] * (zetas[i, j, k] - zeta) + laJ[i, j];
         }
+
+		private void CalculateJqFromTotalField(Complex[,,] zetas, int k, AnomalyCurrent eScattered, Complex zeta, AnomalyCurrent jQ, Func<AnomalyCurrent, ILayerAccessor> getLa)
+		{
+			var nx = LocalNx;
+			var ny = LocalNy;
+
+			var laE = getLa(eScattered);
+			var laQ = getLa(jQ);
+
+			for (int i = 0; i < nx; i++)
+				for (int j = 0; j < ny; j++)
+					laQ[i, j] = laE[i, j] * (zetas[i, j, k] - zeta);
+		}
 
         #endregion
 
