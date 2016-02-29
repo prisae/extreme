@@ -100,12 +100,9 @@ namespace Extreme.Cartesian.Forward
             if (_fgmresSolver == null)
                 _fgmresSolver = new AnomalyCurrentFgmresSolver(this);
 
-			if (_convolutionOperator == null) {
-				if (Engine!=ForwardSolverEngine.Giem2g)
-					_convolutionOperator = new ConvolutionOperator (this);
-				else
-					_convolutionOperator = new ConvolutionOperator (this);
-			}
+			if (_convolutionOperator == null) 
+				_convolutionOperator = new ConvolutionOperator (this);
+
 
             _aToOCalculator.CleanGreenTensors();
         }
