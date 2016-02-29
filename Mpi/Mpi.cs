@@ -4,6 +4,7 @@ using System.Text;
 
 using static Extreme.Parallel.UnsafeNativeMethods;
 using UNM = Extreme.Parallel.UnsafeNativeMethods;
+using System.ComponentModel.Design;
 
 namespace Extreme.Parallel
 {
@@ -52,7 +53,7 @@ namespace Extreme.Parallel
         public int Size => _size;
         public int Rank => _rank;
         public bool IsMaster => _rank == 0;
-
+		public IntPtr Communicator { get; private set; }=CommWorld;
 
         private void WithErrorHandling(int err)
         {
@@ -107,6 +108,15 @@ namespace Extreme.Parallel
 			UnsafeNativeMethods.LogicalReduce(value, result, length, comm);
 		}
 
+		public long CommunicatorC2Fortran(IntPtr comm)
+		{
+			return UnsafeNativeMethods.CommunicatorC2Fortran(comm);
+		}
+
+		public long CommunicatorC2Fortran()
+		{
+			return CommunicatorC2Fortran(this.Communicator);
+		}
 
         public void Barrier(IntPtr comm)
             => WithErrorHandling(UnsafeNativeMethods.Barrier(comm));

@@ -97,5 +97,8 @@ namespace Extreme.Parallel
 
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetMpiAnySource")]
         public static extern int GetMpiAnySource();
+		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "CommunicatorC2Fortran")]
+		public static extern unsafe long  CommunicatorC2Fortran(IntPtr comm);
+
     }
 }
