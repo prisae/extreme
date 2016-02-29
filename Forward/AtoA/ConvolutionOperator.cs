@@ -8,6 +8,7 @@ using Extreme.Core;
 using Extreme.Core.Model;
 using UNM = Extreme.Cartesian.Forward.UnsafeNativeMethods;
 using System.Collections.Generic;
+using Extreme.Cartesian.Green;
 
 namespace Extreme.Cartesian.Forward
 {
@@ -48,8 +49,8 @@ namespace Extreme.Cartesian.Forward
 
             _input = input;
             _output = output;
-			if (_solver.Engine!=ForwardSolverEngine.Giem2g)
-            	CalculateOperatorAorKr();
+			if (_solver.Engine != ForwardSolverEngine.Giem2g) 
+				CalculateOperatorAorKr ();
 			else
 				DoWithProfiling(ApplyGiem2gOperator, ProfilerEvent.OperatorGiem2gApply);
         }
@@ -66,8 +67,7 @@ namespace Extreme.Cartesian.Forward
 				PrepareBackwardFactors (zeta0);
 				PrepareForwardFactors (zeta0);
 			} else {
-				//_rFunction = Model.Anomaly.Zeta;
-				PrepareGiem2gOperator (_greenTensor ["giem2g"].Ptr, _rFunction);
+				PrepareGiem2gOperator ();
 			}
         }
 
@@ -136,12 +136,24 @@ namespace Extreme.Cartesian.Forward
                     }
         }
 
-		void PrepareGiem2gOperator (Complex* giem2g_tensor, Complex*  zeta)
+		private void PrepareGiem2gOperator ()
 		{
-			throw new NotImplementedException ();
+			var nx = Model.Anomaly.LocalSize.Nx;
+			var ny = Model.Anomaly.LocalSize.Ny;
+			var nz = Model.Nz;
+			var zetas = Model.Anomaly.Zeta;
+
+			long index = 0;
+			for (int i = 0; i < nx; i++)
+				for (int j = 0; j < ny; j++)
+					for (int k = 0; k < nz; k++)
+					{
+					_rFunction [index++] = zetas [i, j, k];
+					}
+			Giem2gGreenTensor.PrepareAnomalyConductivity (_greenTensor, _rFunction);
 		}
 
-        private void CalculateOperatorAorKr()
+		private void CalculateOperatorAorKr()
         {
             DoWithProfiling(ApplyOperatorR, ProfilerEvent.OperatorAApplyR);
             DoWithProfiling(PrepareForForwardFft, ProfilerEvent.OperatorAPrepareForForwardFft);
@@ -154,7 +166,8 @@ namespace Extreme.Cartesian.Forward
 
 		void ApplyGiem2gOperator ()
 		{
-			throw new NotImplementedException ();
+			Giem2gGreenTensor.Apply (_greenTensor, _input.Ptr, _output.Ptr);
+
 		}
 
         private void DoWithProfiling(Action action, ProfilerEvent profilerEvent)
@@ -276,7 +289,7 @@ namespace Extreme.Cartesian.Forward
             {
                 //for (int i = 0; i < length; i++)
                 //  {
-                long dataShift = i * 3 * nz;
+                long dataShift = i * 3L * nz;
                 long symmShift = i * symmNz;
                 long asymShift = i * asymNz;
 

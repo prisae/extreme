@@ -38,6 +38,9 @@ namespace Extreme.Cartesian.Forward
         public FftBuffer Pool => FftBuffersPool.GetBuffer(Model);
         public bool IsParallel => Mpi != null && Mpi.IsParallel;
 
+
+
+
         private int LocalNx => Model.Anomaly.LocalSize.Nx;
         private int LocalNy => Model.Anomaly.LocalSize.Ny;
 

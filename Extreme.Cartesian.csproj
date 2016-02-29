@@ -171,6 +171,7 @@
     <Compile Include="Model\LoadAndSave\SerializationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forward\ForwardSolverEngine.cs" />
+    <Compile Include="Forward\AtoA\Giem2gGreenTensor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Extreme.Core\Extreme.Core.csproj">

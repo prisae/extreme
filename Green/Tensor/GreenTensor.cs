@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Extreme.Core;
 using UNM = Extreme.Cartesian.Forward.UnsafeNativeMethods;
+using System.ComponentModel;
 
 namespace Extreme.Cartesian.Green.Tensor
 {
@@ -94,6 +95,19 @@ namespace Extreme.Cartesian.Green.Tensor
 
             return gt;
         }
+
+		public static GreenTensor CreateGiem2gTensor(INativeMemoryProvider memoryProvider,int nx, int ny, int nTr, int nRc,  List<IntPtr> giem2g_ptrs)
+		{
+			var gt = new GreenTensor(memoryProvider, nx, ny, nTr, nRc);
+			var dict = new Dictionary<string, Component>();
+			dict.Add ("giem2g", new Component (gt, (Complex *)giem2g_ptrs[0]));
+			gt._components = dict;
+			gt._basePtrs.AddRange(giem2g_ptrs);
+			return gt;
+		}
+
+
+
 
         public static GreenTensor ReShape(GreenTensor gt, int nx, int ny, int nTr, int nRc)
         {

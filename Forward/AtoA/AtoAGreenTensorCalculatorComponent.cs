@@ -87,9 +87,28 @@ namespace Extreme.Cartesian.Forward
 			return tensor;
 		}
 
-		GreenTensor CalculateGiem2gGreenTensorAtoA ()
+		private GreenTensor CalculateGiem2gGreenTensorAtoA ()
 		{
-			throw new NotImplementedException ();
+			using (Profiler?.StartAuto(ProfilerEvent.GreenTensorAtoA))
+			{
+				GreenTensor tensor;
+
+				using (Profiler?.StartAuto(ProfilerEvent.GreenTensorAtoACalc))
+				{
+					MemoryUtils.PrintMemoryReport("Before GIEM2G tensor", Logger, MemoryProvider);
+					tensor = Giem2gGreenTensor.CalcAtoATensor (Solver);
+					MemoryUtils.PrintMemoryReport("after GIEM2G tensor", Logger, MemoryProvider);
+
+				}
+
+				using (Profiler?.StartAuto(ProfilerEvent.GreenTensorAtoAFft))
+				{
+					PerformFftGiem2g(tensor, MemoryLayoutOrder.AlongVertical);
+				}
+
+				return tensor;
+			}
+
 		}
 
         private GreenTensor CalculateAsymGreenTensorAtoA()
@@ -186,6 +205,8 @@ namespace Extreme.Cartesian.Forward
             MakeFftForComponent(gt, "yz", sizeAsym);
         }
 
+
+
         private void PerformFftSymm(GreenTensor gt, MemoryLayoutOrder layoutOrder)
         {
             if (layoutOrder != MemoryLayoutOrder.AlongVertical)
@@ -199,6 +220,14 @@ namespace Extreme.Cartesian.Forward
             MakeFftForComponent(gt, "yy", sizeSymm);
             MakeFftForComponent(gt, "zz", sizeSymm);
         }
+
+		private void PerformFftGiem2g(GreenTensor gt, MemoryLayoutOrder layoutOrder)
+		{
+			if (layoutOrder != MemoryLayoutOrder.AlongVertical)
+				throw new InvalidOperationException($"{nameof(layoutOrder)} should be AlongVertical to perform fft");
+
+			Giem2gGreenTensor.CalcFFTofGreenTensor (gt);
+		}
 
         private void MakeFftForComponent(GreenTensor gt, string comp, int size)
         {
