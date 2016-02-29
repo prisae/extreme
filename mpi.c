@@ -26,6 +26,7 @@ DLLEXPORT MPI_Op GetMpiOpSum() { return MPI_SUM; }
 DLLEXPORT MpiType GetCommWorld() { return MPI_COMM_WORLD; }
 
 DLLEXPORT MpiType GetMpiInt() { return MPI_INT; }
+
 DLLEXPORT MpiType GetMpiFloat() { return MPI_FLOAT; }
 DLLEXPORT MpiType GetMpiDouble() { return MPI_DOUBLE; }
 DLLEXPORT MpiType GetMpiDoubleComplex() { return MPI_C_DOUBLE_COMPLEX; }
@@ -44,6 +45,12 @@ DLLEXPORT int Init()
 {
 	return MPI_Init(0, NULL);
 }
+
+DLLEXPORT long long CommunicatorC2Fortran(MPI_Comm comm)
+{
+	return  MPI_Comm_c2f(comm);
+}
+
 
 DLLEXPORT int Barrier(MPI_Comm comm)
 {
