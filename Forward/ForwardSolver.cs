@@ -23,8 +23,8 @@ namespace Extreme.Cartesian.Forward
         private ConvolutionOperator _convolutionOperator;
         private AnomalyCurrentFgmresSolver _fgmresSolver;
 
-		//public  ForwardSolverEngine Engine { get; private set; }= ForwardSolverEngine.Giem2g;
-		public  ForwardSolverEngine Engine { get; private set; }= ForwardSolverEngine.X3dTotal;
+		public  ForwardSolverEngine Engine { get; private set; }= ForwardSolverEngine.Giem2g;
+		//public  ForwardSolverEngine Engine { get; private set; }= ForwardSolverEngine.X3dTotal;
 
 
 

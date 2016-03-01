@@ -77,7 +77,7 @@ namespace Extreme.Cartesian.Green
 			anomaly.dx =(double) model.LateralDimensions.CellSizeX;
 			anomaly.dy =(double) model.LateralDimensions.CellSizeY;
 
-			giem2g_ie_op=giem2g_calc_data_sizes(ref anomaly);
+			giem2g_calc_data_sizes(ref anomaly,ref giem2g_ie_op);
 
 
 			var giem2g_ptrs = AllocateGiem2gDataBuffers (solver.MemoryProvider, ref giem2g_ie_op, nz);
@@ -193,7 +193,7 @@ namespace Extreme.Cartesian.Green
 
 
 		[DllImport(LibName, EntryPoint = "giem2g_calc_data_sizes")]
-		private static extern giem2g_data giem2g_calc_data_sizes(ref giem2g_anomaly anomaly);
+		private static extern void  giem2g_calc_data_sizes(ref giem2g_anomaly anomaly,ref  giem2g_data giem2g_op) ;
 
 		[DllImport(LibName, EntryPoint = "giem2g_prepare_ie_kernel")]
 		private static extern void giem2g_prepare_ie_kernel(ref giem2g_anomaly anomaly,ref giem2g_data giem2g_ie_op);
