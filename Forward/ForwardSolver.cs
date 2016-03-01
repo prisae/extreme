@@ -12,6 +12,7 @@ using Extreme.Core;
 using Extreme.Core.Model;
 using Extreme.Parallel;
 using Microsoft.SqlServer.Server;
+using Extreme.Cartesian.Green;
 
 
 namespace Extreme.Cartesian.Forward
@@ -22,6 +23,7 @@ namespace Extreme.Cartesian.Forward
         private ConvolutionOperator _convolutionOperator;
         private AnomalyCurrentFgmresSolver _fgmresSolver;
 
+		//public  ForwardSolverEngine Engine { get; private set; }= ForwardSolverEngine.Giem2g;
 		public  ForwardSolverEngine Engine { get; private set; }= ForwardSolverEngine.X3dTotal;
 
 

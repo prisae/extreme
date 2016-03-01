@@ -36,14 +36,20 @@ namespace Extreme.Cartesian.Green
 			var section = model.Section1D;
 
 			var n = section.NumberOfLayers;
-			bkg.nl = n+1;
+
+
+
+			bkg.nl = n-1;
 			var thick = solver.MemoryProvider.AllocateDouble (bkg.nl-1);
-			var csigb = solver.MemoryProvider.AllocateComplex (bkg.nl);
-			for (int i = 0; i < bkg.nl-1; i++)
-				thick [i] = (double)section [i].Thickness;
+			var csigb = solver.MemoryProvider.AllocateComplex (bkg.nl+1);
+			for (int i = 0; i < bkg.nl - 1; i++) 
+				thick [i] = (double)section [i+1].Thickness;
+
 			bkg.thickness = new IntPtr(thick);
-			for (int i = 0; i < bkg.nl; i++)
+
+			for (int i = 0; i < bkg.nl+1; i++) 
 				csigb [i] = section [i].Zeta;
+
 			
 			bkg.csigb = new IntPtr (csigb);
 
@@ -57,6 +63,9 @@ namespace Extreme.Cartesian.Green
 			
 			z[nz]=z[nz-1]+ dz[nz-1];
 
+
+
+
 			anomaly.nz = nz;
 			// ATTENTION ! formal transpose in horizontal dimensions!!
 			anomaly.nx = ny;
@@ -65,18 +74,23 @@ namespace Extreme.Cartesian.Green
 			anomaly.z = new IntPtr (z);
 			anomaly.dz = new IntPtr (dz);
 
-			giem2g_calc_data_sizes(anomaly,&giem2g_ie_op);
+			anomaly.dx =(double) model.LateralDimensions.CellSizeX;
+			anomaly.dy =(double) model.LateralDimensions.CellSizeY;
+
+			giem2g_ie_op=giem2g_calc_data_sizes(ref anomaly);
 
 
-			var giem2g_ptrs = AllocateGiem2gDataBuffers (solver.MemoryProvider, giem2g_ie_op, nz);
+			var giem2g_ptrs = AllocateGiem2gDataBuffers (solver.MemoryProvider, ref giem2g_ie_op, nz);
 
 			var gt =GreenTensor.CreateGiem2gTensor(solver.MemoryProvider, nx, ny, nz, nz, giem2g_ptrs);
 
-			giem2g_prepare_ie_operator(anomaly, &giem2g_ie_op);
 
+				
+			giem2g_prepare_ie_kernel(ref anomaly, ref giem2g_ie_op);
 
 			var omega = model.Omega;
-			giem2g_calc_ie_kernel(giem2g_ie_op.giem2g_tensor,bkg,anomaly,omega);
+
+			giem2g_calc_ie_kernel(ref giem2g_ie_op.giem2g_tensor,ref bkg, ref anomaly,ref omega);
 
 			solver.MemoryProvider.Release(csigb);
 			solver.MemoryProvider.Release(thick);
@@ -88,7 +102,7 @@ namespace Extreme.Cartesian.Green
 		public static void CalcFFTofGreenTensor(GreenTensor gt){
 			
 			IntPtr ie_op = new IntPtr (gt ["giem2g"].Ptr);
-			giem2g_calc_fft_of_ie_kernel (ie_op);
+			giem2g_calc_fft_of_ie_kernel (ref ie_op);
 
 		}
 
@@ -96,17 +110,18 @@ namespace Extreme.Cartesian.Green
 		public static void PrepareAnomalyConductivity(GreenTensor gt, Complex* csiga){
 
 			IntPtr ie_op =new  IntPtr (gt ["giem2g"].Ptr);
-			giem2g_set_anomaly_conductivity(ie_op, csiga);
+			giem2g_set_anomaly_conductivity(ref ie_op, ref csiga);
 		}
 
 		public static void Apply(GreenTensor gt,Complex* input, Complex* output){
 
 			IntPtr ie_op =new IntPtr (gt ["giem2g"].Ptr);
-			giem2g_apply_ie_operator(ie_op, input, output);
+
+			giem2g_apply_ie_operator(ref ie_op, ref input, ref output);
 
 		}
 
-		private static List<IntPtr> AllocateGiem2gDataBuffers (INativeMemoryProvider memoryProvider, giem2g_data giem2g_ie_op, int nz)
+		private static List<IntPtr> AllocateGiem2gDataBuffers (INativeMemoryProvider memoryProvider, ref giem2g_data giem2g_ie_op, int nz)
 		{
 			var giem2g_ptrs = new List<IntPtr> ();
 			IntPtr tmp;
@@ -138,7 +153,7 @@ namespace Extreme.Cartesian.Green
 			return giem2g_ptrs;
 		}
 
-		private const string LibName = @"ntv_giem2g";
+		private const string LibName = @"_giem2g";
 
 
 		[StructLayout(LayoutKind.Sequential)]
@@ -178,22 +193,22 @@ namespace Extreme.Cartesian.Green
 
 
 		[DllImport(LibName, EntryPoint = "giem2g_calc_data_sizes")]
-		private static extern void giem2g_calc_data_sizes(giem2g_anomaly anomaly,giem2g_data* giem2g_ie_op);
+		private static extern giem2g_data giem2g_calc_data_sizes(ref giem2g_anomaly anomaly);
 
-		[DllImport(LibName, EntryPoint = "giem2g_prepare_ie_operator")]
-		private static extern void giem2g_prepare_ie_operator(giem2g_anomaly anomaly, giem2g_data* giem2g_ie_op);
+		[DllImport(LibName, EntryPoint = "giem2g_prepare_ie_kernel")]
+		private static extern void giem2g_prepare_ie_kernel(ref giem2g_anomaly anomaly,ref giem2g_data giem2g_ie_op);
 
 		[DllImport(LibName, EntryPoint = "giem2g_calc_ie_kernel")]
-		private static extern void giem2g_calc_ie_kernel(IntPtr giem2g_ie_op,giem2g_background bkg,giem2g_anomaly anomaly,double omega);
+		private static extern void giem2g_calc_ie_kernel(ref IntPtr giem2g_ie_op,ref giem2g_background bkg,ref giem2g_anomaly anomaly,ref double omega);
 
 		[DllImport(LibName, EntryPoint = "giem2g_calc_fft_of_ie_kernel")]
-		private static extern void giem2g_calc_fft_of_ie_kernel(IntPtr giem2g_ie_op);
+		private static extern void giem2g_calc_fft_of_ie_kernel(ref IntPtr giem2g_ie_op);
 
 		[DllImport(LibName, EntryPoint = "giem2g_set_anomaly_conductivity")]
-		private static extern void giem2g_set_anomaly_conductivity(IntPtr giem2g_ie_op, Complex* siga);
+		private static extern void giem2g_set_anomaly_conductivity(ref IntPtr giem2g_ie_op, ref Complex* siga);
 
 		[DllImport(LibName, EntryPoint = "giem2g_apply_ie_operator")]
-		private static extern void giem2g_apply_ie_operator(IntPtr giem2g_ie_op, Complex* input, Complex* output);
+		private static extern void giem2g_apply_ie_operator(ref IntPtr giem2g_ie_op,ref Complex* input, ref Complex* output);
 
 	}
 

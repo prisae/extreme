@@ -48,11 +48,16 @@ namespace Extreme.Cartesian.Forward
             if (output == null) throw new ArgumentNullException(nameof(output));
 
             _input = input;
-            _output = output;
+            
+
+			_output = output;
+
 			if (_solver.Engine != ForwardSolverEngine.Giem2g) 
 				CalculateOperatorAorKr ();
 			else
 				DoWithProfiling(ApplyGiem2gOperator, ProfilerEvent.OperatorGiem2gApply);
+
+
         }
 
         public void PrepareOperator(GreenTensor greenTensor, OperatorType operatorType)
