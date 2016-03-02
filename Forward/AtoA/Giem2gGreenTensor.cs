@@ -126,9 +126,9 @@ namespace Extreme.Cartesian.Green
 			var giem2g_ptrs = new List<IntPtr> ();
 			IntPtr tmp;
 
-			tmp = memoryProvider.AllocateBytes (giem2g_ie_op.tensor_size);
+			//tmp = memoryProvider.AllocateBytes (giem2g_ie_op.tensor_size);
+			tmp=giem2g_ie_op.giem2g_tensor;
 			giem2g_ptrs.Add (tmp);
-			giem2g_ie_op.giem2g_tensor = tmp;
 
 			tmp = new IntPtr (memoryProvider.AllocateDouble (nz));
 			giem2g_ptrs.Add (tmp);
