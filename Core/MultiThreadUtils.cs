@@ -18,7 +18,18 @@ namespace Extreme.Cartesian.Core
             if (!string.IsNullOrEmpty(omp))
                 if (int.TryParse(omp, out degree))
                     MaxDegreeOfParallelism = degree;
+
+	    MaxDegreeOfParallelism=1; 
         }
+public		static int NumberOfOpenMPThreads()
+		{		
+		    var omp = Environment.GetEnvironmentVariable(@"OMP_NUM_THREADS");
+    			int degree=1;
+    			if (!string.IsNullOrEmpty(omp))
+				if (int.TryParse(omp, out degree))
+					return degree;
+			return 1;
+		}
 
         public static int MaxDegreeOfParallelism { get; private set; }
 

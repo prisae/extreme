@@ -79,6 +79,7 @@ namespace Extreme.Cartesian.Fft
                 throw new InvalidOperationException("This is allowed only once");
 
             LocalFft = new FftWTransform(MultiThreadUtils.MaxDegreeOfParallelism);
+//            LocalFft = new FftWTransform(MultiThreadUtils.NumberOfOpenMPThreads());
             IsParallel = false;
 
             var localSize = nx * 2 * ny * 2 * 3 * nz;

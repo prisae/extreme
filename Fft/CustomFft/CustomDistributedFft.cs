@@ -33,6 +33,7 @@ namespace Extreme.Cartesian.Fft
             Fftw.InitThreads();
             FftwMpi.Init();
             Fftw.PlanWithNthreads(MultiThreadUtils.MaxDegreeOfParallelism);
+//            Fftw.PlanWithNthreads(MultiThreadUtils.NumberOfOpenMPThreads());
         }
 
         public static int GetLocalSize(Mpi mpi, int fullNx, int fullNy, int nc)
