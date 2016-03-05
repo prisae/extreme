@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using Extreme.Cartesian.Forward;
 using Extreme.Core;
 using Extreme.Core.Model;
+using Extreme.Cartesian.Fft;
+using Extreme.Parallel;
+using Extreme.Cartesian.Logger;
 
 namespace Extreme.Cartesian.Green
 {
@@ -36,7 +39,7 @@ namespace Extreme.Cartesian.Green
 			var section = model.Section1D;
 
 			var n = section.NumberOfLayers;
-
+			giem2g_set_logger (solver.Logger.WriteStatus);
 
 
 			bkg.nl = n-1;
@@ -79,6 +82,19 @@ namespace Extreme.Cartesian.Green
 
 			giem2g_calc_data_sizes(ref anomaly,ref giem2g_ie_op);
 
+			var buff=FftBuffersPool.GetBuffer(model);
+
+			if (buff.Plan3Nz.BufferLength == giem2g_ie_op.fft_buffers_length) {
+				giem2g_ie_op.fft_buffer_in = buff.Plan3Nz.Buffer1Ptr;
+				giem2g_ie_op.fft_buffer_out =buff.Plan3Nz.Buffer2Ptr;
+
+			} else {
+				var len = giem2g_ie_op.fft_buffers_length;
+				giem2g_ie_op.fft_buffer_in = solver.MemoryProvider.AllocateComplex (len);
+				giem2g_ie_op.fft_buffer_out = solver.MemoryProvider.AllocateComplex (len);
+				solver.Logger.Write(0x02,"Allocate additinal memory for FFT inside GIEM2G!!");
+			}
+				
 
 			var giem2g_ptrs = AllocateGiem2gDataBuffers (solver.MemoryProvider, ref giem2g_ie_op, nz);
 
@@ -96,6 +112,8 @@ namespace Extreme.Cartesian.Green
 			solver.MemoryProvider.Release(thick);
 			solver.MemoryProvider.Release(z);
 			solver.MemoryProvider.Release(dz);
+
+
 
 			return gt;
 		}
@@ -124,13 +142,13 @@ namespace Extreme.Cartesian.Green
 		private static List<IntPtr> AllocateGiem2gDataBuffers (INativeMemoryProvider memoryProvider, ref giem2g_data giem2g_ie_op, int nz)
 		{
 			var giem2g_ptrs = new List<IntPtr> ();
-			IntPtr tmp;
+
 
 			//tmp = memoryProvider.AllocateBytes (giem2g_ie_op.tensor_size);
-			tmp=giem2g_ie_op.giem2g_tensor;
-			giem2g_ptrs.Add (tmp);
+			var tmp1=giem2g_ie_op.giem2g_tensor;
+			giem2g_ptrs.Add (tmp1);
 
-			tmp = new IntPtr (memoryProvider.AllocateDouble (nz));
+		/*	tmp = new IntPtr (memoryProvider.AllocateDouble (nz));
 			giem2g_ptrs.Add (tmp);
 			giem2g_ie_op.dz = tmp;
 
@@ -140,20 +158,22 @@ namespace Extreme.Cartesian.Green
 
 			tmp = new IntPtr (memoryProvider.AllocateComplex (nz));
 			giem2g_ptrs.Add (tmp);
-			giem2g_ie_op.csigb = tmp;
+			giem2g_ie_op.csigb = tmp;*/
 
-			tmp = new IntPtr (memoryProvider.AllocateComplex (giem2g_ie_op.ie_kernel_buffer_length));
-			giem2g_ptrs.Add (tmp);
-			giem2g_ie_op.kernel_buffer = tmp;
+			var tmp2 =  (memoryProvider.AllocateComplex (giem2g_ie_op.ie_kernel_buffer_length));
+			giem2g_ptrs.Add (new IntPtr(tmp2));
+			giem2g_ie_op.kernel_buffer = tmp2;
 
-			tmp=new IntPtr (memoryProvider.AllocateComplex (giem2g_ie_op.fft_buffers_length));
-			giem2g_ptrs.Add (tmp);
-			giem2g_ie_op.fft_buffer = tmp;
+
+
+
+
+
 
 			return giem2g_ptrs;
 		}
 
-		private const string LibName = @"_giem2g";
+		private const string LibName = @"giem2g";
 
 
 		[StructLayout(LayoutKind.Sequential)]
@@ -167,8 +187,9 @@ namespace Extreme.Cartesian.Green
 			public IntPtr dz;
 			public IntPtr sqsigb;
 			public IntPtr csigb;
-			public IntPtr kernel_buffer;
-			public IntPtr fft_buffer;
+			public Complex* kernel_buffer;
+			public Complex* fft_buffer_in;
+			public Complex* fft_buffer_out;
 		}
 
 
@@ -190,6 +211,8 @@ namespace Extreme.Cartesian.Green
 
 
 
+		private unsafe delegate void giem2g_logger(string str);
+
 
 
 		[DllImport(LibName, EntryPoint = "giem2g_calc_data_sizes")]
@@ -210,6 +233,8 @@ namespace Extreme.Cartesian.Green
 		[DllImport(LibName, EntryPoint = "giem2g_apply_ie_operator")]
 		private static extern void giem2g_apply_ie_operator(ref IntPtr giem2g_ie_op,ref Complex* input, ref Complex* output);
 
+		[DllImport(LibName, EntryPoint = "giem2g_set_logger")]
+		private static extern void giem2g_set_logger(giem2g_logger gl);
 	}
 
 }
