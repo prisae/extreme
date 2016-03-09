@@ -19,7 +19,7 @@ namespace Extreme.Cartesian.Forward
 {
     public abstract unsafe class ForwardSolver : ForwardSolverGenerics<AnomalyCurrent>, IDisposable
     {
-        private GreenTensor _greenTensorAtoA;
+        private GreenTensor _greenTensorAtoA=null;
         private ConvolutionOperator _convolutionOperator;
         private AnomalyCurrentFgmresSolver _fgmresSolver;
 
@@ -51,7 +51,10 @@ namespace Extreme.Cartesian.Forward
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             Settings = settings;
-			if (Settings.NumberOfHankels <0) Engine=ForwardSolverEngine.Giem2g;
+			if (Settings.NumberOfHankels <0) {
+				Engine=ForwardSolverEngine.Giem2g;
+				Giem2gGreenTensor.giem2g_set_logger(Logger.WriteStatus);
+			}
         }
 
         public ForwardSolver WithMpi(Mpi mpi)
@@ -63,6 +66,9 @@ namespace Extreme.Cartesian.Forward
 		public ForwardSolver With(ForwardSolverEngine engine)
 		{
 			Engine = engine;
+			if (Engine==ForwardSolverEngine.Giem2g)
+				Giem2gGreenTensor.giem2g_set_logger(Logger.WriteStatus);
+			_greenTensorAtoA?.Dispose();
 			return this;
 		}
 
@@ -116,10 +122,11 @@ namespace Extreme.Cartesian.Forward
         protected void CalculateGreenTensor()
         {
             Logger.WriteStatus("Starting Green Tensor AtoA");
-			_greenTensorAtoA?.Dispose();
+			if (Engine!=ForwardSolverEngine.Giem2g)
+					_greenTensorAtoA?.Dispose();
 
 			var	gt = new AtoAGreenTensorCalculatorComponent (this)
-					.CalculateGreenTensor ();
+				.CalculateGreenTensor (_greenTensorAtoA);
 			
             OnAtoAGreenTensorCalculated(new AtoAGreenTensorCalculatedEventArgs(gt));
 

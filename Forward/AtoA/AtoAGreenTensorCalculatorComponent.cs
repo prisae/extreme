@@ -65,7 +65,7 @@ namespace Extreme.Cartesian.Forward
             }
         }
 
-        public GreenTensor CalculateGreenTensor()
+		public GreenTensor CalculateGreenTensor(GreenTensor gt)
         {
             using (Profiler?.StartAuto(ProfilerEvent.GreenAtoATotal))
             {
@@ -73,7 +73,7 @@ namespace Extreme.Cartesian.Forward
 				if (Solver.Engine!=ForwardSolverEngine.Giem2g)
 					tensor= CalculateExtremeGreenTensorAtoA ();
 				else
-					tensor= CalculateGiem2gGreenTensorAtoA ();
+					tensor= CalculateGiem2gGreenTensorAtoA (gt);
                 return tensor;
             }
         }
@@ -87,7 +87,7 @@ namespace Extreme.Cartesian.Forward
 			return tensor;
 		}
 
-		private GreenTensor CalculateGiem2gGreenTensorAtoA ()
+		private GreenTensor CalculateGiem2gGreenTensorAtoA (GreenTensor gt)
 		{
 			using (Profiler?.StartAuto(ProfilerEvent.GreenTensorAtoA))
 			{
@@ -96,7 +96,7 @@ namespace Extreme.Cartesian.Forward
 				using (Profiler?.StartAuto(ProfilerEvent.GreenTensorAtoACalc))
 				{
 					MemoryUtils.PrintMemoryReport("Before GIEM2G tensor", Logger, MemoryProvider);
-					tensor = Giem2gGreenTensor.CalcAtoATensor (Solver);
+					tensor = Giem2gGreenTensor.CalcAtoATensor (Solver,gt);
 					MemoryUtils.PrintMemoryReport("after GIEM2G tensor", Logger, MemoryProvider);
 
 				}
