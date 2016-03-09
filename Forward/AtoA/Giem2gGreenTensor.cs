@@ -86,7 +86,6 @@ namespace Extreme.Cartesian.Green
 			if (buff.Plan3Nz.BufferLength == giem2g_ie_op.fft_buffers_length) {
 				giem2g_ie_op.fft_buffer_in = buff.Plan3Nz.Buffer1Ptr;
 				giem2g_ie_op.fft_buffer_out =buff.Plan3Nz.Buffer2Ptr;
-				buff.Plan3Nz.
 			} else {
 				var len = giem2g_ie_op.fft_buffers_length;
 				giem2g_ie_op.fft_buffer_in = solver.MemoryProvider.AllocateComplex (len);

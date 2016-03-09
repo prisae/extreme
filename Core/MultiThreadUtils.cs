@@ -19,7 +19,6 @@ namespace Extreme.Cartesian.Core
                 if (int.TryParse(omp, out degree))
                     MaxDegreeOfParallelism = degree;
 
-	    MaxDegreeOfParallelism=1; 
         }
 public		static int NumberOfOpenMPThreads()
 		{		
