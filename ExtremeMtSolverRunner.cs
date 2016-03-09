@@ -80,7 +80,10 @@ namespace ExtremeMt
 
             var fs = _project.ForwardSettings;
 
-            ForwardLoggerHelper.WriteStatus(_logger, $"Number of hankels: {fs.NumberOfHankels}");
+			if (fs.NumberOfHankels >0)
+            	ForwardLoggerHelper.WriteStatus(_logger, $"Number of hankels: {fs.NumberOfHankels}");
+			else
+				ForwardLoggerHelper.WriteStatus(_logger, $"Using GIEM2G as forward solver engine");
             ForwardLoggerHelper.WriteStatus(_logger, $"Target residual  : {fs.Residual}");
             ForwardLoggerHelper.WriteStatus(_logger, $"InnerBufferLength: {fs.InnerBufferLength}");
             ForwardLoggerHelper.WriteStatus(_logger, $"OuterBufferLength: {fs.OuterBufferLength}");
