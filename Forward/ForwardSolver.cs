@@ -24,7 +24,7 @@ namespace Extreme.Cartesian.Forward
         private AnomalyCurrentFgmresSolver _fgmresSolver;
 
 
-		public  ForwardSolverEngine Engine { get; private set; }= ForwardSolverEngine.X3dTotal;
+		public  ForwardSolverEngine Engine { get; private set; }= ForwardSolverEngine.X3dScattered;
 
 
 
@@ -300,6 +300,8 @@ namespace Extreme.Cartesian.Forward
 					CalculateJqFromTotalField(anom.Zeta, k, eScattered,  zeta, jQ, ac => GetLayerAccessorZ(ac, layerIndex));
 				}
             }
+
+		
         }
 
         private void CalculateScatteredFieldFromChi(AnomalyCurrent chi, AnomalyCurrent jScattered, Complex[,,] zetas, int k, Complex zeta, AnomalyCurrent eScattered, Func<AnomalyCurrent, ILayerAccessor> getLa)

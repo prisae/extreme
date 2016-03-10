@@ -168,7 +168,6 @@ namespace Extreme.Cartesian.Green
 			var giem2g_ptrs = new List<IntPtr> ();
 
 			var tmp1=(memoryProvider.AllocateBytes(giem2g_ie_op.tensor_size));
-//			var tmp1=giem2g_ie_op.giem2g_tensor;
 			giem2g_ie_op.giem2g_tensor=tmp1;			
 			giem2g_ptrs.Add (tmp1);
 

@@ -193,9 +193,10 @@ namespace Extreme.Cartesian.Green.Tensor
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(this.GetType().ToString());
-		if (Has("giem2g")) 
-			Giem2gGreenTensor.DeleteGiem2gTensor (_basePtrs [0]);
-		_basePtrs.ForEach (ptr => _memoryProvider?.ReleaseMemory (ptr));
+			if (Has("giem2g")) 
+				Giem2gGreenTensor.DeleteGiem2gTensor (_basePtrs [0]);
+			
+			_basePtrs.ForEach (ptr => _memoryProvider?.ReleaseMemory (ptr));
             _components = null;
 
             _isDisposed = true;
