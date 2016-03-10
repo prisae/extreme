@@ -125,7 +125,7 @@ namespace Extreme.Cartesian.Green
 				giem2g_ie_op.fft_buffer_out = solver.MemoryProvider.AllocateComplex (len);
 				solver.Logger.WriteError ("Allocate additinal memory for FFT inside GIEM2G!!");
 			}
-			var giem2g_ptrs = AllocateGiem2gDataBuffers (solver.MemoryProvider, ref giem2g_ie_op);
+			var giem2g_ptrs = AllocateGiem2gDataBuffers (solver.MemoryProvider, ref giem2g_ie_op,nz);
 
 
 			giem2g_prepare_ie_kernel (anomaly, giem2g_ie_op);
@@ -163,17 +163,30 @@ namespace Extreme.Cartesian.Green
 			giem2g_calc_delete_ie_operator (giem2g_ie_op);
 		}
 
-		private static List<IntPtr> AllocateGiem2gDataBuffers (INativeMemoryProvider memoryProvider, ref giem2g_data giem2g_ie_op)
+		private static List<IntPtr> AllocateGiem2gDataBuffers (INativeMemoryProvider memoryProvider, ref giem2g_data giem2g_ie_op,int nz)
 		{
 			var giem2g_ptrs = new List<IntPtr> ();
 
-			var tmp1=giem2g_ie_op.giem2g_tensor;
+			var tmp1=(memoryProvider.AllocateBytes(giem2g_ie_op.tensor_size));
+//			var tmp1=giem2g_ie_op.giem2g_tensor;
+			giem2g_ie_op.giem2g_tensor=tmp1;			
 			giem2g_ptrs.Add (tmp1);
 
 			var tmp2 =  (memoryProvider.AllocateComplex (giem2g_ie_op.ie_kernel_buffer_length));
 			giem2g_ptrs.Add (new IntPtr(tmp2));
 			giem2g_ie_op.kernel_buffer = tmp2;
 
+			var dz=(memoryProvider.AllocateDouble (nz));
+			giem2g_ie_op.dz=dz;
+			giem2g_ptrs.Add(new IntPtr(dz));
+
+			var sqsigb=(memoryProvider.AllocateDouble (nz));
+			giem2g_ie_op.sqsigb=sqsigb;
+			giem2g_ptrs.Add(new IntPtr(sqsigb));
+
+			var csigb=(memoryProvider.AllocateComplex (nz));
+			giem2g_ie_op.csigb=csigb;
+			giem2g_ptrs.Add(new IntPtr(csigb));
 			return giem2g_ptrs;
 		}
 
@@ -188,9 +201,9 @@ namespace Extreme.Cartesian.Green
 			public long fft_buffers_length;
 			public long comm;
 			public IntPtr giem2g_tensor;
-			public IntPtr dz;
-			public IntPtr sqsigb;
-			public IntPtr csigb;
+			public double* dz;
+			public double* sqsigb;
+			public Complex* csigb;
 			public Complex* kernel_buffer;
 			public Complex* fft_buffer_in;
 			public Complex* fft_buffer_out;
