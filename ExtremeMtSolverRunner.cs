@@ -56,7 +56,7 @@ namespace ExtremeMt
 
             foreach (var frequency in _project.Frequencies)
             {
-                ForwardLoggerHelper.WriteStatus(_logger, $"\t\t\tFrequecy {frequency}, {freqCounter++} of {_project.Frequencies.Count}");
+                ForwardLoggerHelper.WriteStatus(_logger, $"\t\t\tFrequecy {frequency}, {++freqCounter} of {_project.Frequencies.Count}");
                 var omegaModel = OmegaModelBuilder.BuildOmegaModel(model, frequency);
                 _profiler.ClearAllRecords();
 
@@ -118,11 +118,13 @@ namespace ExtremeMt
 
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
-
+			
             //ProfilerResultsTextExporter.SaveRawProfilingResults(Path.Combine(dir, $"rawprofile{freqStr}.xml"), model, _profiler);
 
             var records = _profiler.GetAllRecords();
+
             var analizer = new ProfilerStatisticsAnalyzer(records);
+
             var analisisResult = analizer.PerformAnalysis();
 
 
