@@ -51,9 +51,9 @@ namespace Extreme.Cartesian.Forward
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             Settings = settings;
-			if (Settings.NumberOfHankels <0) {
+			if (Settings.NumberOfHankels <=0) {
 				Engine=ForwardSolverEngine.Giem2g;
-				Giem2gGreenTensor.giem2g_set_logger(Logger.WriteStatus);
+				Giem2gGreenTensor.giem2g_set_logger(logger.WriteStatus);
 			}
         }
 
@@ -66,9 +66,10 @@ namespace Extreme.Cartesian.Forward
 		public ForwardSolver With(ForwardSolverEngine engine)
 		{
 			Engine = engine;
+			_greenTensorAtoA?.Dispose();
 			if (Engine==ForwardSolverEngine.Giem2g)
 				Giem2gGreenTensor.giem2g_set_logger(Logger.WriteStatus);
-			_greenTensorAtoA?.Dispose();
+			
 			return this;
 		}
 
@@ -124,7 +125,6 @@ namespace Extreme.Cartesian.Forward
             Logger.WriteStatus("Starting Green Tensor AtoA");
 			if (Engine!=ForwardSolverEngine.Giem2g)
 					_greenTensorAtoA?.Dispose();
-
 			var	gt = new AtoAGreenTensorCalculatorComponent (this)
 				.CalculateGreenTensor (_greenTensorAtoA);
 			

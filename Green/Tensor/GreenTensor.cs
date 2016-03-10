@@ -117,8 +117,11 @@ namespace Extreme.Cartesian.Green.Tensor
             };
         }
 
-        public bool Has(string component)
-            => _components.ContainsKey(component.ToLower());
+		public bool Has(string component){
+			if (_components == null)
+				return false;
+             return _components.ContainsKey(component.ToLower());
+		}
 
         public Component this[string component]
         {

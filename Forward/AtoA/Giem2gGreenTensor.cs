@@ -27,24 +27,28 @@ namespace Extreme.Cartesian.Green
 			var bkg=new giem2g_background();
 			var anomaly=new giem2g_anomaly();
 
+			GreenTensor gt_new;
 
 
 
 			PrepareBkgAndAnomaly (solver, ref bkg, ref anomaly);
-			solver.Logger.WriteError ("wtf 1");
+
+
+
+			giem2g_set_logger(solver.Logger.WriteStatus);
+
 			IntPtr ie_op_ptr;
 
-			if (gt == null) {
-				
-				PrepareGIEM2GTensor (solver, ref giem2g_ie_op, anomaly);
-				solver.Logger.WriteError ("wtf 2");
+			if (gt == null||!gt.Has("giem2g")) {
+				gt_new= PrepareGIEM2GTensor (solver, ref giem2g_ie_op, anomaly);
 				ie_op_ptr = giem2g_ie_op.giem2g_tensor;
 			}else{
 				ie_op_ptr =new IntPtr( gt ["giem2g"].Ptr);
+				gt_new = gt;
 			}
 
 
-			solver.Logger.WriteError ("wtf");
+
 
 			var omega = solver.Model.Omega;
 
@@ -57,7 +61,7 @@ namespace Extreme.Cartesian.Green
 
 
 
-			return gt;
+			return gt_new;
 		}
 
 		static void PrepareBkgAndAnomaly (ForwardSolver solver, ref giem2g_background bkg, ref giem2g_anomaly anomaly)
@@ -108,10 +112,10 @@ namespace Extreme.Cartesian.Green
 			giem2g_ie_op.comm = solver.Mpi.CommunicatorC2Fortran ();
 			giem2g_calc_data_sizes (anomaly, ref giem2g_ie_op);
 
-			solver.Logger.WriteError ("wtf 33");
+
 
 			var buff = FftBuffersPool.GetBuffer (solver.Model);
-			if (buff.Plan3Nz.BufferLength == giem2g_ie_op.fft_buffers_length) {
+			if (buff.Plan3Nz.BufferLength >= giem2g_ie_op.fft_buffers_length) {
 				giem2g_ie_op.fft_buffer_in = buff.Plan3Nz.Buffer1Ptr;
 				giem2g_ie_op.fft_buffer_out = buff.Plan3Nz.Buffer2Ptr;
 			}
@@ -121,12 +125,12 @@ namespace Extreme.Cartesian.Green
 				giem2g_ie_op.fft_buffer_out = solver.MemoryProvider.AllocateComplex (len);
 				solver.Logger.WriteError ("Allocate additinal memory for FFT inside GIEM2G!!");
 			}
-			var giem2g_ptrs = AllocateGiem2gDataBuffers (solver.MemoryProvider, ref giem2g_ie_op, nz);
-			solver.Logger.WriteError ("wtf 55");
+			var giem2g_ptrs = AllocateGiem2gDataBuffers (solver.MemoryProvider, ref giem2g_ie_op);
+
 
 			giem2g_prepare_ie_kernel (anomaly, giem2g_ie_op);
 
-			solver.Logger.WriteError ("wtf 44");
+
 
 			var gt = GreenTensor.CreateGiem2gTensor (solver.MemoryProvider, nx, ny, nz, nz, giem2g_ptrs);
 			return gt;
@@ -159,7 +163,7 @@ namespace Extreme.Cartesian.Green
 			giem2g_calc_delete_ie_operator (giem2g_ie_op);
 		}
 
-		private static List<IntPtr> AllocateGiem2gDataBuffers (INativeMemoryProvider memoryProvider, ref giem2g_data giem2g_ie_op, int nz)
+		private static List<IntPtr> AllocateGiem2gDataBuffers (INativeMemoryProvider memoryProvider, ref giem2g_data giem2g_ie_op)
 		{
 			var giem2g_ptrs = new List<IntPtr> ();
 
