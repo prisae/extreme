@@ -171,7 +171,8 @@
     <Compile Include="Model\LoadAndSave\SerializationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forward\ForwardSolverEngine.cs" />
-    <Compile Include="Forward\AtoA\Giem2gGreenTensor.cs" />
+    <Compile Include="Forward\AtoA\GIEM2G\Giem2gGreenTensor.cs" />
+    <Compile Include="Forward\AtoA\GIEM2G\GIEM2GLoggerEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Extreme.Core\Extreme.Core.csproj">
@@ -215,4 +216,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="Forward\AtoA\GIEM2G\" />
+  </ItemGroup>
 </Project>

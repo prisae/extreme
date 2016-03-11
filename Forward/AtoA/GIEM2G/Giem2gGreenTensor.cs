@@ -14,7 +14,7 @@ using Extreme.Cartesian.Fft;
 using Extreme.Parallel;
 using Extreme.Cartesian.Logger;
 
-namespace Extreme.Cartesian.Green
+namespace Extreme.Cartesian.Giem2g
 {
 	[SuppressUnmanagedCodeSecurity]
 	public static unsafe class Giem2gGreenTensor
@@ -35,7 +35,7 @@ namespace Extreme.Cartesian.Green
 
 
 
-			giem2g_set_logger(solver.Logger.WriteStatus);
+			//giem2g_set_logger(GIEM2G_LOGGER);
 
 			IntPtr ie_op_ptr;
 
@@ -226,7 +226,14 @@ namespace Extreme.Cartesian.Green
 			public IntPtr dz;
 		}
 
+		public static event EventHandler<GIEM2GLoggerEventArgs> GIEM2G_Message;
 
+		public static void GIEM2G_LOGGER(string str){
+			
+			var e = new GIEM2GLoggerEventArgs (str);
+			GIEM2G_Message?.Invoke (str,e);
+
+		}
 
 		public unsafe delegate void giem2g_logger(string str);
 

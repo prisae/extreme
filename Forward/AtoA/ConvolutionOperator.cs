@@ -9,7 +9,7 @@ using Extreme.Core.Model;
 using UNM = Extreme.Cartesian.Forward.UnsafeNativeMethods;
 using System.Collections.Generic;
 using Extreme.Cartesian.Green;
-
+using Extreme.Cartesian.Giem2g;
 namespace Extreme.Cartesian.Forward
 {
     public unsafe class ConvolutionOperator : ForwardSolverComponent, IDisposable

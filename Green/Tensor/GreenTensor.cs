@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using Extreme.Core;
 using UNM = Extreme.Cartesian.Forward.UnsafeNativeMethods;
 using System.ComponentModel;
+using Extreme.Cartesian.Giem2g;
 
 namespace Extreme.Cartesian.Green.Tensor
 {

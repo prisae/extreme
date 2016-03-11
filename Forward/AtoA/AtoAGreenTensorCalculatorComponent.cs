@@ -8,7 +8,7 @@ using Extreme.Cartesian.Green.Tensor.Impl;
 using Extreme.Cartesian.Model;
 using Extreme.Core;
 using Extreme.Parallel;
-
+using Extreme.Cartesian.Giem2g;
 namespace Extreme.Cartesian.Forward
 {
     public unsafe class AtoAGreenTensorCalculatorComponent : ForwardSolverComponent
