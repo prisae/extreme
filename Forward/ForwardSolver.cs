@@ -14,6 +14,7 @@ using Extreme.Parallel;
 using Microsoft.SqlServer.Server;
 using Extreme.Cartesian.Green;
 using Extreme.Cartesian.Giem2g;
+using System.Runtime.Remoting.Channels;
 
 namespace Extreme.Cartesian.Forward
 {
@@ -70,7 +71,8 @@ namespace Extreme.Cartesian.Forward
 			_greenTensorAtoA?.Dispose();
 			if (Engine == ForwardSolverEngine.Giem2g) {
 				Giem2gGreenTensor.GIEM2G_Message += Giem2gLoggerRequest;
-			} 
+			} else {
+			}
 			
 			return this;
 		}
@@ -103,7 +105,8 @@ namespace Extreme.Cartesian.Forward
         }
 
 		private void Giem2gLoggerRequest(object sender, GIEM2GLoggerEventArgs e){
-			Logger.WriteStatus (e.Message);
+			if (this==sender)
+				Logger.WriteStatus (e.Message);
 		}
 
         protected void SetModel(OmegaModel model)

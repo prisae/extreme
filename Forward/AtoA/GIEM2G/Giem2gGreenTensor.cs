@@ -19,7 +19,7 @@ namespace Extreme.Cartesian.Giem2g
 	[SuppressUnmanagedCodeSecurity]
 	public static unsafe class Giem2gGreenTensor
 	{
-		
+		private static ForwardSolver current_solver;
 
 		public static GreenTensor CalcAtoATensor(ForwardSolver solver, GreenTensor gt)
 		{
@@ -28,7 +28,7 @@ namespace Extreme.Cartesian.Giem2g
 			var anomaly=new giem2g_anomaly();
 
 			GreenTensor gt_new;
-
+			current_solver = solver;
 
 
 			PrepareBkgAndAnomaly (solver, ref bkg, ref anomaly);
@@ -123,7 +123,7 @@ namespace Extreme.Cartesian.Giem2g
 				var len = giem2g_ie_op.fft_buffers_length;
 				giem2g_ie_op.fft_buffer_in = solver.MemoryProvider.AllocateComplex (len);
 				giem2g_ie_op.fft_buffer_out = solver.MemoryProvider.AllocateComplex (len);
-				solver.Logger.WriteError ("Allocate additinal memory for FFT inside GIEM2G!!");
+				solver.Logger.WriteError ("Allocate additional memory for FFT inside GIEM2G!!");
 			}
 			var giem2g_ptrs = AllocateGiem2gDataBuffers (solver.MemoryProvider, ref giem2g_ie_op,nz);
 
@@ -231,7 +231,7 @@ namespace Extreme.Cartesian.Giem2g
 		public static void GIEM2G_LOGGER(string str){
 			
 			var e = new GIEM2GLoggerEventArgs (str);
-			GIEM2G_Message?.Invoke (str,e);
+			GIEM2G_Message?.Invoke (current_solver,e);
 
 		}
 
