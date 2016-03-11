@@ -25,7 +25,7 @@ namespace Extreme.Cartesian.Forward
         private AnomalyCurrentFgmresSolver _fgmresSolver;
 
 
-		public  ForwardSolverEngine Engine { get; private set; }= ForwardSolverEngine.X3dTotal;
+		public  ForwardSolverEngine Engine { get; private set; }= ForwardSolverEngine.X3dScattered;
 
 
 
