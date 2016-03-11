@@ -167,14 +167,15 @@ namespace Extreme.Cartesian.Green
 		{
 			var giem2g_ptrs = new List<IntPtr> ();
 
-			var tmp1=(memoryProvider.AllocateBytes(giem2g_ie_op.tensor_size));
-			giem2g_ie_op.giem2g_tensor=tmp1;			
+//			var tmp1=(memoryProvider.AllocateBytes(giem2g_ie_op.tensor_size));
+//			giem2g_ie_op.giem2g_tensor=tmp1;			
+			var tmp1=giem2g_ie_op.giem2g_tensor;
 			giem2g_ptrs.Add (tmp1);
 
 			var tmp2 =  (memoryProvider.AllocateComplex (giem2g_ie_op.ie_kernel_buffer_length));
 			giem2g_ptrs.Add (new IntPtr(tmp2));
 			giem2g_ie_op.kernel_buffer = tmp2;
-
+/*
 			var dz=(memoryProvider.AllocateDouble (nz));
 			giem2g_ie_op.dz=dz;
 			giem2g_ptrs.Add(new IntPtr(dz));
@@ -185,7 +186,7 @@ namespace Extreme.Cartesian.Green
 
 			var csigb=(memoryProvider.AllocateComplex (nz));
 			giem2g_ie_op.csigb=csigb;
-			giem2g_ptrs.Add(new IntPtr(csigb));
+			giem2g_ptrs.Add(new IntPtr(csigb));*/
 			return giem2g_ptrs;
 		}
 
