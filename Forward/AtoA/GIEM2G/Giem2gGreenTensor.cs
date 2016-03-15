@@ -101,6 +101,7 @@ namespace Extreme.Cartesian.Giem2g
 			anomaly.dx = (double)model.LateralDimensions.CellSizeX;
 			anomaly.dy = (double)model.LateralDimensions.CellSizeY;
 
+
 		}
 
 		static GreenTensor PrepareGIEM2GTensor (ForwardSolver solver, ref giem2g_data giem2g_ie_op, giem2g_anomaly anomaly)
