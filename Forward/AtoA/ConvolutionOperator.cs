@@ -149,9 +149,9 @@ namespace Extreme.Cartesian.Forward
 			var zetas = Model.Anomaly.Zeta;
 
 			long index = 0;
-			for (int i = 0; i < nx; i++)
-				for (int j = 0; j < ny; j++)
-					for (int k = 0; k < nz; k++)
+			for (int k = 0; k < nz; k++)
+				for (int i = 0; i < nx; i++)
+					for (int j = 0; j < ny; j++)
 					{
 					_rFunction [index++] = zetas [i, j, k];
 					}
