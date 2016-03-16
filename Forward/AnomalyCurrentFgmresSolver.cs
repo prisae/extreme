@@ -115,14 +115,14 @@ namespace Extreme.Cartesian.Convolution
         {
             using (_solver.Profiler?.StartAuto(ProfilerEvent.CalcDotProduct))
             {
-                for (int k = 0; k < e.NumberOfDotProducts; k++)
-                    CalculateProductConjugatedLeft(e.Length, e.X + e.Length * k, e.Y, e.Result + k);
+				for (long k = 0; k < e.NumberOfDotProducts; k++)
+					CalculateProductConjugatedLeft(e.Length, e.X + e.Length * k, e.Y, e.Result + k);
 
                 _numberOfDotProducts += e.NumberOfDotProducts;
 
                 if (_solver.IsParallel)
                 {
-                    for (int i = 0; i < e.NumberOfDotProducts; i++)
+					for (long i = 0; i < e.NumberOfDotProducts; i++)
                         e.Result[i] = _solver.Mpi.AllReduce(_solver.Pool.RealModelPartCommunicator, e.Result[i]);
                 }
             }
