@@ -30,7 +30,7 @@ namespace Extreme.Cartesian.Core
 
         public long GetFullLength() => Nx * Ny * Nz * 3;
 
-        public Complex* this[int linearIndex]
+		public Complex* this[long linearIndex]
             => Ptr + linearIndex;
 
         public static AnomalyCurrent ReUseMemory(Complex* ptr, int nx, int ny, int nz)

@@ -223,7 +223,21 @@ namespace Extreme.Cartesian.Forward
 				_convolutionOperator.PrepareOperator (_greenTensorAtoA, OperatorType.Chi0);
 				_convolutionOperator.Apply (jScattered, chi0);
 			}else{
-				Copy(jScattered,chi0);	
+				if (Engine == ForwardSolverEngine.Giem2g) {
+					var nx = Model.Anomaly.LocalSize.Nx;
+					var ny = Model.Anomaly.LocalSize.Ny;
+					var nz = Model.Nz;
+					long ind1 = 0;
+					long ind2 = 0;
+					for (int k = 0; k < 3*nz; k++)
+						for (int i = 0; i < nx; i++)
+							for (int j = 0; j < ny; j++)
+							{
+								ind2 = k + 3 * nz * (j + i * LocalNy);
+								chi0.Ptr[ind1++] =jScattered.Ptr[ind2];
+							}
+					//Copy (jScattered, chi0);	
+				}
 			}
         }
 
@@ -263,10 +277,30 @@ namespace Extreme.Cartesian.Forward
 
         #endregion
 
-        #region After CIE, Befor Observations
+        #region After CIE, Before Observations
 
         sealed protected override void CalculateEScatteredFrom(AnomalyCurrent chi, AnomalyCurrent jScattered, AnomalyCurrent eScattered)
         {
+
+			if (Engine == ForwardSolverEngine.Giem2g) {
+				var nx = Model.Anomaly.LocalSize.Nx;
+				var ny = Model.Anomaly.LocalSize.Ny;
+				var nz = Model.Nz;
+				long ind1 = 0;
+				long ind2 = 0;
+				for (int i = 0; i < nx; i++)
+					for (int j = 0; j < ny; j++)
+						for (int k = 0; k < 3*nz; k++)
+						{
+							ind2 = j + ny * (i + k * nx);
+							eScattered.Ptr[ind1++] =chi.Ptr[ind2];
+						}
+				Copy (eScattered,chi);
+			}
+
+
+
+
             for (int k = 0; k < Model.Anomaly.Layers.Count; k++)
             {
                 var layer = Model.Anomaly.Layers[k];
@@ -293,6 +327,10 @@ namespace Extreme.Cartesian.Forward
         sealed protected override void CalculateJqFrom(AnomalyCurrent eScattered, AnomalyCurrent jScattered, AnomalyCurrent jQ)
         {
             var anom = Model.Anomaly;
+
+
+
+
 
             for (int k = 0; k < Model.Anomaly.Layers.Count; k++)
             {
