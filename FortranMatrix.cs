@@ -17,27 +17,27 @@ namespace Extreme.Fgmres
 
         public FortranMatrix(INativeMemoryProvider memoryProvider, int nx, int ny)
         {
-            _ptr = memoryProvider.AllocateComplex(nx * ny);
+            _ptr = memoryProvider.AllocateComplex(((long) nx) * ny);
             Nx = nx;
             Ny = ny;
             _memoryProvider = memoryProvider;
         }
 
-        public Complex this[int i, int j]
+        public Complex this[long i, long j]
         {
             get { return _ptr[j * Nx + i]; }
             set { _ptr[j * Nx + i] = value; }
         }
         
-        public Complex* GetPointer(int i, int j)
+        public Complex* GetPointer(long i, long j)
             => _ptr + j * Nx + i;
 
         public Complex* Ptr => _ptr;
 
-        public Complex* GetColumn(int j)
+        public Complex* GetColumn(long j)
              => _ptr + j * Nx;
 
-        public NativeVector GetColumnVector(int i)
+        public NativeVector GetColumnVector(long i)
              => new NativeVector(GetColumn(i), Nx);
 
         public void Dispose()
@@ -45,7 +45,7 @@ namespace Extreme.Fgmres
 
         public void FillAll(Complex value)
         {
-            for (int i = 0; i < Nx * Ny; i++)
+            for (long i = 0; i < Nx * Ny; i++)
                 _ptr[i] = value;
         }
     }

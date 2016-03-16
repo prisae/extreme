@@ -24,7 +24,7 @@ namespace Extreme.Fgmres
             Length = length;
         }
 
-        public Complex this[int i]
+        public Complex this[long i]
         {
             get { return _ptr[i]; }
             set { _ptr[i] = value; }
