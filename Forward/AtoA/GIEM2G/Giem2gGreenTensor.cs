@@ -176,7 +176,7 @@ namespace Extreme.Cartesian.Giem2g
 			var tmp2 =  (memoryProvider.AllocateComplex (giem2g_ie_op.ie_kernel_buffer_length));
 			giem2g_ptrs.Add (new IntPtr(tmp2));
 			giem2g_ie_op.kernel_buffer = tmp2;
-/*
+
 			var dz=(memoryProvider.AllocateDouble (nz));
 			giem2g_ie_op.dz=dz;
 			giem2g_ptrs.Add(new IntPtr(dz));
@@ -187,7 +187,7 @@ namespace Extreme.Cartesian.Giem2g
 
 			var csigb=(memoryProvider.AllocateComplex (nz));
 			giem2g_ie_op.csigb=csigb;
-			giem2g_ptrs.Add(new IntPtr(csigb));*/
+			giem2g_ptrs.Add(new IntPtr(csigb));
 			return giem2g_ptrs;
 		}
 
