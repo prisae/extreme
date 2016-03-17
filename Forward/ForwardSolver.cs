@@ -233,7 +233,7 @@ namespace Extreme.Cartesian.Forward
 						for (int i = 0; i < nx; i++)
 							for (int j = 0; j < ny; j++)
 							{
-								ind2 = k + 3 * nz * (j + i * LocalNy);
+								ind2 = k + 3 * nz * (j + i * ny);
 								chi0.Ptr[ind1++] =jScattered.Ptr[ind2];
 							}
 					//Copy (jScattered, chi0);	
