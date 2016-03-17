@@ -13,6 +13,7 @@ using Extreme.Core.Model;
 using Extreme.Cartesian.Fft;
 using Extreme.Parallel;
 using Extreme.Cartesian.Logger;
+using System.Security.Policy;
 
 namespace Extreme.Cartesian.Giem2g
 {
@@ -74,15 +75,25 @@ namespace Extreme.Cartesian.Giem2g
 			var model = solver.Model;
 			var section = model.Section1D;
 
+
+
+
+
 			var n = section.NumberOfLayers;
+			int first = 0;
+			if (model.GetLayerDepth (0) < 0) {
+				n = n - 1;
+				first = 1;
+			}
 
 			bkg.nl = n - 1;
 			var thick = solver.MemoryProvider.AllocateDouble (bkg.nl - 1);
 			var csigb = solver.MemoryProvider.AllocateComplex (bkg.nl + 1);
 			for (int i = 0; i < bkg.nl - 1; i++)
-				thick [i] = (double)section [i + 1].Thickness;
-			for (int i = 0; i < bkg.nl + 1; i++)
-				csigb [i] = section [i].Zeta;
+				thick [i] = (double)section [i + 1+first].Thickness;
+			for (int i = 0; i < bkg.nl + 1; i++) 
+				csigb [i] = section [i+first].Zeta;
+
 			bkg.thickness = new IntPtr (thick);
 			bkg.csigb = new IntPtr (csigb);
 			var z = solver.MemoryProvider.AllocateDouble (nz + 1);
