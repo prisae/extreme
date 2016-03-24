@@ -56,6 +56,7 @@ namespace Extreme.Cartesian.Forward
 				Engine=ForwardSolverEngine.Giem2g;
 				Giem2gGreenTensor.giem2g_set_logger(Giem2gGreenTensor.GIEM2G_LOGGER);
 				Giem2gGreenTensor.GIEM2G_Message+=Giem2gLoggerRequest;
+				CieSolverFinished+=Giem2gGreenTensor.PrintStats;
 			}
         }
 
@@ -71,6 +72,7 @@ namespace Extreme.Cartesian.Forward
 			_greenTensorAtoA?.Dispose();
 			if (Engine == ForwardSolverEngine.Giem2g) {
 				Giem2gGreenTensor.GIEM2G_Message += Giem2gLoggerRequest;
+				CieSolverFinished+=Giem2gGreenTensor.PrintStats;
 			} else {
 			}
 			
@@ -257,7 +259,11 @@ namespace Extreme.Cartesian.Forward
 
         private void OnCieSolverFinished(AnomalyCurrent chi)
         {
-            CieSolverFinished?.Invoke(this, new CieSolverFinishedEventArgs(chi));
+			if (Engine != ForwardSolverEngine.Giem2g) {
+				CieSolverFinished?.Invoke (this, new CieSolverFinishedEventArgs (chi));
+			}else{
+				CieSolverFinished?.Invoke (this, new CieSolverFinishedEventArgs (chi, _greenTensorAtoA));
+			}
         }
 
         sealed protected override void SolveEquationFor(AnomalyCurrent chi0, AnomalyCurrent chi)

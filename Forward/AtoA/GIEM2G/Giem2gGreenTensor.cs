@@ -14,6 +14,7 @@ using Extreme.Cartesian.Fft;
 using Extreme.Parallel;
 using Extreme.Cartesian.Logger;
 using System.Security.Policy;
+using System.Xml;
 
 namespace Extreme.Cartesian.Giem2g
 {
@@ -170,6 +171,20 @@ namespace Extreme.Cartesian.Giem2g
 
 		}
 
+
+		public static void PrintStats(object sender, CieSolverFinishedEventArgs e){
+
+			if (sender == current_solver) {
+
+				var gt = e.Gt;
+
+				IntPtr ie_op = new IntPtr (gt ["giem2g"].Ptr);
+
+				giem2g_print_stats (ie_op);
+			}
+
+		}
+
 		public static void DeleteGiem2gTensor (IntPtr giem2g_ie_op)
 		{
 			giem2g_calc_delete_ie_operator (giem2g_ie_op);
@@ -274,6 +289,10 @@ namespace Extreme.Cartesian.Giem2g
 
 		[DllImport(LibName, EntryPoint = "giem2g_set_logger")]
 		public static extern void giem2g_set_logger(giem2g_logger gl);
+
+
+		[DllImport(LibName, EntryPoint = "giem2g_print_stats")]
+		private static extern void giem2g_print_stats(IntPtr giem2g_ie_op);
 	}
 
 }
