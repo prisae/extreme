@@ -23,7 +23,20 @@ namespace Extreme.Cartesian.Model
                 }
             }
         }
-
+		public static void WriteAnomalyDataToGIEM2GFormat(double[,,] sigma, string fileName)
+		{
+			using (var sw = new StreamWriter(fileName))
+			{
+				for (int i = 0; i < sigma.GetLength(1); i++)
+				{
+					for (int j = 0; j < sigma.GetLength(0); j++){
+						for (int k = 0; k < sigma.GetLength(2); k++)
+							sw.Write("{0} ", sigma[j, i, k]);
+						sw.WriteLine ();
+					}
+				}
+			}
+		}
         public static void ReadAnomalyDataFromPlainText(LinesReader lr,  double[,,] sigma, int k)
         {
             int nx = sigma.GetLength(0);
