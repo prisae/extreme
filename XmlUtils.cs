@@ -123,6 +123,17 @@ namespace Extreme.Core
             return int.Parse(attr.Value, NumberStyles.Integer, CultureInfo.InvariantCulture);
         }
 
+		public static decimal AttributeAsDecimalOrZero(this XElement xelem, string name)
+		{
+			var attr = xelem.Attribute(name);
+
+			if (attr == null)
+				return 0;
+
+			return decimal.Parse(attr.Value);
+		}
+
+
         public static int? AttributeAsIntOrNull(this XElement xelem, string name)
         {
             var attr = xelem.Attribute(name);
