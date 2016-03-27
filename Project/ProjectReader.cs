@@ -118,8 +118,8 @@ namespace Extreme.Cartesian.Project
         {
             var z = xelem.AttributeAsDecimal(ObservationLevelZCoordinateAttr);
 
-            int xShift = xelem.AttributeAsIntOrZero(ObservationLevelXShiftAttr);
-            int yShift = xelem.AttributeAsIntOrZero(ObservationLevelYShiftAttr);
+            decimal xShift = xelem.AttributeAsDecimalOrZero(ObservationLevelXShiftAttr);
+			decimal yShift = xelem.AttributeAsDecimalOrZero(ObservationLevelYShiftAttr);
 
             var name = xelem.AttributeAsStringOrEmpty(ObservationLevelNameAttr);
 
