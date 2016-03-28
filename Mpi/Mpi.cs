@@ -124,7 +124,7 @@ namespace Extreme.Parallel
         public int BroadCast(IntPtr comm, int root, int value)
         {
             Bcast(&value, 1, Int, root, comm);
-            return value;
+           return value;
         }
 
         public void AllGatherV(Complex* src, int sendSize, Complex* dst, int[] rCounts, int[] rDispl)
@@ -145,6 +145,13 @@ namespace Extreme.Parallel
                 Bcast(ptr, values.Length, Double, root, comm);
         }
 
+		public void BroadCast(IntPtr comm, int root, int[,,] values)
+		{
+			fixed (int* ptr = &values[0,0,0])
+				BroadCast (comm, 0, ptr, values.Length);
+		}
+
+
         public void BroadCast(IntPtr comm, int root, Complex[] values)
         {
             fixed (Complex* ptr = &values[0])
@@ -161,6 +168,11 @@ namespace Extreme.Parallel
         {
             Bcast(values, length, Complex, root, comm);
         }
+
+		public void BroadCast(IntPtr comm, int root, int* values, int length)
+		{
+			Bcast(values, length, Int, root, comm);
+		}
 
 
         public void Barrier()
