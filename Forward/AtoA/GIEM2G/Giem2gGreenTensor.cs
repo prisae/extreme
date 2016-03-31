@@ -104,6 +104,12 @@ namespace Extreme.Cartesian.Giem2g
 				dz [i] = (double)model.Anomaly.Layers [i].Thickness;
 			}
 			z [nz] = z [nz - 1] + dz [nz - 1];
+
+
+			for (int i = 0; i < nz; i++) {
+				solver.Logger.WriteWarning ($"{z[i]} {dz[i]}");
+			}
+
 			anomaly.nz = nz;
 			// ATTENTION ! formal transpose in horizontal dimensions!!
 			anomaly.nx = ny;
