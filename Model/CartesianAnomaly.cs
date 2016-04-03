@@ -20,7 +20,7 @@ namespace Extreme.Cartesian.Model
 
         public void CreateSigma()
         {
-            Sigma = new double[LocalSize.Nx, LocalSize.Ny, Layers.Count];
+			Sigma = new double[(long)LocalSize.Nx,(long) LocalSize.Ny, (long)Layers.Count];
         }
         
         public void ChangeLocalSize(Size2D size)
