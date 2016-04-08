@@ -173,6 +173,7 @@
     <Compile Include="Forward\ForwardSolverEngine.cs" />
     <Compile Include="Forward\AtoA\GIEM2G\Giem2gGreenTensor.cs" />
     <Compile Include="Forward\AtoA\GIEM2G\GIEM2GLoggerEventArgs.cs" />
+    <Compile Include="Forward\TensorCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Extreme.Core\Extreme.Core.csproj">

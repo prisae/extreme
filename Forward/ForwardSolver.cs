@@ -15,6 +15,7 @@ using Microsoft.SqlServer.Server;
 using Extreme.Cartesian.Green;
 using Extreme.Cartesian.Giem2g;
 using System.Runtime.Remoting.Channels;
+using System.Globalization;
 
 namespace Extreme.Cartesian.Forward
 {
@@ -111,7 +112,7 @@ namespace Extreme.Cartesian.Forward
 				Logger.WriteStatus (e.Message);
 		}
 
-        protected void SetModel(OmegaModel model)
+		protected void SetModel(OmegaModel model, TensorCache tensors=null)
         {
             if (IsParallel)
                 Mpi.CheckNumberOfProcesses(model.LateralDimensions);
@@ -127,8 +128,11 @@ namespace Extreme.Cartesian.Forward
 			if (_convolutionOperator == null) 
 				_convolutionOperator = new ConvolutionOperator (this);
 
-
-            _aToOCalculator.CleanGreenTensors();
+			if (tensors == null) {
+				_aToOCalculator.CleanGreenTensors ();
+			} else {
+				_aToOCalculator.SetTensors (tensors.eGreenTensors, tensors.hGreenTensors);
+			}
         }
 
         protected void CalculateGreenTensor()

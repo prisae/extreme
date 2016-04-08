@@ -260,7 +260,7 @@ namespace Extreme.Cartesian.Giem2g
 		}
 
 		public static event EventHandler<GIEM2GLoggerEventArgs> GIEM2G_Message;
-
+		[MonoPInvokeCallback (typeof (giem2g_logger))]
 		public static void GIEM2G_LOGGER(string str){
 			
 			var e = new GIEM2GLoggerEventArgs (str);
@@ -301,4 +301,10 @@ namespace Extreme.Cartesian.Giem2g
 		private static extern void giem2g_print_stats(IntPtr giem2g_ie_op);
 	}
 
+
+public class MonoPInvokeCallbackAttribute : System.Attribute
+{
+	private Type type;
+	public MonoPInvokeCallbackAttribute( Type t ) { type = t; }
+}
 }
