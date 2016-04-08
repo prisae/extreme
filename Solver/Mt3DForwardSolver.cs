@@ -82,25 +82,29 @@ namespace Extreme.Cartesian.Magnetotellurics
             return GatherSolution();
         }
 
-        public ResultsContainer SolveWithoutGather(OmegaModel model, GreenTensor aToA = null)
+		public ResultsContainer SolveWithoutGather(OmegaModel model, TensorCache tensors=null)
         {
-            SolvePrivate(model, aToA);
+			
+			if (tensors==null)
+				SolvePrivate(model, null,tensors);
+			else
+				SolvePrivate(model, tensors.gtAtoA,tensors);
             return GatherSolutionLocally();
         }
 
-        private void SolvePrivate(OmegaModel model, GreenTensor aToA)
+		private void SolvePrivate(OmegaModel model, GreenTensor aToA,TensorCache tensors=null)
         {
             Logger.WriteStatus("Starting Cartesian MT Forward solver...");
-
+		
             using (Profiler?.StartAuto(ProfilerEvent.ForwardSolving))
             {
-                SetModel(model);
+				SetModel(model,tensors);
 
 				if (aToA == null) 
 					CalculateGreenTensor ();
 				else
                     SetNewGreenTensor(aToA);
-
+				
                 SolverPolarizationX();
                 SolverPolarizationY();
             }
