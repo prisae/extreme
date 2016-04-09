@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <ProjectGuid>{B7D2EC67-13AE-4EC7-AF4D-3771E75CB305}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -22,6 +22,8 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -32,6 +34,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -81,15 +84,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Extreme.Cartesian\Extreme.Cartesian.csproj">
-      <Project>{d37795f3-44bd-4103-8f7e-cab1ceba7109}</Project>
+      <Project>{D37795F3-44BD-4103-8F7E-CAB1CEBA7109}</Project>
       <Name>Extreme.Cartesian</Name>
     </ProjectReference>
     <ProjectReference Include="..\Extreme.Core\Extreme.Core.csproj">
-      <Project>{19ca12f6-2eb8-4ab2-b93f-28fddfe0be3c}</Project>
+      <Project>{19CA12F6-2EB8-4AB2-B93F-28FDDFE0BE3C}</Project>
       <Name>Extreme.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Extreme.Mpi\Extreme.Parallel.csproj">
-      <Project>{484d7def-8596-483f-8a39-9c10ba1f6e53}</Project>
+      <Project>{484D7DEF-8596-483F-8A39-9C10BA1F6E53}</Project>
       <Name>Extreme.Parallel</Name>
     </ProjectReference>
   </ItemGroup>
