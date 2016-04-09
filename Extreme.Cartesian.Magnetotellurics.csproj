@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <ProjectGuid>{FB98C663-09D8-4C04-86FD-D70A8228264E}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -22,6 +22,8 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -33,6 +35,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -74,15 +77,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FftWrap\FftWrap\FftWrap.csproj">
-      <Project>{5cb1047e-437f-4bf3-a2e3-5a43c9cba91e}</Project>
+      <Project>{5CB1047E-437F-4BF3-A2E3-5A43C9CBA91E}</Project>
       <Name>FftWrap</Name>
     </ProjectReference>
     <ProjectReference Include="..\Extreme.Cartesian\Extreme.Cartesian.csproj">
-      <Project>{d37795f3-44bd-4103-8f7e-cab1ceba7109}</Project>
+      <Project>{D37795F3-44BD-4103-8F7E-CAB1CEBA7109}</Project>
       <Name>Extreme.Cartesian</Name>
     </ProjectReference>
     <ProjectReference Include="..\Extreme.Core\Extreme.Core.csproj">
-      <Project>{19ca12f6-2eb8-4ab2-b93f-28fddfe0be3c}</Project>
+      <Project>{19CA12F6-2EB8-4AB2-B93F-28FDDFE0BE3C}</Project>
       <Name>Extreme.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Extreme.Fgmres\Extreme.Fgmres.csproj">
