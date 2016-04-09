@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -14,6 +14,8 @@
     <ProjectGuid>{5D05D399-AFBD-45AA-9AF6-6DAB997FCEFC}</ProjectGuid>
     <RootNamespace>PorvemCKernel</RootNamespace>
     <ProjectName>Native.Matrix</ProjectName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -23,6 +25,12 @@
     <CharacterSet>MultiByte</CharacterSet>
     <UseIntelMKL>Parallel</UseIntelMKL>
     <UseMpiLibrary>MSMPI</UseMpiLibrary>
+    <OutputPath>.</OutputPath>
+    <IncludePath>C:\Program Files %28x86%29\Intel\Composer XE 2013 SP1\mkl\include;$(IncludePath)</IncludePath>
+    <TargetExt>.dll</TargetExt>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>ntv_math</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -32,6 +40,11 @@
     <UseIntelMKL>Parallel</UseIntelMKL>
     <PlatformToolset>Intel C++ Compiler XE 15.0</PlatformToolset>
     <UseMpiLibrary>MSMPI</UseMpiLibrary>
+    <OutputPath>.</OutputPath>
+    <IncludePath>C:\Program Files %28x86%29\Intel\Composer XE 2013 SP1\mkl\include;$(IncludePath)</IncludePath>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>ntv_math</TargetName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -43,19 +56,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Program Files %28x86%29\Intel\Composer XE 2013 SP1\mkl\include;$(IncludePath)</IncludePath>
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
-    <LinkIncremental>false</LinkIncremental>
-    <TargetName>ntv_math</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Program Files %28x86%29\Intel\Composer XE 2013 SP1\mkl\include;$(IncludePath)</IncludePath>
-    <TargetExt>.dll</TargetExt>
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
-    <LinkIncremental>false</LinkIncremental>
-    <TargetName>ntv_math</TargetName>
-  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
