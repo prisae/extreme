@@ -89,18 +89,21 @@ namespace ModelCreaters
 
                 var thick0 = (double)(maxZ - minZ) * (mesh.GeometricRation - 1.0) / (Math.Pow(mesh.GeometricRation, mesh.Nz) - 1);
 
-                decimal nextZ = Math.Floor((decimal)((double)z0 + thick0));
+                //decimal nextZ = Math.Floor((decimal)((double)z0 + thick0));
+				decimal nextZ = ((decimal)((double)z0 + thick0));
                 anomalyFragmentation.Add(nextZ);
 
                 for (int i = 1; i < mesh.Nz - 1; i++)
                 {
                     var thick = thick0 * Math.Pow(mesh.GeometricRation, i);
 
-                    nextZ = Math.Floor((decimal)((double)nextZ + thick));
+                    //nextZ = Math.Floor((decimal)((double)nextZ + thick));
+					nextZ = ((decimal)((double)nextZ + thick));
                     anomalyFragmentation.Add(nextZ);
                 }
 
                 anomalyFragmentation.Add(maxZ);
+
             }
             else
             {
