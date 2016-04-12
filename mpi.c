@@ -25,6 +25,8 @@ DLLEXPORT MPI_Op GetMpiOpSum() { return MPI_SUM; }
 
 DLLEXPORT MpiType GetCommWorld() { return MPI_COMM_WORLD; }
 
+DLLEXPORT MpiType GetCommNull() { return MPI_COMM_NULL; }
+
 DLLEXPORT MpiType GetMpiInt() { return MPI_INT; }
 
 DLLEXPORT MpiType GetMpiFloat() { return MPI_FLOAT; }
@@ -57,9 +59,9 @@ DLLEXPORT int Barrier(MPI_Comm comm)
 	return MPI_Barrier(comm);
 }
 
-DLLEXPORT int AllGatherV(void* sendbuf, int size, void* rbuf, int *recvcounts, int *displs)
+DLLEXPORT int AllGatherV(void* sendbuf, int size, void* rbuf, int *recvcounts, int *displs, MPI_Comm comm)
 {
-	return MPI_Allgatherv(sendbuf, size, MPI_DOUBLE_COMPLEX, rbuf, recvcounts, displs, MPI_DOUBLE_COMPLEX, MPI_COMM_WORLD);
+	return MPI_Allgatherv(sendbuf, size, MPI_DOUBLE_COMPLEX, rbuf, recvcounts, displs, MPI_DOUBLE_COMPLEX, comm);
 }
 
 DLLEXPORT int Gather(void *sendbuf, int sendcount, void *recvbuf, int recvcount, int root, MPI_Comm comm)
@@ -67,9 +69,9 @@ DLLEXPORT int Gather(void *sendbuf, int sendcount, void *recvbuf, int recvcount,
 	return MPI_Gather(sendbuf, sendcount, MPI_DOUBLE_COMPLEX, recvbuf, recvcount, MPI_DOUBLE_COMPLEX, root, comm);
 }
 
-DLLEXPORT int GatherV(void* sendbuf, int size, void* rbuf, int *recvcounts, int *displs)
+DLLEXPORT int GatherV(void* sendbuf, int size, void* rbuf, int *recvcounts, int *displs, MPI_Comm comm)
 {
-	return MPI_Gatherv(sendbuf, size, MPI_DOUBLE_COMPLEX, rbuf, recvcounts, displs, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD);
+	return MPI_Gatherv(sendbuf, size, MPI_DOUBLE_COMPLEX, rbuf, recvcounts, displs, MPI_DOUBLE_COMPLEX, 0, comm);
 }
 
 DLLEXPORT int AllReduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Comm comm)
@@ -113,6 +115,7 @@ DLLEXPORT int GetProcessorName(char *name, int *resultlen)
 	return MPI_Get_processor_name(name, resultlen);
 }
 
+
 DLLEXPORT int GetCommWorldRank(int* rank)
 {
 	return MPI_Comm_rank(MPI_COMM_WORLD, rank);
@@ -122,6 +125,20 @@ DLLEXPORT int GetCommWorldSize(int* size)
 {
 	return MPI_Comm_size(MPI_COMM_WORLD, size);
 }
+
+
+
+DLLEXPORT int GetCommRank(MPI_Comm comm, int* rank)
+{
+	return MPI_Comm_rank(comm, rank);
+}
+
+DLLEXPORT int GetCommSize(MPI_Comm comm,int* size)
+{
+	return MPI_Comm_size(comm, size);
+}
+
+
 
 DLLEXPORT int CommCreate(MPI_Comm comm, MPI_Group group, MPI_Comm *newcomm)
 {
@@ -156,9 +173,9 @@ DLLEXPORT int Recv(void *buf, int count, MPI_Datatype datatype, int source, int 
 	return err;
 }
 
-DLLEXPORT int SendComplexMatrix(void* data, int nx, int ny, int destination, int tag)
+DLLEXPORT int SendComplexMatrix(void* data, int nx, int ny, int destination, int tag, MPI_Comm comm)
 {
-	return MPI_Send(data, nx*ny, MPI_DOUBLE_COMPLEX, destination, tag, MPI_COMM_WORLD);
+	return MPI_Send(data, nx*ny, MPI_DOUBLE_COMPLEX, destination, tag, comm);
 }
 
 DLLEXPORT int AllToAllDoubleComplex(complex16 *sendbuf, int sendcount, void *recvbuf, int recvcount, MPI_Comm comm)
