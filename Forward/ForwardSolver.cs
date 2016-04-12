@@ -37,9 +37,11 @@ namespace Extreme.Cartesian.Forward
 
         public ForwardSettings Settings { get; }
         public OmegaModel Model { get; private set; }
-        public Mpi Mpi { get; private set; }
+		public FftBuffer Pool => FftBuffersPool.GetBuffer(Model);
 
-        public FftBuffer Pool => FftBuffersPool.GetBuffer(Model);
+        public Mpi Mpi { get; private set; }
+		public Mpi MpiRealPart =>Pool.RealModelPart;
+		        
         public bool IsParallel => Mpi != null && Mpi.IsParallel;
 
 

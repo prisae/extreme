@@ -51,7 +51,6 @@
     <Compile Include="Fft\CustomFft\CustomDistributedFft.cs" />
     <Compile Include="Fft\CustomFft\CustomFftPlan.cs" />
     <Compile Include="Fft\CustomFft\UnsafeArray.cs" />
-    <Compile Include="Fft\FftW\FftwPlan.cs" />
     <Compile Include="Fft\IFftBufferPlan.cs" />
     <Compile Include="Forward\EventArgs\AtoAGreenTensorCalculatedEventArgs.cs" />
     <Compile Include="Forward\EventArgs\CieSolverStartedEventArgs.cs" />
@@ -78,9 +77,6 @@
     <Compile Include="Core\LayerAccessor.cs" />
     <Compile Include="Core\MultiThreadUtils.cs" />
     <Compile Include="DebugUtils.cs" />
-    <Compile Include="Fft\FftW\FftWTransform.cs" />
-    <Compile Include="Fft\FftW\FftWMemoryProvider.cs" />
-    <Compile Include="Fft\FftW\DistributedFftWTransform.cs" />
     <Compile Include="Forward\EventArgs\CieSolverFinishedEventArgs.cs" />
     <Compile Include="Forward\AtoA\ConvolutionOperator.cs" />
     <Compile Include="Forward\AtoA\AtoAGreenTensorCalculatorComponent.cs" />
@@ -89,7 +85,6 @@
     <Compile Include="Forward\ForwardSolverComponent.cs" />
     <Compile Include="Forward\ForwardSolverGenerics.cs" />
     <Compile Include="Forward\NewTaskEventArgs.cs" />
-    <Compile Include="Forward\SimpleParallelManager.cs" />
     <Compile Include="Green\Scalar\GreenScalars.cs" />
     <Compile Include="Green\Scalar\Impl\AuxContainerFast.cs" />
     <Compile Include="Green\Scalar\Impl\NativeEnvelop.cs" />
@@ -174,6 +169,9 @@
     <Compile Include="Forward\AtoA\GIEM2G\Giem2gGreenTensor.cs" />
     <Compile Include="Forward\AtoA\GIEM2G\GIEM2GLoggerEventArgs.cs" />
     <Compile Include="Forward\TensorCache.cs" />
+    <Compile Include="Fft\FftW\FftWTransform.cs" />
+    <Compile Include="Fft\FftW\FftwPlan.cs" />
+    <Compile Include="Fft\FftW\FftWMemoryProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Extreme.Core\Extreme.Core.csproj">

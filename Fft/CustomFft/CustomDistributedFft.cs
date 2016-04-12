@@ -131,7 +131,7 @@ namespace Extreme.Cartesian.Fft
             data.BackwardX = new FftwPlan(0, 0, 0, handlerPlanXBackward);
         }
 
-        private static void Create1DFftPlansY(CustomFftPlan data, uint flags)
+        private  void Create1DFftPlansY(CustomFftPlan data, uint flags)
         {
             var pNy = new int[] { data.Ny, };
             var dy = data.Ny;
@@ -152,7 +152,7 @@ namespace Extreme.Cartesian.Fft
             data.BackwardY = new FftwPlan(0, 0, 0, handlerPlanYBackward);
         }
 
-        private static void CreateTransposePlan(CustomFftPlan data, uint flags)
+        private  void CreateTransposePlan(CustomFftPlan data, uint flags)
         {
             var n = new IntPtr(2 * data.NumberOfLocalFftsAlongSecondDimension * data.LocalNx);
             var np = new IntPtr(data.NumberOfMpiProcesses);
@@ -161,7 +161,7 @@ namespace Extreme.Cartesian.Fft
             var input = new IntPtr(data.Input.Ptr);
             var output = new IntPtr(data.Output.Ptr);
 
-            var handler = FftwMpi.PlanManyTranspose(np, np, n, one, one, input, output, Mpi.CommWorld, flags);
+			var handler = FftwMpi.PlanManyTranspose(np, np, n, one, one, input, output, _mpi.Communicator, flags);
             data.TransposePlan = new FftwPlan(np.ToInt32(), np.ToInt32(), n.ToInt32(), handler);
         }
 

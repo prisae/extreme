@@ -90,10 +90,10 @@ namespace Extreme.Cartesian.Convolution
         }
 
         private int RecvCommandFromMaster()
-            => _solver.Mpi.BroadCast(Mpi.CommWorld, Mpi.Master, 0);
+            => _solver.Mpi.BroadCast(_solver.Mpi.Master, 0);
 
         private void SendCommand(int command)
-            => _solver.Mpi.BroadCast(Mpi.CommWorld, Mpi.Master, command);
+		=> _solver.Mpi.BroadCast(_solver.Mpi.Master, command);
 
         private void _solver_MatrixVectorMultRequest(object sender, MatrixVectorMultRequestEventArgs e)
         {
@@ -123,7 +123,7 @@ namespace Extreme.Cartesian.Convolution
                 if (_solver.IsParallel)
                 {
 					for (long i = 0; i < e.NumberOfDotProducts; i++)
-                        e.Result[i] = _solver.Mpi.AllReduce(_solver.Pool.RealModelPartCommunicator, e.Result[i]);
+                        e.Result[i] = _solver.MpiRealPart.AllReduce(e.Result[i]);
                 }
             }
         }

@@ -107,7 +107,7 @@ namespace Extreme.Cartesian.Model
                     else if (nxLength != 0)
                     {
                         fixed (double* data = &sigma[0, 0, 0])
-                            mpi.Send(data, sendLength, Mpi.Double, rank, 0, Mpi.CommWorld);
+                            mpi.Send(data, sendLength, Mpi.Double, rank, 0);
                     }
                 }
             }
@@ -127,7 +127,7 @@ namespace Extreme.Cartesian.Model
                 	for (int k = 0; k < anomaly.Layers.Count; k++)
                 	{
                         var actualSource = 0;
-                        mpi.Recv(data, recvLength, Mpi.Double, 0, 0, Mpi.CommWorld, out actualSource);
+                        mpi.Recv(data, recvLength, Mpi.Double, 0, 0,  out actualSource);
 						for (int i = 0; i < nxLength; i++)
 							for (int j = 0; j < model.Anomaly.LocalSize.Ny; j++)
 								model.Anomaly.Sigma[i, j, k] = sigma[i, j, 0];
