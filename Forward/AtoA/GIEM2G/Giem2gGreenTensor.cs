@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Collections.Generic;
 using Extreme.Cartesian.Forward;
-using Extreme.Core;
 using Extreme.Core.Model;
 using Extreme.Cartesian.Fft;
 using Extreme.Parallel;

@@ -26,8 +26,8 @@ namespace Extreme.Cartesian.Fft
         private CustomDistributedFft CustomFft { get; set; }
         private FftWTransform LocalFft { get; set; }
 
-        public IntPtr RealModelPartCommunicator { get; private set; }
-
+        //public IntPtr RealModelPartCommunicator { get; private set; }
+		public Mpi RealModelPart { get; private set; }
         private bool IsParallel { get; set; }
 
         public FftBuffer(INativeMemoryProvider memoryProvider, IProfiler profiler = null)
@@ -62,7 +62,8 @@ namespace Extreme.Cartesian.Fft
             var localSize3Nz = CustomDistributedFft.GetLocalSize(mpi, nx * 2, ny * 2, 3 * nz);
 
             var ranks = Enumerable.Range(0, mpi.Size / 2).ToArray();
-            RealModelPartCommunicator = mpi.CreateNewCommunicator(ranks);
+
+            RealModelPart = mpi.NewCommunicator(ranks);
 
             _inputBuffer = _memoryProvider.AllocateComplex(localSize3Nz);
             _outputBuffer = _memoryProvider.AllocateComplex(localSize3Nz);

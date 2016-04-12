@@ -21,15 +21,13 @@ namespace Extreme.Cartesian.Forward
             {
                 var result = AnomalyCurrent.AllocateNew(solver.MemoryProvider, solver.Model.Nx, solver.Model.Ny, 1);
 
-                solver.Mpi.Gather(solver.Pool.RealModelPartCommunicator,
-                    result.Ptr, field.Ptr, size, size);
+                solver.MpiRealPart.Gather(result.Ptr, field.Ptr, size, size);
 
                 return result;
             }
             else
             {
-                solver.Mpi.Gather(solver.Pool.RealModelPartCommunicator,
-                 null, field.Ptr, 0, size);
+				solver.MpiRealPart.Gather(null, field.Ptr, 0, size);
 
                 return null;
             }
