@@ -19,9 +19,9 @@ namespace Extreme.Parallel
             Complex localLinuxMemory = (double)LinuxMemoryFileReader.GetTotalMemoryInMiB();
             var linuxMemory = new Complex[mpi?.Size ?? 1];
 
-            mpi?.Gather(Mpi.CommWorld, nativeMemory, localNativeMemory);
-            mpi?.Gather(Mpi.CommWorld, managedMemory, localManagedMemory);
-            mpi?.Gather(Mpi.CommWorld, linuxMemory, localLinuxMemory);
+            mpi?.Gather(nativeMemory, localNativeMemory);
+            mpi?.Gather(managedMemory, localManagedMemory);
+            mpi?.Gather(linuxMemory, localLinuxMemory);
 
             if (mpi?.IsMaster ?? true)
             {

@@ -27,7 +27,7 @@ namespace Extreme.Parallel
 
             unsafe
             {
-                int error = GetCommWorldRankNative(&result);
+                int error = GetCommWorldRank(&result);
 
                 if (error != 0)
                     throw new InvalidOperationException("Can't get rank");

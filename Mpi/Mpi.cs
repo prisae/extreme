@@ -5,14 +5,18 @@ using System.Text;
 using static Extreme.Parallel.UnsafeNativeMethods;
 using UNM = Extreme.Parallel.UnsafeNativeMethods;
 using System.ComponentModel.Design;
+using System.Runtime.Remoting.Messaging;
 
 namespace Extreme.Parallel
 {
     public unsafe class Mpi : IDisposable
     {
-        public const int Master = 0;
+        public readonly int Master = 0;
 
-        public static readonly IntPtr CommWorld = GetCommWorld();
+        private static readonly IntPtr CommWorld = GetCommWorld();
+
+		private static readonly IntPtr CommNull =GetCommNull();
+
         public static readonly IntPtr Int = GetMpiInt();
         public static readonly IntPtr Float = GetMpiFloat();
         public static readonly IntPtr Double = GetMpiDouble();
@@ -28,9 +32,10 @@ namespace Extreme.Parallel
         {
             UnsafeNativeMethods.Init();
 
-            _rank = GetWorldRank();
-            _size = GetWorldSize();
-        }
+			_rank = UnsafeNativeMethods.GetWorldRank ();
+			_size = UnsafeNativeMethods.GetWorldSize ();
+			}
+
 
         private static bool _initialized = false;
 
@@ -48,67 +53,96 @@ namespace Extreme.Parallel
                 _initialized = true;
             }
         }
+		public Mpi(IntPtr comm)
+		{
+			if (_initialized) {
+					Communicator = comm;
+
+					int rank;
+					int size;
+					int err;
+					err = UnsafeNativeMethods.GetCommRank (comm, &rank);
+					
+					if (err != 0)
+						throw new InvalidOperationException (GetErrorString (err));
+					_rank = rank;
+
+					err = UnsafeNativeMethods.GetCommSize (comm, &size);
+					if (err != 0)
+						throw new InvalidOperationException (GetErrorString (err));
+
+					_size = size;
+			} 
+		}
+		public Mpi NewCommunicator (params int[] ranks)
+		{
+			var comm=CreateNewCommunicator(ranks);
+			if (comm != CommNull)
+				return new Mpi (comm);
+			else
+				return null;
+		}
 
         public bool IsParallel => Size > 1;
         public int Size => _size;
         public int Rank => _rank;
-        public bool IsMaster => _rank == 0;
+        public bool IsMaster => _rank == Master;
 		public IntPtr Communicator { get; private set; }=CommWorld;
 
-        private void WithErrorHandling(int err)
+        private static void WithErrorHandling(int err)
         {
             if (err != 0)
                 throw new InvalidOperationException(GetErrorString(err));
         }
 
-        public IntPtr CreateNewCommunicator(params int[] ranks)
+        private IntPtr CreateNewCommunicator(params int[] ranks)
         {
             IntPtr group;
-            CommGroup(CommWorld, &@group);
+            CommGroup(Communicator, &@group);
 
             IntPtr newGroup;
             GroupIncl(@group, ranks.Length, ranks, &newGroup);
 
             IntPtr newComm;
-            CommCreate(CommWorld, newGroup, &newComm);
+			CommCreate(Communicator, newGroup, &newComm);
 
             return newComm;
         }
 
-        public Complex AllReduce(IntPtr comm, Complex value)
+        public Complex AllReduce(Complex value)
         {
             Complex result;
-            UnsafeNativeMethods.AllReduce(&value, &result, 1, Complex, comm);
+			UnsafeNativeMethods.AllReduce(&value, &result, 1, Complex, Communicator);
 
             return result;
         }
 
-        public double AllReduce(IntPtr comm, double value)
+        public double AllReduce(double value)
         {
             double result;
-            UnsafeNativeMethods.AllReduce(&value, &result, 1, Double, comm);
+			UnsafeNativeMethods.AllReduce(&value, &result, 1, Double, Communicator);
             return result;
         }
 
-		public int AllReduce(IntPtr comm, int value)
+		public int AllReduce(int value)
 		{
 			int result;
-			UnsafeNativeMethods.AllReduce(&value, &result, 1, Int, comm);
+			UnsafeNativeMethods.AllReduce(&value, &result, 1, Int, Communicator);
 			return result;
 		}
 
 
-        public void Reduce(IntPtr comm, double* value, double* result, int length)
+        public void Reduce(double* value, double* result, int length)
         {
-            UnsafeNativeMethods.Reduce(value, result, length, Double, comm);
+			UnsafeNativeMethods.Reduce(value, result, length, Double, Communicator);
         }
 
-		public void LogicalReduce(IntPtr comm, double* value, double* result, int length)
+		public void LogicalReduce(double* value, double* result, int length)
 		{
-			UnsafeNativeMethods.LogicalReduce(value, result, length, comm);
+			UnsafeNativeMethods.LogicalReduce(value, result, length, Communicator);
 		}
 
-		public long CommunicatorC2Fortran(IntPtr comm)
+		public static long CommunicatorC2Fortran(IntPtr comm)
 		{
 			return UnsafeNativeMethods.CommunicatorC2Fortran(comm);
 		}
@@ -118,73 +152,74 @@ namespace Extreme.Parallel
 			return CommunicatorC2Fortran(this.Communicator);
 		}
 
-        public void Barrier(IntPtr comm)
+		public static void Barrier(IntPtr comm)
             => WithErrorHandling(UnsafeNativeMethods.Barrier(comm));
 
-        public int BroadCast(IntPtr comm, int root, int value)
+		public void Barrier()
+		=> WithErrorHandling(UnsafeNativeMethods.Barrier(Communicator));
+
+        public int BroadCast(int root, int value)
         {
-            Bcast(&value, 1, Int, root, comm);
+			Bcast(&value, 1, Int, root, Communicator);
            return value;
         }
 
         public void AllGatherV(Complex* src, int sendSize, Complex* dst, int[] rCounts, int[] rDispl)
         {
             fixed (int* cntPtr = &rCounts[0], dsplPtr = &rDispl[0])
-                UnsafeNativeMethods.AllGatherV(src, sendSize, dst, cntPtr, dsplPtr);
+			UnsafeNativeMethods.AllGatherV(src, sendSize, dst, cntPtr, dsplPtr,Communicator);
         }
 
         public void GatherV(Complex* src, int sendSize, Complex* dst, int[] rCounts, int[] rDispl)
         {
             fixed (int* cntPtr = &rCounts[0], dsplPtr = &rDispl[0])
-                UnsafeNativeMethods.GatherV(src, sendSize, dst, cntPtr, dsplPtr);
+			UnsafeNativeMethods.GatherV(src, sendSize, dst, cntPtr, dsplPtr,Communicator);
         }
 
-        public void BroadCast(IntPtr comm, int root, double[] values)
+        public void BroadCast( int root, double[] values)
         {
             fixed (double* ptr = &values[0])
-                Bcast(ptr, values.Length, Double, root, comm);
+			Bcast(ptr, values.Length, Double, root, Communicator);
         }
 
-		public void BroadCast(IntPtr comm, int root, int[,,] values)
+		public void BroadCast( int root, int[,,] values)
 		{
 			fixed (int* ptr = &values[0,0,0])
-				BroadCast (comm, 0, ptr, values.Length);
+				BroadCast ( root, ptr, values.Length);
 		}
 
 
-        public void BroadCast(IntPtr comm, int root, Complex[] values)
+        public void BroadCast(int root, Complex[] values)
         {
             fixed (Complex* ptr = &values[0])
-                Bcast(ptr, values.Length, Complex, root, comm);
+			Bcast(ptr, values.Length, Complex, root, Communicator);
         }
 
-        public void BroadCast(IntPtr comm, int root, double* values, int length)
+        public void BroadCast(int root, double* values, int length)
         {
-            Bcast(values, length, Double, root, comm);
+            Bcast(values, length, Double, root, Communicator);
         }
 
 
-        public void BroadCast(IntPtr comm, int root, Complex* values, int length)
+        public void BroadCast(int root, Complex* values, int length)
         {
-            Bcast(values, length, Complex, root, comm);
+			Bcast(values, length, Complex, root, Communicator);
         }
 
-		public void BroadCast(IntPtr comm, int root, int* values, int length)
+		public void BroadCast( int root, int* values, int length)
 		{
-			Bcast(values, length, Int, root, comm);
+			Bcast(values, length, Int, root, Communicator);
 		}
 
 
-        public void Barrier()
-            => Barrier(CommWorld);
 
-        public int Send(void* data, int count, IntPtr datatype, int dest, int tag, IntPtr comm)
-            => UNM.Send(data, count, datatype, dest, tag, comm);
+        public int Send(void* data, int count, IntPtr datatype, int dest, int tag)
+		=> UNM.Send(data, count, datatype, dest, tag, Communicator);
 
-        public int Recv(void* data, int count, IntPtr datatype, int source, int tag, IntPtr comm, out int actualSource)
-            => UNM.Recv(data, count, datatype, source, tag, comm, out actualSource);
+        public int Recv(void* data, int count, IntPtr datatype, int source, int tag, out int actualSource)
+		=> UNM.Recv(data, count, datatype, source, tag, Communicator, out actualSource);
 
-        public string GetErrorString(int error)
+        public static string GetErrorString(int error)
             => UNM.GetErrorString(error);
 
         public string GetProcessorName()
@@ -200,22 +235,23 @@ namespace Extreme.Parallel
             return Encoding.ASCII.GetString(name, 0, length);
         }
 
-        public void Gather(IntPtr comm, Complex* dst, Complex* src, int dstSize, int srcSize)
+	
+        public void Gather(Complex* dst, Complex* src, int dstSize, int srcSize)
         {
-            UNM.Gather(src, srcSize, dst, dstSize, Master, comm);
+			UNM.Gather(src, srcSize, dst, dstSize, Master, Communicator);
         }
 
-        public void Gather(IntPtr comm, Complex[] dst, Complex src)
+        public void Gather(Complex[] dst, Complex src)
         {
             fixed (Complex* dstPtr = &dst[0])
-                UNM.Gather(&src, 1, dstPtr, 1, Master, comm);
+				UNM.Gather(&src, 1, dstPtr, 1, Master, Communicator);
         }
 
         public void AllToAll(Complex* buffer, int size)
-            => AllToAllDoubleComplexInPlace(buffer, size, CommWorld);
+		=> AllToAllDoubleComplexInPlace(buffer, size, Communicator);
 
         public void AllToAll(Complex* src, int srcSize, Complex* dst, int dstSize)
-            => AllToAllDoubleComplex(src, srcSize, dst, dstSize, CommWorld);
+		=> AllToAllDoubleComplex(src, srcSize, dst, dstSize, Communicator);
 
         public void Dispose()
         {

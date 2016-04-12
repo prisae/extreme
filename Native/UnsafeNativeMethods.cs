@@ -18,10 +18,10 @@ namespace Extreme.Parallel
         public static extern unsafe int AllToAllDoubleComplexInPlace(Complex* recvbuf, int recvcount, IntPtr comm);
 
         [DllImport(MpiWrapper)]
-        unsafe public static extern int GatherV(Complex* sendbuf, int size, Complex* rbuf, int* recvcounts, int* displs);
+		unsafe public static extern int GatherV(Complex* sendbuf, int size, Complex* rbuf, int* recvcounts, int* displs, IntPtr comm);
 
         [DllImport(MpiWrapper)]
-        unsafe public static extern int AllGatherV(Complex* sendbuf, int size, Complex* rbuf, int* recvcounts, int* displs);
+		unsafe public static extern int AllGatherV(Complex* sendbuf, int size, Complex* rbuf, int* recvcounts, int* displs, IntPtr comm);
 
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Gather")]
         public static extern unsafe int Gather(Complex* sendbuf, int sendcount, Complex* recvbuf, int recvcount, int root, IntPtr comm);
@@ -52,11 +52,18 @@ namespace Extreme.Parallel
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetProcessorName")]
         unsafe public static extern int GetProcessorName(byte* name, ref int resultlen);
 
-        [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetCommWorldRank")]
-        unsafe private static extern int GetCommWorldRankNative(int* rank);
 
-        [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetCommWorldSize")]
-        unsafe private static extern int GetCommWorldSize(int* size);
+		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetCommWorldRank")]
+		unsafe private static extern int GetCommWorldRank(int* rank);
+
+		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetCommWorldSize")]
+		unsafe private static extern int GetCommWorldSize(int* size);
+
+        [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetCommRank")]
+        unsafe public static extern int GetCommRank(IntPtr comm, int* rank);
+
+        [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetCommSize")]
+		unsafe public static extern int GetCommSize(IntPtr comm, int* size);
 
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Bcast")]
         public static extern unsafe int Bcast(void* buffer, int count, IntPtr datatype, int root, IntPtr comm);
@@ -75,6 +82,10 @@ namespace Extreme.Parallel
 
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetCommWorld")]
         public static extern IntPtr GetCommWorld();
+
+		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetCommNull")]
+		public static extern IntPtr GetCommNull();
+
 
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetMpiInt")]
         public static extern IntPtr GetMpiInt();
