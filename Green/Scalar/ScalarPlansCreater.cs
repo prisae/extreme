@@ -23,7 +23,8 @@ namespace Extreme.Cartesian.Green.Scalar
         {
             _lateral = lateral;
             _hankel = hankel;
-            _numberOfHankels = numberOfHankels;
+
+			_numberOfHankels = Math.Abs(numberOfHankels);
         }
 
         /// <summary>
@@ -126,6 +127,7 @@ namespace Extreme.Cartesian.Green.Scalar
             var r1 = rho1[rho1.Length - 2];
 
             var step = (r2 - r1) / n;
+
 
             plan.AddNewLog10PlanItem(hankel, rho1);
 

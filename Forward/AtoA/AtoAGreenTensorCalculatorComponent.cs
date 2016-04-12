@@ -8,7 +8,7 @@ using Extreme.Cartesian.Green.Tensor.Impl;
 using Extreme.Cartesian.Model;
 using Extreme.Core;
 using Extreme.Parallel;
-
+using Extreme.Cartesian.Giem2g;
 namespace Extreme.Cartesian.Forward
 {
     public unsafe class AtoAGreenTensorCalculatorComponent : ForwardSolverComponent
@@ -24,6 +24,20 @@ namespace Extreme.Cartesian.Forward
 
         public AtoAGreenTensorCalculatorComponent(ForwardSolver solver) : base(solver)
         {
+			if (Solver.Engine == ForwardSolverEngine.Giem2g) {
+				if (!Solver.IsParallel) {
+					throw new NotImplementedException ("GIEM2G works only in parallel mode!");
+				}
+				_plan = null;
+				_scalarCalc = null;
+				_tensorCalc = null;
+				_mirroringX = false;
+				_realCalcNxStart = -1;
+				_totalNxLength = -1;
+				_calcNxLength = -1;
+				return;
+			}
+
             _plan = new ScalarPlansCreater(Model.LateralDimensions, HankelCoefficients.LoadN40(), Solver.Settings.NumberOfHankels)
                         .CreateForAnomalyToAnomaly();
 
@@ -51,21 +65,51 @@ namespace Extreme.Cartesian.Forward
             }
         }
 
-        public GreenTensor CalculateGreenTensor()
+		public GreenTensor CalculateGreenTensor(GreenTensor gt)
         {
             using (Profiler?.StartAuto(ProfilerEvent.GreenAtoATotal))
             {
-                _tensorCalc.SetNxSizes(_realCalcNxStart, _totalNxLength, _calcNxLength);
-
-                var asym = CalculateAsymGreenTensorAtoA();
-                var symm = CalculateSymmGreenTensorAtoA();
-                var tensor = GreenTensor.Merge(asym, symm);
-
+				GreenTensor tensor;
+				if (Solver.Engine!=ForwardSolverEngine.Giem2g)
+					tensor= CalculateExtremeGreenTensorAtoA ();
+				else
+					tensor= CalculateGiem2gGreenTensorAtoA (gt);
                 return tensor;
             }
         }
 
+		GreenTensor CalculateExtremeGreenTensorAtoA ()
+		{
+			_tensorCalc.SetNxSizes (_realCalcNxStart, _totalNxLength, _calcNxLength);
+			var asym = CalculateAsymGreenTensorAtoA ();
+			var symm = CalculateSymmGreenTensorAtoA ();
+			var tensor = GreenTensor.Merge (asym, symm);
+			return tensor;
+		}
 
+		private GreenTensor CalculateGiem2gGreenTensorAtoA (GreenTensor gt)
+		{
+			using (Profiler?.StartAuto(ProfilerEvent.GreenTensorAtoA))
+			{
+				GreenTensor tensor;
+
+				using (Profiler?.StartAuto(ProfilerEvent.GreenTensorAtoACalc))
+				{
+					MemoryUtils.PrintMemoryReport("Before GIEM2G tensor", Logger, MemoryProvider);
+					tensor = Giem2gGreenTensor.CalcAtoATensor (Solver,gt);
+					MemoryUtils.PrintMemoryReport("after GIEM2G tensor", Logger, MemoryProvider);
+
+				}
+
+				using (Profiler?.StartAuto(ProfilerEvent.GreenTensorAtoAFft))
+				{
+					PerformFftGiem2g(tensor, MemoryLayoutOrder.AlongVertical);
+				}
+
+				return tensor;
+			}
+
+		}
 
         private GreenTensor CalculateAsymGreenTensorAtoA()
         {
@@ -161,6 +205,8 @@ namespace Extreme.Cartesian.Forward
             MakeFftForComponent(gt, "yz", sizeAsym);
         }
 
+
+
         private void PerformFftSymm(GreenTensor gt, MemoryLayoutOrder layoutOrder)
         {
             if (layoutOrder != MemoryLayoutOrder.AlongVertical)
@@ -174,6 +220,14 @@ namespace Extreme.Cartesian.Forward
             MakeFftForComponent(gt, "yy", sizeSymm);
             MakeFftForComponent(gt, "zz", sizeSymm);
         }
+
+		private void PerformFftGiem2g(GreenTensor gt, MemoryLayoutOrder layoutOrder)
+		{
+			if (layoutOrder != MemoryLayoutOrder.AlongVertical)
+				throw new InvalidOperationException($"{nameof(layoutOrder)} should be AlongVertical to perform fft");
+
+			Giem2gGreenTensor.CalcFFTofGreenTensor (gt);
+		}
 
         private void MakeFftForComponent(GreenTensor gt, string comp, int size)
         {

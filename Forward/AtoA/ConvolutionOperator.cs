@@ -7,7 +7,9 @@ using Extreme.Cartesian.Model;
 using Extreme.Core;
 using Extreme.Core.Model;
 using UNM = Extreme.Cartesian.Forward.UnsafeNativeMethods;
-
+using System.Collections.Generic;
+using Extreme.Cartesian.Green;
+using Extreme.Cartesian.Giem2g;
 namespace Extreme.Cartesian.Forward
 {
     public unsafe class ConvolutionOperator : ForwardSolverComponent, IDisposable
@@ -46,9 +48,16 @@ namespace Extreme.Cartesian.Forward
             if (output == null) throw new ArgumentNullException(nameof(output));
 
             _input = input;
-            _output = output;
+            
 
-            CalculateOperatorAorKr();
+			_output = output;
+
+			if (_solver.Engine != ForwardSolverEngine.Giem2g) 
+				CalculateOperatorAorKr ();
+			else
+				DoWithProfiling(ApplyGiem2gOperator, ProfilerEvent.OperatorGiem2gApply);
+
+
         }
 
         public void PrepareOperator(GreenTensor greenTensor, OperatorType operatorType)
@@ -56,12 +65,15 @@ namespace Extreme.Cartesian.Forward
             if (greenTensor == null) throw new ArgumentNullException(nameof(greenTensor));
             _greenTensor = greenTensor;
             _operatorType = operatorType;
+			if (_solver.Engine != ForwardSolverEngine.Giem2g) {
+				var zeta0 = GetBackgroundZeta (Model.Anomaly, Model.Section1D);
 
-            var zeta0 = GetBackgroundZeta(Model.Anomaly, Model.Section1D);
-
-            PrepareRFunction(zeta0);
-            PrepareBackwardFactors(zeta0);
-            PrepareForwardFactors(zeta0);
+				PrepareRFunction (zeta0);
+				PrepareBackwardFactors (zeta0);
+				PrepareForwardFactors (zeta0);
+			} else {
+				PrepareGiem2gOperator ();
+			}
         }
 
         private static Complex[] GetBackgroundZeta(IAnomaly anomaly, ISection1D<IsotropyLayer> section1D)
@@ -129,7 +141,24 @@ namespace Extreme.Cartesian.Forward
                     }
         }
 
-        private void CalculateOperatorAorKr()
+		private void PrepareGiem2gOperator ()
+		{
+			var nx = Model.Anomaly.LocalSize.Nx;
+			var ny = Model.Anomaly.LocalSize.Ny;
+			var nz = Model.Nz;
+			var zetas = Model.Anomaly.Zeta;
+
+			long index = 0;
+			for (int k = 0; k < nz; k++)
+				for (int i = 0; i < nx; i++)
+					for (int j = 0; j < ny; j++)
+					{
+					_rFunction [index++] = zetas [i, j, k];
+					}
+			Giem2gGreenTensor.PrepareAnomalyConductivity (_greenTensor, _rFunction);
+		}
+
+		private void CalculateOperatorAorKr()
         {
             DoWithProfiling(ApplyOperatorR, ProfilerEvent.OperatorAApplyR);
             DoWithProfiling(PrepareForForwardFft, ProfilerEvent.OperatorAPrepareForForwardFft);
@@ -139,6 +168,12 @@ namespace Extreme.Cartesian.Forward
             DoWithProfiling(ExtractData, ProfilerEvent.OperatorAExtractAfterBackwardFft);
             DoWithProfiling(PerformLastStep, ProfilerEvent.OperatorAFinish);
         }
+
+		void ApplyGiem2gOperator ()
+		{
+			Giem2gGreenTensor.Apply (_greenTensor, _input.Ptr, _output.Ptr);
+
+		}
 
         private void DoWithProfiling(Action action, ProfilerEvent profilerEvent)
         {
@@ -259,7 +294,7 @@ namespace Extreme.Cartesian.Forward
             {
                 //for (int i = 0; i < length; i++)
                 //  {
-                long dataShift = i * 3 * nz;
+                long dataShift = i * 3L * nz;
                 long symmShift = i * symmNz;
                 long asymShift = i * asymNz;
 

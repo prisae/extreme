@@ -29,6 +29,32 @@ namespace Extreme.Cartesian.Forward
 
         #region Level
 
+
+		public void SetTensors(Dictionary<ObservationLevel, GreenTensor> gte, Dictionary<ObservationLevel, GreenTensor> gth){
+			_eGreenTensors.Clear ();
+			_hGreenTensors.Clear ();
+
+			foreach (var level in gte.Keys) {
+				/*if (_eGreenTensors.ContainsKey (level)) {
+					_eGreenTensors [level] = gte [level];
+					Console.WriteLine ("GGGG");
+				} else {
+					_eGreenTensors.Add(level, gte[level]);
+					Console.WriteLine ("NNNNN");
+				}*/
+				_eGreenTensors.Add(level, gte[level]);
+			}
+			foreach (var level in gth.Keys) {
+				/*if (_hGreenTensors.ContainsKey (level)) {
+					_hGreenTensors [level] = gth [level];
+				} else {
+					_hGreenTensors.Add(level, gth[level]);
+				}*/
+				_hGreenTensors.Add(level, gth[level]);
+			}
+				
+		}
+
         public event EventHandler<GreenTensorCalculatedEventArgs> GreenTensorECalculated;
         public event EventHandler<GreenTensorCalculatedEventArgs> GreenTensorHCalculated;
 
@@ -40,18 +66,22 @@ namespace Extreme.Cartesian.Forward
 
         public void CalculateAnomalyFieldE(ObservationLevel level, AnomalyCurrent jQ, AnomalyCurrent field)
         {
+
+
+
             if (_eGreenTensors.ContainsKey(level))
             {
+
                 using (Solver.Profiler?.StartAuto(ProfilerEvent.AtoOFields))
                 {
                     CalculateAnomalyFieldE(jQ, field, _eGreenTensors[level]);
+			
                 }
                 
                 return;
             }
-
             var greenTensor = CalculateGreenTensorAtoOLevelElectric(level);
-            var arg = new GreenTensorCalculatedEventArgs(level, greenTensor);
+			var arg = new GreenTensorCalculatedEventArgs(level, greenTensor);
             OnGreenTensorECalculated(arg);
 
             using (Solver.Profiler?.StartAuto(ProfilerEvent.AtoOFields))
@@ -218,12 +248,13 @@ namespace Extreme.Cartesian.Forward
 
         public void CleanGreenTensors()
         {
+			/*
             foreach (var greenTensor in _eGreenTensors.Values)
-                greenTensor.Dispose();
+                //greenTensor.Dispose();
 
             foreach (var greenTensor in _hGreenTensors.Values)
                 greenTensor.Dispose();
-
+			*/
             _eGreenTensors.Clear();
             _hGreenTensors.Clear();
         }

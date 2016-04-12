@@ -5,6 +5,8 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Extreme.Core;
 using UNM = Extreme.Cartesian.Forward.UnsafeNativeMethods;
+using System.ComponentModel;
+using Extreme.Cartesian.Giem2g;
 
 namespace Extreme.Cartesian.Green.Tensor
 {
@@ -95,6 +97,19 @@ namespace Extreme.Cartesian.Green.Tensor
             return gt;
         }
 
+		public static GreenTensor CreateGiem2gTensor(INativeMemoryProvider memoryProvider,int nx, int ny, int nTr, int nRc,  List<IntPtr> giem2g_ptrs)
+		{
+			var gt = new GreenTensor(memoryProvider, nx, ny, nTr, nRc);
+			var dict = new Dictionary<string, Component>();
+			dict.Add ("giem2g", new Component (gt, (Complex *)giem2g_ptrs[0]));
+			gt._components = dict;
+			gt._basePtrs.AddRange(giem2g_ptrs);
+			return gt;
+		}
+
+
+
+
         public static GreenTensor ReShape(GreenTensor gt, int nx, int ny, int nTr, int nRc)
         {
             return new GreenTensor(nx, ny, nTr, nRc)
@@ -103,8 +118,11 @@ namespace Extreme.Cartesian.Green.Tensor
             };
         }
 
-        public bool Has(string component)
-            => _components.ContainsKey(component.ToLower());
+		public bool Has(string component){
+			if (_components == null)
+				return false;
+             return _components.ContainsKey(component.ToLower());
+		}
 
         public Component this[string component]
         {
@@ -176,8 +194,12 @@ namespace Extreme.Cartesian.Green.Tensor
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(this.GetType().ToString());
-
-            _basePtrs.ForEach(ptr => _memoryProvider?.ReleaseMemory(ptr));
+			if (Has("giem2g")){ 
+				Giem2gGreenTensor.DeleteGiem2gTensor (_basePtrs [0]);
+				_memoryProvider?.ReleaseMemory (_basePtrs[1]);
+			}else{
+			_basePtrs.ForEach (ptr => _memoryProvider?.ReleaseMemory (ptr));
+			}
             _components = null;
 
             _isDisposed = true;
