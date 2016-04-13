@@ -53,7 +53,7 @@ namespace Extreme.Parallel
         public unsafe static extern int CommGroup(IntPtr comm, IntPtr* group);
 
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Init")]
-        private static extern int InitNative();
+		private unsafe static extern int InitNative(int* threads_on);
 
 		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "CommFree")]
 		public unsafe static extern int CommFree(IntPtr* comm);

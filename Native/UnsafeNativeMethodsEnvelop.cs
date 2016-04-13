@@ -8,12 +8,19 @@ namespace Extreme.Parallel
     [SuppressUnmanagedCodeSecurity]
     internal static partial class UnsafeNativeMethods
     {
-        public static void Init()
+        public unsafe static void Init()
         {
-            int error = InitNative();
+			int thread_on;
+            int error = InitNative(&thread_on);
 
             if (error != 0)
                 throw new InvalidOperationException("Can't init MPI subsytem");
+			if (thread_on==0) {
+				int rank = GetWorldRank ();
+				if (rank == 0) {
+					Console.WriteLine ("Multithreading is not supported");
+				}
+			}
         }
 
         public static void FinalizeMpi()
