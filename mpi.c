@@ -53,6 +53,13 @@ DLLEXPORT long long CommunicatorC2Fortran(MPI_Comm comm)
 	return  MPI_Comm_c2f(comm);
 }
 
+DLLEXPORT int CommSplit(MPI_Comm comm, int color, int key, MPI_Comm *newcomm){
+	return MPI_Comm_split(comm, color,  key,	newcomm);
+    }
+
+DLLEXPORT int CommDup(MPI_Comm comm, MPI_Comm *newcomm){
+	return MPI_Comm_dup(comm,  newcomm);
+}
 
 DLLEXPORT int Barrier(MPI_Comm comm)
 {
@@ -187,6 +194,15 @@ DLLEXPORT int AllToAllDoubleComplexInPlace(void *recvbuf, int recvcount, MPI_Com
 {
 	return MPI_Alltoall(MPI_IN_PLACE, recvcount, MPI_DOUBLE_COMPLEX, recvbuf, recvcount, MPI_DOUBLE_COMPLEX, comm);
 }
+
+DLLEXPORT int CommFree(MPI_Comm* comm){
+	return  MPI_Comm_free(comm);
+}
+
+int MPI_Comm_free(
+  MPI_Comm *comm
+);
+
 
 DLLEXPORT void Finalize()
 {
