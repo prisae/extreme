@@ -44,22 +44,24 @@ namespace Extreme.Cartesian.Forward
 		        
         public bool IsParallel => Mpi != null && Mpi.IsParallel;
 
-
+		private bool StoreAtoA=false;
 
 
         private int LocalNx => Model.Anomaly.LocalSize.Nx;
         private int LocalNy => Model.Anomaly.LocalSize.Ny;
 
-        protected ForwardSolver(ILogger logger, INativeMemoryProvider memoryProvider, ForwardSettings settings)
+		protected ForwardSolver(ILogger logger, INativeMemoryProvider memoryProvider, ForwardSettings settings,bool store=false)
             : base(logger, memoryProvider)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             Settings = settings;
+			StoreAtoA=store;
 			if (Settings.NumberOfHankels <=0) {
 				Engine=ForwardSolverEngine.Giem2g;
 				Giem2gGreenTensor.giem2g_set_logger(Giem2gGreenTensor.GIEM2G_LOGGER);
 				Giem2gGreenTensor.GIEM2G_Message+=Giem2gLoggerRequest;
 				CieSolverFinished+=Giem2gGreenTensor.PrintStats;
+				StoreAtoA=true;
 			}
         }
 
@@ -76,7 +78,9 @@ namespace Extreme.Cartesian.Forward
 			if (Engine == ForwardSolverEngine.Giem2g) {
 				Giem2gGreenTensor.GIEM2G_Message += Giem2gLoggerRequest;
 				CieSolverFinished+=Giem2gGreenTensor.PrintStats;
+				StoreAtoA=true;
 			} else {
+				StoreAtoA=false;
 			}
 			
 			return this;
@@ -132,15 +136,18 @@ namespace Extreme.Cartesian.Forward
 
 			if (tensors == null) {
 				_aToOCalculator.CleanGreenTensors ();
+				if (!StoreAtoA)
+					_greenTensorAtoA?.Dispose();
 			} else {
 				_aToOCalculator.SetTensors (tensors.eGreenTensors, tensors.hGreenTensors);
+				SetNewGreenTensor(tensors.gtAtoA);
 			}
         }
 
         protected void CalculateGreenTensor()
         {
             Logger.WriteStatus("Starting Green Tensor AtoA");
-			if (Engine!=ForwardSolverEngine.Giem2g)
+			if (!StoreAtoA)
 					_greenTensorAtoA?.Dispose();
 			var	gt = new AtoAGreenTensorCalculatorComponent (this)
 				.CalculateGreenTensor (_greenTensorAtoA);

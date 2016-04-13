@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Extreme.Cartesian.Model;
 using Extreme.Core;
 using Extreme.Parallel;
+using System.Runtime.CompilerServices;
 
 namespace Extreme.Cartesian.Fft
 {
@@ -95,5 +96,12 @@ namespace Extreme.Cartesian.Fft
 
         private static bool IsParallel(Mpi mpi)
             => mpi != null && mpi.Size > 1;
+
+		public static void Free(Mpi mpi){
+			if (IsParallel(mpi)) {
+				foreach (var buf in Buffers.Values)
+					buf.Dispose ();
+			}
+		}
     }
 }

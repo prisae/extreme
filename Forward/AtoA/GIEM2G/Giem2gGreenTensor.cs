@@ -20,7 +20,7 @@ namespace Extreme.Cartesian.Giem2g
 	[SuppressUnmanagedCodeSecurity]
 	public static unsafe class Giem2gGreenTensor
 	{
-		private static ForwardSolver current_solver;
+		public static ForwardSolver current_solver;
 
 		public static GreenTensor CalcAtoATensor(ForwardSolver solver, GreenTensor gt)
 		{
