@@ -9,8 +9,9 @@ namespace Extreme.Parallel.Logger
 		private readonly Mpi _mpi;
 		private readonly string _name;
 		private readonly int _rank;
+		private readonly bool _permitToWrite;
 		private readonly StreamWriter _streamWriter;
-		public ParallelFileLogger(Mpi mpi, string fileName, bool rewrite) 
+		public ParallelFileLogger(Mpi mpi, string fileName, bool rewrite,bool permit=false) 
 			
 		{
 			_mpi = mpi;
@@ -20,14 +21,16 @@ namespace Extreme.Parallel.Logger
 			_rank = mpi.Rank;
 
 			if (_mpi.IsMaster) {
-
+				_permitToWrite = true;
 				if (rewrite)
-				if (File.Exists(fileName))
-					File.Delete(fileName);
+				if (File.Exists (fileName))
+					File.Delete (fileName);
 
-				_streamWriter = new StreamWriter(fileName);
-				_streamWriter.WriteLine($"File logger started at {CreationTime}");
-				_streamWriter.Flush();
+				_streamWriter = new StreamWriter (fileName);
+				_streamWriter.WriteLine ($"File logger started at {CreationTime}");
+				_streamWriter.Flush ();
+			} else {
+				_permitToWrite = permit;
 			}
 		}
 
@@ -44,7 +47,7 @@ namespace Extreme.Parallel.Logger
 
 		public override void Write(int logLevel, string message)
 		{
-			if (_mpi.IsMaster) {
+			if (_permitToWrite) {
 				if (!Filter (logLevel)) {
 					var prefix = this.GetPrefix (logLevel);
 

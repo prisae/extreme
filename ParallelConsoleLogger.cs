@@ -8,8 +8,8 @@ namespace Extreme.Parallel.Logger
         private readonly Mpi _mpi;
         private readonly string _name;
         private readonly int _rank;
-
-        public ParallelConsoleLogger(Mpi mpi)
+		private readonly bool _permitToWrite=false;
+		public ParallelConsoleLogger(Mpi mpi,bool permit=false)
         {
             _mpi = mpi;
             if (mpi == null) throw new ArgumentNullException(nameof(mpi));
@@ -17,15 +17,19 @@ namespace Extreme.Parallel.Logger
             _name = mpi.GetProcessorName();
             _rank = mpi.Rank;
 
-            if (_mpi.IsMaster)
-                Console.WriteLine($"Parallel logger started on [master {_name}] at {CreationTime}");
+			if (_mpi.IsMaster) {
+				Console.WriteLine ($"Parallel logger started on [master {_name}] at {CreationTime}");
+				_permitToWrite = true;
+			} else {
+				_permitToWrite = permit;
+			}
         }
 
 		protected virtual bool Filter(int logLevel) => false;
 
         public override void Write(int logLevel, string message)
         {
-            if (_mpi.IsMaster)
+            if (_permitToWrite)
 			{ 
 				if (!Filter (logLevel)) {
 					var time = (DateTime.Now - CreationTime).TotalSeconds;

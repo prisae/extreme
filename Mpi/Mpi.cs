@@ -6,6 +6,7 @@ using static Extreme.Parallel.UnsafeNativeMethods;
 using UNM = Extreme.Parallel.UnsafeNativeMethods;
 using System.ComponentModel.Design;
 using System.Runtime.Remoting.Messaging;
+using System.Runtime.ConstrainedExecution;
 
 namespace Extreme.Parallel
 {
@@ -26,15 +27,24 @@ namespace Extreme.Parallel
         public static readonly IntPtr MpiOpSumm = GetMpiOpSum();
 
 
-        private readonly int _rank = -1;
-        private readonly int _size = -1;
+        private readonly int _rank = 0;
+        private readonly int _size = 1;
         private Mpi()
         {
             UnsafeNativeMethods.Init();
 
-			_rank = UnsafeNativeMethods.GetWorldRank ();
-			_size = UnsafeNativeMethods.GetWorldSize ();
-			}
+
+			IntPtr comm;
+			Communicator = CommWorld;
+
+			int rank;
+			int size;
+
+			UnsafeNativeMethods.GetCommRank (Communicator,&rank);
+			UnsafeNativeMethods.GetCommSize (Communicator,&size);
+			_rank = rank;
+			_size = size;
+		}
 
 
         private static bool _initialized = false;
@@ -53,28 +63,30 @@ namespace Extreme.Parallel
                 _initialized = true;
             }
         }
-		public Mpi(IntPtr comm)
+		private Mpi(IntPtr comm)
 		{
 			if (_initialized) {
-					Communicator = comm;
+				Communicator = comm;
 
-					int rank;
-					int size;
-					int err;
-					err = UnsafeNativeMethods.GetCommRank (comm, &rank);
+				int rank;
+				int size;
+				int err;
+				err = UnsafeNativeMethods.GetCommRank (comm, &rank);
 					
-					if (err != 0)
-						throw new InvalidOperationException (GetErrorString (err));
-					_rank = rank;
+				if (err != 0)
+					throw new InvalidOperationException (GetErrorString (err));
+				_rank = rank;
 
-					err = UnsafeNativeMethods.GetCommSize (comm, &size);
-					if (err != 0)
-						throw new InvalidOperationException (GetErrorString (err));
+				err = UnsafeNativeMethods.GetCommSize (comm, &size);
+				if (err != 0)
+					throw new InvalidOperationException (GetErrorString (err));
 
-					_size = size;
-			} 
+				_size = size;
+			} else {
+				
+			}
 		}
-		public Mpi NewCommunicator (params int[] ranks)
+		public Mpi Merge (params int[] ranks)
 		{
 			var comm=CreateNewCommunicator(ranks);
 			if (comm != CommNull)
@@ -83,11 +95,18 @@ namespace Extreme.Parallel
 				return null;
 		}
 
+		public Mpi Separate(int color){
+			IntPtr comm;
+			UNM.CommSplit (Communicator, color, Rank, &comm);
+			return new Mpi (comm);
+		}
+
+
         public bool IsParallel => Size > 1;
         public int Size => _size;
         public int Rank => _rank;
         public bool IsMaster => _rank == Master;
-		public IntPtr Communicator { get; private set; }=CommWorld;
+		public IntPtr Communicator { get; private set; }=CommNull;
 
         private static void WithErrorHandling(int err)
         {
@@ -108,6 +127,14 @@ namespace Extreme.Parallel
 
             return newComm;
         }
+
+
+		public Mpi Dup(){
+			IntPtr comm;
+
+			UNM.CommDup (this.Communicator, &comm);
+			return new Mpi (comm);
+		}
 
         public Complex AllReduce(Complex value)
         {
@@ -253,9 +280,25 @@ namespace Extreme.Parallel
         public void AllToAll(Complex* src, int srcSize, Complex* dst, int dstSize)
 		=> AllToAllDoubleComplex(src, srcSize, dst, dstSize, Communicator);
 
+
+		public void Free(){
+			IntPtr comm = Communicator;
+			if (Communicator!=CommNull&&Communicator!=CommWorld)
+				UnsafeNativeMethods.CommFree(&comm);
+			Communicator = CommNull;
+		}
+
         public void Dispose()
         {
-            FinalizeMpi();
+           // FinalizeMpi();
+			if (Communicator == CommWorld)
+				Finalize ();
+			Free ();
         }
+
+		private static void Finalize()
+		{
+			FinalizeMpi ();
+		}
     }
 }

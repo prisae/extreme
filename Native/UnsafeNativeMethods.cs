@@ -34,6 +34,15 @@ namespace Extreme.Parallel
 
 		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "LogicalReduce")]
 		public static extern unsafe int LogicalReduce(void *sendbuf, void *recvbuf, int count, IntPtr comm);
+
+
+		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "CommDup")]
+		public static extern unsafe int CommDup(IntPtr comm,  IntPtr* newcomm);
+
+		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "CommSplit")]
+		public static extern unsafe int CommSplit(IntPtr comm, int color , int key,IntPtr* newcomm);
+
+
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "CommCreate")]
         public static extern unsafe int CommCreate(IntPtr comm, IntPtr group, IntPtr* newcomm);
 
@@ -45,6 +54,9 @@ namespace Extreme.Parallel
 
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Init")]
         private static extern int InitNative();
+
+		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "CommFree")]
+		public unsafe static extern int CommFree(IntPtr* comm);
 
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Finalize")]
         private static extern int FinalizeNative();
