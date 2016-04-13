@@ -30,16 +30,17 @@ namespace ExtremeMt
 
         private static void RunFullVersion(ForwardProject project)
         {
-            using (var mpi = Mpi.Init())
-            using (var memoryProvider = new FftWMemoryProvider())
-            {
-                using (var runner = new ExtremeMtSolverRunner(project, memoryProvider, mpi))
-                {
-                    var model = ModelGenUtils.LoadCartesianModel(project.ModelFile, mpi);
+			using (var mpi_world = Mpi.Init ()) {
+				var mpi = mpi_world.Dup ();
+				using (var memoryProvider = new FftWMemoryProvider ()) {
+					using (var runner = new ExtremeMtSolverRunner (project, memoryProvider, mpi)) {
+						var model = ModelGenUtils.LoadCartesianModel (project.ModelFile, mpi);
 
-                    runner.Run(model);
-                }
-            }
+						runner.Run (model);
+					}
+				}
+				mpi.Dispose ();
+			}
         }
     }
 }
