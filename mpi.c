@@ -43,9 +43,13 @@ DLLEXPORT int GetErrorString(int errorcode, char *string, int *resultlen)
 	return MPI_Error_string(errorcode, string, resultlen);
 }
 
-DLLEXPORT int Init()
+DLLEXPORT int Init(int* thread_support)
 {
-	return MPI_Init(0, NULL);
+	int provided;
+	int err;
+	err=MPI_Init_thread(NULL, NULL,   MPI_THREAD_FUNNELED, &provided);
+	*thread_support=provided>=MPI_THREAD_FUNNELED;
+	return err;
 }
 
 DLLEXPORT long long CommunicatorC2Fortran(MPI_Comm comm)
