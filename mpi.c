@@ -47,8 +47,8 @@ DLLEXPORT int Init(int* thread_support)
 {
 	int provided;
 	int err;
-	err=MPI_Init_thread(NULL, NULL,   MPI_THREAD_FUNNELED, &provided);
-	*thread_support=provided>=MPI_THREAD_FUNNELED;
+	err=MPI_Init_thread(NULL, NULL,   MPI_THREAD_MULTIPLE, &provided);
+	*thread_support=provided>=MPI_THREAD_MULTIPLE;
 	return err;
 }
 
