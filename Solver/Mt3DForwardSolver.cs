@@ -21,8 +21,8 @@ namespace Extreme.Cartesian.Magnetotellurics
         private readonly List<MtFieldsAtLevelCalculatedEventArgs> _eFields;
         private readonly List<MtFieldsAtLevelCalculatedEventArgs> _hFields;
 
-        public Mt3DForwardSolver(ILogger logger, INativeMemoryProvider memoryProvider, ForwardSettings settings)
-            : base(logger, memoryProvider, settings)
+		public Mt3DForwardSolver(ILogger logger, INativeMemoryProvider memoryProvider, ForwardSettings settings,bool store=false)
+            : base(logger, memoryProvider, settings,store)
         {
             _eFields = new List<MtFieldsAtLevelCalculatedEventArgs>();
             _hFields = new List<MtFieldsAtLevelCalculatedEventArgs>();
@@ -100,10 +100,11 @@ namespace Extreme.Cartesian.Magnetotellurics
             {
 				SetModel(model,tensors);
 
-				if (aToA == null) 
+				if (aToA == null)
 					CalculateGreenTensor ();
-				else
-                    SetNewGreenTensor(aToA);
+				else {
+					SetNewGreenTensor (aToA);
+				}
 				
                 SolverPolarizationX();
                 SolverPolarizationY();
