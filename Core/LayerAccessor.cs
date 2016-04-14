@@ -42,14 +42,14 @@ namespace Extreme.Cartesian.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private long GetIndex(int i, int j, int k)
+        private long GetIndex(long i, long j, long k)
                     => (i * _ny + j) * 3 * _nz + _nz * _comp + k;
     }
 
 
     public interface ILayerAccessor
     {
-        Complex this[int i, int j] { get; set; }
+        Complex this[long i, long j] { get; set; }
         int Nx { get; }
         int Ny { get; }
     }
@@ -64,7 +64,7 @@ namespace Extreme.Cartesian.Core
         private VerticalLayerAccessor(Complex* basePtr, int nx, int ny, int nz, int k)
         {
             _nz = nz;
-            _ptr = basePtr + k;
+			_ptr = basePtr + (long)k;
             Nx = nx;
             Ny = ny;
         }
@@ -78,7 +78,7 @@ namespace Extreme.Cartesian.Core
         public static ILayerAccessor NewZ(AnomalyCurrent ac, int k) =>
             new VerticalLayerAccessor(ac.Ptr + ac.Nz * 2, ac.Nx, ac.Ny, ac.Nz, k);
 
-        public Complex this[int i, int j]
+        public Complex this[long i, long j]
         {
             get { return _ptr[(i * Ny + j) * 3 * _nz]; }
             set { _ptr[(i * Ny + j) * 3 * _nz] = value; }
