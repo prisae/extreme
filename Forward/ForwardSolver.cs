@@ -261,9 +261,9 @@ namespace Extreme.Cartesian.Forward
 					var nz = Model.Nz;
 					long ind1 = 0;
 					long ind2 = 0;
-					for (int k = 0; k < 3*nz; k++)
-						for (int i = 0; i < nx; i++)
-							for (int j = 0; j < ny; j++)
+					for (long k = 0; k < 3*nz; k++)
+						for (long i = 0; i < nx; i++)
+							for (long j = 0; j < ny; j++)
 							{
 								ind2 = k + 3 * nz * (j + i * ny);
 								chi0.Ptr[ind1++] =jScattered.Ptr[ind2];
