@@ -192,7 +192,6 @@ namespace Extreme.Cartesian.Green.Tensor
 
         public void Dispose()
         {
-
             if (_isDisposed)
                 throw new ObjectDisposedException(this.GetType().ToString());
 			if (Has("giem2g")){ 
