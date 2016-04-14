@@ -13,9 +13,9 @@ namespace Extreme.Cartesian.Core
 
         public Complex* Ptr { get; private set; }
 
-		public long Nx { get; private set; }
-        public long Ny { get; private set; }
-        public long Nz { get; private set; }
+		public int Nx { get; private set; }
+        public int Ny { get; private set; }
+        public int Nz { get; private set; }
 
         public MemoryLayoutOrder LayoutOrder { get; set; }
 
@@ -28,7 +28,7 @@ namespace Extreme.Cartesian.Core
         {
         }
 
-        public long GetFullLength() => Nx * Ny * Nz * 3L;
+		public long GetFullLength() => ((long) Nx) * Ny * Nz * 3L;
 
 		public Complex* this[long linearIndex]
             => Ptr + linearIndex;
@@ -50,7 +50,7 @@ namespace Extreme.Cartesian.Core
             if (dst.Ny != Ny) throw new ArgumentOutOfRangeException(nameof(dst));
             if (dst.Nz != Nz) throw new ArgumentOutOfRangeException(nameof(dst));
             
-            var length = Nx * Ny * Nz * 3L;
+			var length = ((long)Nx) * Ny * Nz * 3L;
             UnsafeNativeMethods.Zcopy(length, Ptr, dst.Ptr);
         }
 
@@ -70,8 +70,8 @@ namespace Extreme.Cartesian.Core
         {
             if (memoryProvider == null) throw new ArgumentNullException(nameof(memoryProvider));
 
-            var componentSize = nx * ny * nz;
-            var ptr = memoryProvider.AllocateComplex(componentSize * 3);
+			long componentSize = ((long) nx) * ny * nz;
+            var ptr = memoryProvider.AllocateComplex(componentSize * 3L);
 
             var current = new AnomalyCurrent(memoryProvider)
             {
