@@ -20,7 +20,7 @@ namespace Extreme.Cartesian.Giem2g
 	[SuppressUnmanagedCodeSecurity]
 	public static unsafe class Giem2gGreenTensor
 	{
-		public static ForwardSolver current_solver;
+	//	public static ForwardSolver current_solver;
 
 		public static GreenTensor CalcAtoATensor(ForwardSolver solver, GreenTensor gt)
 		{
@@ -29,7 +29,7 @@ namespace Extreme.Cartesian.Giem2g
 			var anomaly=new giem2g_anomaly();
 
 			GreenTensor gt_new;
-			current_solver = solver;
+		//	current_solver = solver;
 
 
 			PrepareBkgAndAnomaly (solver, ref bkg, ref anomaly);
@@ -176,14 +176,14 @@ namespace Extreme.Cartesian.Giem2g
 
 		public static void PrintStats(object sender, CieSolverFinishedEventArgs e){
 
-			if (sender == current_solver) {
+		//	if (sender == current_solver) {
 
 				var gt = e.Gt;
 
 				IntPtr ie_op = new IntPtr (gt ["giem2g"].Ptr);
 
 				giem2g_print_stats (ie_op);
-			}
+		//	}
 
 		}
 
@@ -260,7 +260,7 @@ namespace Extreme.Cartesian.Giem2g
 		public static void GIEM2G_LOGGER(string str){
 			
 			var e = new GIEM2GLoggerEventArgs (str);
-			GIEM2G_Message?.Invoke (current_solver,e);
+			GIEM2G_Message?.Invoke (e,e);
 
 		}
 

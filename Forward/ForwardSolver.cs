@@ -58,9 +58,9 @@ namespace Extreme.Cartesian.Forward
 			StoreAtoA=store;
 			if (Settings.NumberOfHankels <=0) {
 				Engine=ForwardSolverEngine.Giem2g;
-				Giem2gGreenTensor.giem2g_set_logger(Giem2gGreenTensor.GIEM2G_LOGGER);
-				Giem2gGreenTensor.GIEM2G_Message+=Giem2gLoggerRequest;
-				CieSolverFinished+=Giem2gGreenTensor.PrintStats;
+
+				SetGiem2gLogger();
+
 				StoreAtoA=true;
 			}
         }
@@ -76,8 +76,7 @@ namespace Extreme.Cartesian.Forward
 			Engine = engine;
 			_greenTensorAtoA?.Dispose();
 			if (Engine == ForwardSolverEngine.Giem2g) {
-				Giem2gGreenTensor.GIEM2G_Message += Giem2gLoggerRequest;
-				CieSolverFinished+=Giem2gGreenTensor.PrintStats;
+				SetGiem2gLogger();
 				StoreAtoA=true;
 			} else {
 				StoreAtoA=false;
@@ -114,9 +113,25 @@ namespace Extreme.Cartesian.Forward
         }
 
 		private void Giem2gLoggerRequest(object sender, GIEM2GLoggerEventArgs e){
-			if (this==sender)
 				Logger.WriteStatus (e.Message);
 		}
+
+		public void SetGiem2gLogger(){
+			if (Engine == ForwardSolverEngine.Giem2g) {
+				Giem2gGreenTensor.giem2g_set_logger(Giem2gGreenTensor.GIEM2G_LOGGER);
+				Giem2gGreenTensor.GIEM2G_Message += Giem2gLoggerRequest;
+				CieSolverFinished += Giem2gGreenTensor.PrintStats;
+			}
+		}
+
+
+		public void RemoveGiem2gLogger(){
+			if (Engine == ForwardSolverEngine.Giem2g) {
+				Giem2gGreenTensor.GIEM2G_Message -= Giem2gLoggerRequest;
+				CieSolverFinished -= Giem2gGreenTensor.PrintStats;
+			}
+		}
+
 
 		protected void SetModel(OmegaModel model, TensorCache tensors=null)
         {
