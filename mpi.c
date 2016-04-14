@@ -42,13 +42,19 @@ DLLEXPORT int GetErrorString(int errorcode, char *string, int *resultlen)
 {
 	return MPI_Error_string(errorcode, string, resultlen);
 }
+DLLEXPORT void GetThreadSupportLevels(int* sup_level) { 
+	sup_level[0]=MPI_THREAD_SINGLE;
+	sup_level[1]=MPI_THREAD_FUNNELED;
+	sup_level[2]=MPI_THREAD_SERIALIZED;
+	sup_level[3]=MPI_THREAD_MULTIPLE;
+  }
 
 DLLEXPORT int Init(int* thread_support)
 {
 	int provided;
 	int err;
-	err=MPI_Init_thread(NULL, NULL,   MPI_THREAD_MULTIPLE, &provided);
-	*thread_support=provided>=MPI_THREAD_MULTIPLE;
+	err=MPI_Init_thread(NULL, NULL,   MPI_THREAD_MULTIPLE, thread_support);
+
 	return err;
 }
 
