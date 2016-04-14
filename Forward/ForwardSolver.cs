@@ -151,8 +151,10 @@ namespace Extreme.Cartesian.Forward
 
 			if (tensors == null) {
 				_aToOCalculator.CleanGreenTensors ();
-				if (!StoreAtoA)
-					_greenTensorAtoA?.Dispose();
+				if (!StoreAtoA) {
+					_greenTensorAtoA?.Dispose ();
+					_greenTensorAtoA = null;
+				}
 			} else {
 				_aToOCalculator.SetTensors (tensors.eGreenTensors, tensors.hGreenTensors);
 				SetNewGreenTensor(tensors.gtAtoA);
