@@ -23,7 +23,7 @@ namespace Extreme.Parallel
         public static readonly IntPtr Double = GetMpiDouble();
         public static readonly IntPtr Complex = GetMpiDoubleComplex();
         public static readonly int AnySource = GetMpiAnySource();
-
+		public static readonly IntPtr InPlace=GetMpiInPlace();
         public static readonly IntPtr MpiOpSumm = GetMpiOpSum();
 
 
@@ -161,7 +161,11 @@ namespace Extreme.Parallel
 
         public void Reduce(double* value, double* result, int length)
         {
-			UnsafeNativeMethods.Reduce(value, result, length, Double, Communicator);
+			if (result == value && IsMaster) {
+				UnsafeNativeMethods.Reduce ((void*)InPlace, result, length, Double, Communicator);
+			} else {
+				UnsafeNativeMethods.Reduce (value, result, length, Double, Communicator);
+			}
         }
 
 		public void LogicalReduce(double* value, double* result, int length)
