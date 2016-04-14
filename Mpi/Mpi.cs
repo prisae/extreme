@@ -170,7 +170,12 @@ namespace Extreme.Parallel
 
 		public void LogicalReduce(double* value, double* result, int length)
 		{
-			UnsafeNativeMethods.LogicalReduce(value, result, length, Communicator);
+
+			if (result == value && IsMaster) {
+				UnsafeNativeMethods.LogicalReduce ((void*)InPlace, result, length,  Communicator);
+			} else {
+				UnsafeNativeMethods.LogicalReduce (value, result, length,  Communicator);
+			}
 		}
 
 		public static long CommunicatorC2Fortran(IntPtr comm)
