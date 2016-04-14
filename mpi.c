@@ -36,7 +36,7 @@ DLLEXPORT MpiType GetMpiDoubleComplex() { return MPI_C_DOUBLE_COMPLEX; }
 
 DLLEXPORT int GetMaxProcessorName() { return MPI_MAX_PROCESSOR_NAME; }
 DLLEXPORT int GetMpiAnySource() { return MPI_ANY_SOURCE; }
-
+DLLEXPORT int GetMpiInPlace(){ return MPI_IN_PLACE; }
 
 DLLEXPORT int GetErrorString(int errorcode, char *string, int *resultlen)
 {
