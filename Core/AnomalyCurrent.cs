@@ -13,9 +13,9 @@ namespace Extreme.Cartesian.Core
 
         public Complex* Ptr { get; private set; }
 
-        public int Nx { get; private set; }
-        public int Ny { get; private set; }
-        public int Nz { get; private set; }
+		public long Nx { get; private set; }
+        public long Ny { get; private set; }
+        public long Nz { get; private set; }
 
         public MemoryLayoutOrder LayoutOrder { get; set; }
 
@@ -28,7 +28,7 @@ namespace Extreme.Cartesian.Core
         {
         }
 
-        public long GetFullLength() => Nx * Ny * Nz * 3;
+        public long GetFullLength() => Nx * Ny * Nz * 3L;
 
 		public Complex* this[long linearIndex]
             => Ptr + linearIndex;
