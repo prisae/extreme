@@ -55,6 +55,10 @@ namespace Extreme.Parallel
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Init")]
 		private unsafe static extern int InitNative(int* threads_on);
 
+		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetThreadSupportLevels")]
+		private unsafe static extern int GetThreadSupportLevels(int* sup_levels);
+
+
 		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "CommFree")]
 		public unsafe static extern int CommFree(IntPtr* comm);
 

@@ -10,16 +10,23 @@ namespace Extreme.Parallel
     {
         public unsafe static void Init()
         {
-			int thread_on;
-            int error = InitNative(&thread_on);
-
+			int thread_level;
+            int error = InitNative(&thread_level);
+			var sup_levels = new int[4];
+			fixed(int* p =&sup_levels[0])
+					GetThreadSupportLevels(p);
             if (error != 0)
                 throw new InvalidOperationException("Can't init MPI subsytem");
-			if (thread_on==0) {
-				int rank = GetWorldRank ();
-				if (rank == 0) {
-					Console.WriteLine ("Multithreading is not supported");
-				}
+			int rank = GetWorldRank ();
+			if (rank == 0) {
+				if (thread_level==sup_levels[3]) 				
+					Console.WriteLine ("Absolute  multithreading");
+				if (thread_level==sup_levels[2]) 				
+					Console.WriteLine (" Only one thread will make MPI library calls at one time ");
+				if (thread_level==sup_levels[1]) 				
+					Console.WriteLine (" Only the thread that called MPI_Init_thread will make MPI calls");
+				if (thread_level==sup_levels[0]) 				
+					Console.WriteLine ("Multithreading is unsupported");
 			}
         }
 
