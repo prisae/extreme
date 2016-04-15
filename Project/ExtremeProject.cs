@@ -36,6 +36,7 @@ namespace Extreme.Cartesian.Project
             _frequencies = frequencies;
             Settings = settings;
             ResultsPath = @"results";
+
         }
 
         public ExtremeProject WithResultsPath(string resultsPath)
