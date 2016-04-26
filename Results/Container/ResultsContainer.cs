@@ -12,13 +12,16 @@ namespace Extreme.Cartesian.Magnetotellurics
     {
         public List<AllFieldsAtLevel> LevelFields { get; }
         public LateralDimensions Lateral { get; }
-
+		public int LocalNx;
+		public int LocalNxStart;
         private bool _isDisposed = false;
 
-        public ResultsContainer(LateralDimensions lateral)
+		public ResultsContainer(LateralDimensions lateral,int nx=-1, int nx_offset=0)
         {
             Lateral = lateral;
             LevelFields = new List<AllFieldsAtLevel>();
+			LocalNx = nx < 0 ? lateral.Nx : nx;
+			LocalNxStart = nx_offset;
         }
 
         public void Add(AllFieldsAtLevel levelField)

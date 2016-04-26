@@ -7,7 +7,7 @@ namespace Extreme.Cartesian.Magnetotellurics
 {
     public static class AllFieldsUtils
     {
-        public static unsafe AllFieldsAtSite GetSite(this AllFieldsAtLevel level, LateralDimensions lateral, int i, int j)
+		public static unsafe AllFieldsAtSite GetSite(this AllFieldsAtLevel level, LateralDimensions lateral, int i, int j,int shiftx=0)
         {
             int ny = lateral.Ny;
 
@@ -16,7 +16,7 @@ namespace Extreme.Cartesian.Magnetotellurics
                f1.Ptr[(i * ny + j) * 3 + 1],
                f1.Ptr[(i * ny + j) * 3 + 2]);
 
-            var x = lateral.CellSizeX * i + lateral.CellSizeX / 2 + level.Level.ShiftAlongX;
+			var x = lateral.CellSizeX * (i+shiftx) + lateral.CellSizeX / 2 + level.Level.ShiftAlongX;
             var y = lateral.CellSizeY * j + lateral.CellSizeY / 2 + level.Level.ShiftAlongY;
             var z = level.Level.Z;
             var name = level.Level.Name;

@@ -166,15 +166,20 @@ namespace Extreme.Cartesian.Magnetotellurics
 
         private ResultsContainer GatherSolutionLocally()
         {
-            var rc = new ResultsContainer(Model.LateralDimensions);
-          
-            foreach (var observationLevel in _observationLevels)
-            {
-                var all = GatherAllFieldsAtLevelLocally(observationLevel, _eFields, _hFields);
-                rc.Add(all);
+			var nx = Model.Anomaly.LocalSize.Nx;
+			int nx_offset = 0;
+			if (IsParallel) {
+				nx = Model.Anomaly.LocalSize.Nx;
+				nx_offset = Mpi.CalcLocalHalfNxStart (Model.Nx);
+			}
+			var rc = new ResultsContainer(Model.LateralDimensions,nx,nx_offset);
+			if (nx > 0) {          
+				foreach (var observationLevel in _observationLevels) {
+					var all = GatherAllFieldsAtLevelLocally (observationLevel, _eFields, _hFields);
+					rc.Add (all);
                 
-            }
-
+				}
+			}
             _eFields.Clear();
             _hFields.Clear();
             

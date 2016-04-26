@@ -34,13 +34,15 @@ namespace Extreme.Cartesian.Magnetotellurics
         private void IterateThroughAll(Action<AllFieldsAtSite> action)
         {
             var lat = _container.Lateral;
+			var nx = _container.LocalNx;
+			var nx_shift = _container.LocalNxStart;
 
             foreach (var level in _container.LevelFields)
             {
-                for (int i = 0; i < lat.Nx; i++)
+                for (int i = 0; i < nx; i++)
                     for (int j = 0; j < lat.Ny; j++)
                     {
-                        var value = level.GetSite(lat, i, j);
+						var value = level.GetSite(lat, i, j,nx_shift);
                         action(value);
                     }
             }
@@ -127,103 +129,103 @@ namespace Extreme.Cartesian.Magnetotellurics
         }
 
         public void ExportRawFields(string path)
-        {
-            using (var sw = new StreamWriter(path))
-            {
-                WriteFreqAndCoordHead(sw);
+		{
+			if (_container.LocalNx > 0) {
+				using (var sw = new StreamWriter (path)) {
+					WriteFreqAndCoordHead (sw);
 
-                // normal pol X
+					// normal pol X
 
-                WriteWithPadding(sw, "N_polX_Ex_re");
-                WriteWithPadding(sw, "N_polX_Ex_im");
+					WriteWithPadding (sw, "N_polX_Ex_re");
+					WriteWithPadding (sw, "N_polX_Ex_im");
 
-                WriteWithPadding(sw, "N_polX_Ey_re");
-                WriteWithPadding(sw, "N_polX_Ey_im");
+					WriteWithPadding (sw, "N_polX_Ey_re");
+					WriteWithPadding (sw, "N_polX_Ey_im");
 
-                WriteWithPadding(sw, "N_polX_Ez_re");
-                WriteWithPadding(sw, "N_polX_Ez_im");
+					WriteWithPadding (sw, "N_polX_Ez_re");
+					WriteWithPadding (sw, "N_polX_Ez_im");
 
-                WriteWithPadding(sw, "N_polX_Hx_re");
-                WriteWithPadding(sw, "N_polX_Hx_im");
+					WriteWithPadding (sw, "N_polX_Hx_re");
+					WriteWithPadding (sw, "N_polX_Hx_im");
 
-                WriteWithPadding(sw, "N_polX_Hy_re");
-                WriteWithPadding(sw, "N_polX_Hy_im");
+					WriteWithPadding (sw, "N_polX_Hy_re");
+					WriteWithPadding (sw, "N_polX_Hy_im");
 
-                WriteWithPadding(sw, "N_polX_Hz_re");
-                WriteWithPadding(sw, "N_polX_Hz_im");
+					WriteWithPadding (sw, "N_polX_Hz_re");
+					WriteWithPadding (sw, "N_polX_Hz_im");
 
-                // normal pol Y 
+					// normal pol Y 
 
-                WriteWithPadding(sw, "N_polY_Ex_re");
-                WriteWithPadding(sw, "N_polY_Ex_im");
+					WriteWithPadding (sw, "N_polY_Ex_re");
+					WriteWithPadding (sw, "N_polY_Ex_im");
 
-                WriteWithPadding(sw, "N_polY_Ey_re");
-                WriteWithPadding(sw, "N_polY_Ey_im");
+					WriteWithPadding (sw, "N_polY_Ey_re");
+					WriteWithPadding (sw, "N_polY_Ey_im");
 
-                WriteWithPadding(sw, "N_polY_Ez_re");
-                WriteWithPadding(sw, "N_polY_Ez_im");
+					WriteWithPadding (sw, "N_polY_Ez_re");
+					WriteWithPadding (sw, "N_polY_Ez_im");
 
-                WriteWithPadding(sw, "N_polY_Hx_re");
-                WriteWithPadding(sw, "N_polY_Hx_im");
+					WriteWithPadding (sw, "N_polY_Hx_re");
+					WriteWithPadding (sw, "N_polY_Hx_im");
 
-                WriteWithPadding(sw, "N_polY_Hy_re");
-                WriteWithPadding(sw, "N_polY_Hy_im");
+					WriteWithPadding (sw, "N_polY_Hy_re");
+					WriteWithPadding (sw, "N_polY_Hy_im");
 
-                WriteWithPadding(sw, "N_polY_Hz_re");
-                WriteWithPadding(sw, "N_polY_Hz_im");
+					WriteWithPadding (sw, "N_polY_Hz_re");
+					WriteWithPadding (sw, "N_polY_Hz_im");
 
-                // anomaly pol X
+					// anomaly pol X
 
-                WriteWithPadding(sw, "A_polX_Ex_re");
-                WriteWithPadding(sw, "A_polX_Ex_im");
+					WriteWithPadding (sw, "A_polX_Ex_re");
+					WriteWithPadding (sw, "A_polX_Ex_im");
 
-                WriteWithPadding(sw, "A_polX_Ey_re");
-                WriteWithPadding(sw, "A_polX_Ey_im");
+					WriteWithPadding (sw, "A_polX_Ey_re");
+					WriteWithPadding (sw, "A_polX_Ey_im");
 
-                WriteWithPadding(sw, "A_polX_Ez_re");
-                WriteWithPadding(sw, "A_polX_Ez_im");
+					WriteWithPadding (sw, "A_polX_Ez_re");
+					WriteWithPadding (sw, "A_polX_Ez_im");
 
-                WriteWithPadding(sw, "A_polX_Hx_re");
-                WriteWithPadding(sw, "A_polX_Hx_im");
+					WriteWithPadding (sw, "A_polX_Hx_re");
+					WriteWithPadding (sw, "A_polX_Hx_im");
 
-                WriteWithPadding(sw, "A_polX_Hy_re");
-                WriteWithPadding(sw, "A_polX_Hy_im");
+					WriteWithPadding (sw, "A_polX_Hy_re");
+					WriteWithPadding (sw, "A_polX_Hy_im");
 
-                WriteWithPadding(sw, "A_polX_Hz_re");
-                WriteWithPadding(sw, "A_polX_Hz_im");
+					WriteWithPadding (sw, "A_polX_Hz_re");
+					WriteWithPadding (sw, "A_polX_Hz_im");
 
-                // anomaly pol Y      
+					// anomaly pol Y      
 
-                WriteWithPadding(sw, "A_polY_Ex_re");
-                WriteWithPadding(sw, "A_polY_Ex_im");
+					WriteWithPadding (sw, "A_polY_Ex_re");
+					WriteWithPadding (sw, "A_polY_Ex_im");
 
-                WriteWithPadding(sw, "A_polY_Ey_re");
-                WriteWithPadding(sw, "A_polY_Ey_im");
+					WriteWithPadding (sw, "A_polY_Ey_re");
+					WriteWithPadding (sw, "A_polY_Ey_im");
 
-                WriteWithPadding(sw, "A_polY_Ez_re");
-                WriteWithPadding(sw, "A_polY_Ez_im");
+					WriteWithPadding (sw, "A_polY_Ez_re");
+					WriteWithPadding (sw, "A_polY_Ez_im");
 
-                WriteWithPadding(sw, "A_polY_Hx_re");
-                WriteWithPadding(sw, "A_polY_Hx_im");
+					WriteWithPadding (sw, "A_polY_Hx_re");
+					WriteWithPadding (sw, "A_polY_Hx_im");
 
-                WriteWithPadding(sw, "A_polY_Hy_re");
-                WriteWithPadding(sw, "A_polY_Hy_im");
+					WriteWithPadding (sw, "A_polY_Hy_re");
+					WriteWithPadding (sw, "A_polY_Hy_im");
 
-                WriteWithPadding(sw, "A_polY_Hz_re");
-                WriteWithPadding(sw, "A_polY_Hz_im");
+					WriteWithPadding (sw, "A_polY_Hz_re");
+					WriteWithPadding (sw, "A_polY_Hz_im");
 
 
-                sw.WriteLine();
+					sw.WriteLine ();
 
-                IterateThroughAll( value =>
-                {
-                    WriteFreqAndCoord(sw, _frequency, value.Site);
-                    WriteFullField(sw, value);
+					IterateThroughAll (value => {
+						WriteFreqAndCoord (sw, _frequency, value.Site);
+						WriteFullField (sw, value);
 
-                    sw.WriteLine();
-                });
-            }
-        }
+						sw.WriteLine ();
+					});
+				}
+			}
+		}
 
 
         public void ExportMtResponses(string path)
