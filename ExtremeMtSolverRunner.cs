@@ -11,6 +11,7 @@ using Extreme.Parallel;
 using Extreme.Parallel.Logger;
 using Extreme.Cartesian.Magnetotellurics;
 using Profiling;
+using System.Configuration;
 
 namespace ExtremeMt
 {
@@ -60,13 +61,21 @@ namespace ExtremeMt
                 var omegaModel = OmegaModelBuilder.BuildOmegaModel(model, frequency);
                 _profiler.ClearAllRecords();
 
-                using (var rc = _solver.Solve(omegaModel))
+                //using (var rc = _solver.Solve(omegaModel))
+				using (var rc = _solver.SolveWithoutGather(omegaModel))
                 {
-                    if (!_solver.IsParallel || _mpi.IsMaster)
-                    {
-                        ExportProfiling(model, frequency);
-                        Export(rc, frequency);
-                    }
+					if (!_solver.IsParallel || _mpi.IsMaster) {
+						ExportProfiling (model, frequency);
+					}
+					if (!_solver.IsParallel) {
+						Export (rc, frequency);
+					} else {
+
+						var tag ="_"+_mpi.Rank;
+						if (rc != null) {
+							Export (rc, frequency, tag);
+						}
+					}
 
                     ForwardLoggerHelper.WriteStatus(_logger, "Finish");
                     ParallelMemoryUtils.ExportMemoryUsage(_project.ResultsPath, _mpi, _memoryProvider, frequency);
@@ -90,7 +99,7 @@ namespace ExtremeMt
             ForwardLoggerHelper.WriteStatus(_logger, $"MaxRepeatsNumber: {fs.MaxRepeatsNumber}");
         }
 
-        private void Export(ResultsContainer rc, double frequency)
+		private void Export(ResultsContainer rc, double frequency, string tag="")
         {
             ForwardLoggerHelper.WriteStatus(_logger, "Exporting results...");
 
@@ -104,10 +113,11 @@ namespace ExtremeMt
             var exporter = new PlainTextExporter(rc, frequency);
 
             ForwardLoggerHelper.WriteStatus(_logger, "\t Export Raw fields");
+			fieldsFileName = fieldsFileName + tag;
             exporter.ExportRawFields(Path.Combine(resultPath, fieldsFileName));
 
-            ForwardLoggerHelper.WriteStatus(_logger, "\t Export MT responses");
-            exporter.ExportMtResponses(Path.Combine(resultPath, responsesFileName));
+            //ForwardLoggerHelper.WriteStatus(_logger, "\t Export MT responses");
+            //exporter.ExportMtResponses(Path.Combine(resultPath, responsesFileName));
         }
 
         private void ExportProfiling(CartesianModel model, double frequency)
