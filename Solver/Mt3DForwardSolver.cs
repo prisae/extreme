@@ -180,6 +180,24 @@ namespace Extreme.Cartesian.Magnetotellurics
                 
 				}
 			}
+
+			if (IsParallel)
+			{
+				_eFields.ForEach(f =>
+					{
+						f.NormalField.Dispose();
+						f.AnomalyField.Dispose();
+					});
+
+				_hFields.ForEach(f =>
+					{
+						f.NormalField.Dispose();
+						f.AnomalyField.Dispose();
+					});
+			}
+
+
+
             _eFields.Clear();
             _hFields.Clear();
             
