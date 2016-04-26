@@ -248,13 +248,13 @@ namespace Extreme.Cartesian.Forward
 
         public void CleanGreenTensors()
         {
-			/*
+			
             foreach (var greenTensor in _eGreenTensors.Values)
-                //greenTensor.Dispose();
+                greenTensor.Dispose();
 
             foreach (var greenTensor in _hGreenTensors.Values)
                 greenTensor.Dispose();
-			*/
+			
             _eGreenTensors.Clear();
             _hGreenTensors.Clear();
         }
