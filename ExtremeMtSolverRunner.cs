@@ -71,11 +71,11 @@ namespace ExtremeMt
 						Export (rc, frequency);
 					} else {
 						if (_solver.MpiRealPart != null) {
-							for (int i = 0; i < _solver.MpiRealPart.Size; i++) {
-								if (_solver.MpiRealPart.Rank == i)
-									Export (rc, frequency, i);
-								_solver.MpiRealPart.Barrier ();
-							}
+							//for (int i = 0; i < _solver.MpiRealPart.Size; i++) {
+							//	if (_solver.MpiRealPart.Rank == i)
+								Export (rc, frequency, _solver.MpiRealPart.Rank);
+							//	_solver.MpiRealPart.Barrier ();
+							//}
 						}
 					}
 
@@ -115,8 +115,8 @@ namespace ExtremeMt
             var exporter = new PlainTextExporter(rc, frequency);
 
             ForwardLoggerHelper.WriteStatus(_logger, "\t Export Raw fields");
-
-            exporter.ExportRawFields(Path.Combine(resultPath, fieldsFileName),flag);
+			fieldsFileName = fieldsFileName + "_" + flag;
+            exporter.ExportRawFields(Path.Combine(resultPath, fieldsFileName),0);
 
             //ForwardLoggerHelper.WriteStatus(_logger, "\t Export MT responses");
             //exporter.ExportMtResponses(Path.Combine(resultPath, responsesFileName));
