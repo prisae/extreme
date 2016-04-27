@@ -131,7 +131,7 @@ namespace Extreme.Cartesian.Magnetotellurics
         public void ExportRawFields(string path)
 		{
 			if (_container.LocalNx > 0) {
-				using (var sw = new StreamWriter (path)) {
+				using (var sw = new StreamWriter (path,true)) {
 					WriteFreqAndCoordHead (sw);
 
 					// normal pol X
@@ -232,6 +232,7 @@ namespace Extreme.Cartesian.Magnetotellurics
         {
             using (var sw = new StreamWriter(path))
             {
+				
                 WriteFreqAndCoordHead(sw);
 
                 // Impedance
