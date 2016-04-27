@@ -70,10 +70,10 @@ namespace ExtremeMt
 					if (!_solver.IsParallel) {
 						Export (rc, frequency);
 					} else {
-
-						var tag ="_"+_mpi.Rank;
-						if (rc != null) {
-							Export (rc, frequency, tag);
+						for (int i = 0; i < _mpi.Size / 2; i++) {
+							if (_mpi.Rank==i) 
+							Export (rc, frequency);
+							_mpi.Barrier ();
 						}
 					}
 
