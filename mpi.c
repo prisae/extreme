@@ -177,6 +177,12 @@ DLLEXPORT int Bcast(void *buffer, int count, MPI_Datatype datatype, int root, MP
 	return	MPI_Bcast(buffer, count, datatype, root, comm);
 }
 
+
+DLLEXPORT int Scatter(void* sendbuf,void* recvbuf, int count, MPI_Datatype datatype, int root, MPI_Comm comm)
+{
+	return MPI_Scatter(sendbuf, count, datatype, recvbuf, count, datatype,  root, comm);
+}
+
 DLLEXPORT int Send(void* data, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
 {
 	return MPI_Send(data, count, datatype, dest, tag, comm);
