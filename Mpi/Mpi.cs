@@ -7,6 +7,7 @@ using UNM = Extreme.Parallel.UnsafeNativeMethods;
 using System.ComponentModel.Design;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.ConstrainedExecution;
+using System.Xml.Schema;
 
 namespace Extreme.Parallel
 {
@@ -282,6 +283,17 @@ namespace Extreme.Parallel
             fixed (Complex* dstPtr = &dst[0])
 				UNM.Gather(&src, 1, dstPtr, 1, Master, Communicator);
         }
+
+
+		public void Scatter(int[,,] senddata, int[,,] recvdata )
+		{
+			var len = recvdata.Length;
+
+			fixed (int* sendPtr = &senddata[0,0,0])
+				fixed(int* recvPtr=&recvdata[0,0,0] ){
+					UNM.Scatter (sendPtr, recvPtr, len, Int,Master, Communicator);
+				}
+		}
 
         public void AllToAll(Complex* buffer, int size)
 		=> AllToAllDoubleComplexInPlace(buffer, size, Communicator);
