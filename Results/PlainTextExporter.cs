@@ -4,6 +4,7 @@ using System.Numerics;
 using Extreme.Cartesian.Model;
 using Extreme.Core;
 using Porvem.Magnetotellurics;
+using System.Text;
 
 namespace Extreme.Cartesian.Magnetotellurics
 {
@@ -131,7 +132,7 @@ namespace Extreme.Cartesian.Magnetotellurics
         public void ExportRawFields(string path)
 		{
 			if (_container.LocalNx > 0) {
-				using (var sw = new StreamWriter (path,true)) {
+				using (var sw = new StreamWriter (path,true,Encoding.ASCII,0x10000)) {
 					WriteFreqAndCoordHead (sw);
 
 					// normal pol X
