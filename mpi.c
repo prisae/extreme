@@ -211,6 +211,12 @@ DLLEXPORT int AllToAllDoubleComplexInPlace(void *recvbuf, int recvcount, MPI_Com
 	return MPI_Alltoall(MPI_IN_PLACE, recvcount, MPI_DOUBLE_COMPLEX, recvbuf, recvcount, MPI_DOUBLE_COMPLEX, comm);
 }
 
+
+DLLEXPORT int SendRecv(void* sendbuf,void* recvbuf ,int count,int source, int dest, int tag,MPI_Datatype datatype,  MPI_Comm comm)
+{
+	return  MPI_Sendrecv(sendbuf, count, MPI_INT, dest, tag, recvbuf, count, datatype,  source, tag,comm, MPI_STATUS_IGNORE);
+}
+
 DLLEXPORT int CommFree(MPI_Comm* comm){
 	return  MPI_Comm_free(comm);
 }
