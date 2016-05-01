@@ -8,6 +8,8 @@ using System.ComponentModel.Design;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.ConstrainedExecution;
 using System.Xml.Schema;
+using System.Data.SqlClient;
+using System.Runtime.InteropServices;
 
 namespace Extreme.Parallel
 {
@@ -294,6 +296,31 @@ namespace Extreme.Parallel
 					UNM.Scatter (sendPtr, recvPtr, len, Int,Master, Communicator);
 				}
 		}
+
+		public void SendRecvChain(int[,] senddata, int[,] recvdata,int tag,int cl=-1 ,bool reverse=false )
+		{
+			var len = recvdata.Length;
+			var chain_len=cl<0?Size:cl;
+
+		//	Console.WriteLine ($"{chain_len} {Rank}");
+			int dst = (Rank + 1) % chain_len;
+			int src = (Rank - 1);
+			if (src < 0)
+				src = chain_len - 1;
+			
+			if (reverse) {
+				int tmp = src;
+				src = dst;
+				dst = tmp;
+			}
+		//	Console.WriteLine ($"{src} {dst}");
+
+			fixed (int* sendPtr = &senddata[0,0])
+				fixed(int* recvPtr=&recvdata[0,0] ){
+					UNM.SendRecv (sendPtr, recvPtr, len, src, dst, tag, Int, Communicator);
+				}
+		}
+
 
         public void AllToAll(Complex* buffer, int size)
 		=> AllToAllDoubleComplexInPlace(buffer, size, Communicator);

@@ -87,6 +87,10 @@ namespace Extreme.Parallel
 		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Scatter")]
 		public static extern unsafe int Scatter(void* sendbuf,void* recvbuf, int count, IntPtr datatype, int root, IntPtr comm);
 
+		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SendRecv")]
+		public static extern unsafe int SendRecv(void* sendbuf,void* recvbuf ,int count,int src, int dest, int tag,IntPtr datatype,  IntPtr comm);
+
+
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Barrier")]
         public static extern int Barrier(IntPtr comm);
 
