@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CartesianModel version="2.0">
+  <LateralDimensions nx="40" ny="40" dx="2000" dy="2000" />
+  <Background1DSection zeroLevel="-200000">
+    <Layer thickness="0" sigma="0.00E+000" />
+    <Layer thickness="200000" sigma="0.00E+000" />
+    <Layer thickness="10000" sigma="1.00E-001" />
+    <Layer thickness="20000" sigma="1.00E-002" />
+    <Layer thickness="0" sigma="1.00E+001" />
+  </Background1DSection>
+  <Anomaly>
+    <AnomalyLayer depth="0" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0000.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="250" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0001.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="500" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0002.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="750" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0003.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="1000" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0004.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="1250" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0005.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="1500" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0006.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="1750" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0007.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="2000" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0008.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="2250" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0009.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="2500" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0010.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="2750" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0011.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="3000" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0012.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="3250" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0013.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="3500" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0014.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="3750" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0015.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="4000" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0016.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="4250" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0017.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="4500" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0018.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="4750" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0019.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="5000" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0020.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="5250" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0021.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="5500" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0022.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="5750" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0023.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="6000" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0024.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="6250" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0025.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="6500" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0026.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="6750" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0027.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="7000" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0028.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="7250" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0029.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="7500" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0030.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="7750" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0031.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="8000" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0032.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="8250" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0033.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="8500" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0034.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="8750" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0035.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="9000" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0036.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="9250" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0037.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="9500" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0038.dat" />
+    </AnomalyLayer>
+    <AnomalyLayer depth="9750" thickness="250">
+      <FromFile fileType="plain-text" fileName="anomaly_layer_0039.dat" />
+    </AnomalyLayer>
+  </Anomaly>
+</CartesianModel>

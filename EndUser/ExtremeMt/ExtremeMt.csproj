@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{03C704B6-CDAA-43A9-AD0E-56C9192E708C}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ExtremeMt</RootNamespace>
+    <AssemblyName>ExtremeMt</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ExtremeMtSolverRunner.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Extreme.Model\Extreme.Model.csproj">
+      <Project>{B7D2EC67-13AE-4EC7-AF4D-3771E75CB305}</Project>
+      <Name>Extreme.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\FftWrap\FftWrap\FftWrap.csproj">
+      <Project>{5CB1047E-437F-4BF3-A2E3-5A43C9CBA91E}</Project>
+      <Name>FftWrap</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Extreme.Cartesian.Magnetotellurics\Extreme.Cartesian.Magnetotellurics.csproj">
+      <Project>{FB98C663-09D8-4C04-86FD-D70A8228264E}</Project>
+      <Name>Extreme.Cartesian.Magnetotellurics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Extreme.Cartesian\Extreme.Cartesian.csproj">
+      <Project>{D37795F3-44BD-4103-8F7E-CAB1CEBA7109}</Project>
+      <Name>Extreme.Cartesian</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Extreme.Core\Extreme.Core.csproj">
+      <Project>{19CA12F6-2EB8-4AB2-B93F-28FDDFE0BE3C}</Project>
+      <Name>Extreme.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Extreme.Fgmres\Extreme.Fgmres.csproj">
+      <Project>{628BA123-341C-497C-B6B2-59F0CBEBD682}</Project>
+      <Name>Extreme.Fgmres</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Extreme.Mpi\Extreme.Parallel.csproj">
+      <Project>{484D7DEF-8596-483F-8A39-9C10BA1F6E53}</Project>
+      <Name>Extreme.Parallel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Profiling\Profiling.csproj">
+      <Project>{069F4273-D261-46AA-A8C3-3476275AEDDD}</Project>
+      <Name>Profiling</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">copy  $(SolutionDir)Native\bin\*.dll $(TargetDir)
+copy  $(SolutionDir)externlib\*.dll $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Unix' ">cp  $(SolutionDir)Native\bin\*.so $(TargetDir)</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

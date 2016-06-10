@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ExtremeProject version="0.7.2">
+  <ProblemType></ProblemType>
+  <ResultsPath>results_forward</ResultsPath>
+  <ModelFile>commemi.xmodel</ModelFile>
+  <Frequencies>
+    <F>0.1</F>
+    <F>0.01</F>
+    <F>0.001</F>
+  </Frequencies>
+  <Observations>
+    <Tablets>
+	<T xShift="-20000" yShift="-20000" z="0"></T>
+	<T xShift="-20000" yShift="20000" z="0"></T>
+	<T xShift="20000" yShift="-20000" z="0"></T>
+	<T xShift="20000" yShift="20000" z="0"></T>
+    </Tablets>
+  </Observations>
+  <Settings>
+	  <Forward>
+	    <Residual>1E-10</Residual>
+	    <InnerBufferLength>10</InnerBufferLength>
+	    <OuterBufferLength>15</OuterBufferLength>
+	    <MaxRepeatsNumber>100</MaxRepeatsNumber>
+	    <NumberOfHankels>5</NumberOfHankels>
+	  </Forward>
+  </Settings>
+</ExtremeProject>
