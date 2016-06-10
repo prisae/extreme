@@ -35,7 +35,6 @@ namespace ExtremeMt
 				using (var memoryProvider = new FftWMemoryProvider ()) {
 					using (var runner = new ExtremeMtSolverRunner (project, memoryProvider, mpi)) {
 						var model = ModelGenUtils.LoadCartesianModel (project.ModelFile, mpi);
-
 						runner.Run (model);
 					}
 				}
