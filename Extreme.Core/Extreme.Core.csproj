@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{19CA12F6-2EB8-4AB2-B93F-28FDDFE0BE3C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Extreme.Core</RootNamespace>
+    <AssemblyName>Extreme.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;CHECK_NATIVE_MEMORY_BOUNDS</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Memory\LinuxMemoryFileReader.cs" />
+    <Compile Include="Logger\BaseLogger.cs" />
+    <Compile Include="Logger\MultiLogger.cs" />
+    <Compile Include="Logger\ErrorFileLogger.cs" />
+    <Compile Include="Logger\WarningFileLogger.cs" />
+    <Compile Include="Logger\ConsoleLogger.cs" />
+    <Compile Include="Logger\EmptyLogger.cs" />
+    <Compile Include="Logger\FileLogger.cs" />
+    <Compile Include="Logger\LoggerHelper.cs" />
+    <Compile Include="Logger\LogLevel.cs" />
+    <Compile Include="Memory\INativeMemoryProvider.cs" />
+    <Compile Include="Memory\MarshalAllocHGlobalMemoryProvider.cs" />
+    <Compile Include="Logger\MemoryConsoleLogger.cs" />
+    <Compile Include="Memory\MemoryProvider.cs" />
+    <Compile Include="Memory\MemoryUtils.cs" />
+    <Compile Include="Model\IConductivityLayer1D.cs" />
+    <Compile Include="Model\IResistivityLayer1D.cs" />
+    <Compile Include="Model\ISection1D.cs" />
+    <Compile Include="Model\Layer1D.cs" />
+    <Compile Include="Model\Section1D.cs" />
+    <Compile Include="Model\AnomalyLayer.cs" />
+    <Compile Include="Model\SourceLayer.cs" />
+    <Compile Include="Profiler\EmptyProfiler.cs" />
+    <Compile Include="Profiler\IProfiler.cs" />
+    <Compile Include="Profiler\Profiler.cs" />
+    <Compile Include="Profiler\ProfilerEvent.cs" />
+    <Compile Include="Profiler\ProfilerRecord.cs" />
+    <Compile Include="Profiler\ProfilerStatistics.cs" />
+    <Compile Include="Profiler\ProfilerStatisticsAnalyzer.cs" />
+    <Compile Include="Profiler\ProfilerUtils.cs" />
+    <Compile Include="Model\IAnomalyLayer.cs" />
+    <Compile Include="FieldToField.cs" />
+    <Compile Include="Model\IAnomaly.cs" />
+    <Compile Include="Model\ObservationLevel.cs" />
+    <Compile Include="Logger\ILogger.cs" />
+    <Compile Include="Model\ObservationSite.cs" />
+    <Compile Include="Size2D.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Model\LateralDimensions.cs" />
+    <Compile Include="StrictThreadPool.cs" />
+    <Compile Include="Transceiver\ITransceiverElement.cs" />
+    <Compile Include="Transceiver\Receiver.cs" />
+    <Compile Include="Transceiver\Transceiver.cs" />
+    <Compile Include="Transceiver\TransceiverElement.cs" />
+    <Compile Include="Transceiver\TransceiverElementUtils.cs" />
+    <Compile Include="Transceiver\Transmitter.cs" />
+    <Compile Include="XmlUtils.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
