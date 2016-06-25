@@ -1,3 +1,4 @@
+//Copyright (c) 2016 by ETH Zurich, Alexey Geraskin, Mikhail Kruglyakov, and Alexey Kuvshinov
 #include <complex.h> 
 #include "algebra.h"
 #include <string.h>
