@@ -10,7 +10,7 @@ user:
 
 	mkdir -p ${DST}
 	$(MAKE) -C Native  
-	xbuild ExtrEMeMT.sln  /p:Platform="x64" /p:Configuration="Release"
+	xbuild extrEMe.sln  /p:Platform="x64" /p:Configuration="Release"
 
 
 	cp $(FWD_PATH)/*.exe $(DST)
@@ -20,7 +20,7 @@ user:
 
 clean: 
 	$(MAKE) -C Native clean 
-	xbuild ExtrEMeMT.sln  /t:Clean /p:Platform="x64" /p:Configuration="Release"
+	xbuild extrEMe.sln  /t:Clean /p:Platform="x64" /p:Configuration="Release"
 
 	rm $(FWD_PATH)/*.dll*
 	rm $(INV_PATH)/*.dll*
