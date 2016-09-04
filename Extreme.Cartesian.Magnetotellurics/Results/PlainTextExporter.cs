@@ -44,7 +44,7 @@ namespace Extreme.Cartesian.Magnetotellurics
                 for (int i = 0; i < nx; i++)
                     for (int j = 0; j < lat.Ny; j++)
                     {
-						var value = level.GetSite(lat, i, j,nx_shift);
+			var value = level.GetSite(lat, i, j,nx_shift);
                         action(value);
                     }
             }

@@ -27,7 +27,9 @@ else
 endif
 
 mpi:	mkdst
+ifdef MPI_VERSION
 	$(MPICC)  -D $(MPI_TYPE) $(C_FLAGS)  ${MPI_SRC}/*.c -o ${DST}/libntv_mpi.so
+endif
 mkdst:
 	mkdir -p ${DST}
  

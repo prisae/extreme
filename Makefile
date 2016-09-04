@@ -3,12 +3,13 @@ DST=bin
 
 FWD_PATH=./EndUser/ExtremeMt/bin/x64/Release
 
-
+ifndef PLATFORM
+PLATFORM=GNU
+endif
 
 user: 
-
 	mkdir -p ${DST}
-	$(MAKE) -C Native  
+	$(MAKE) -C Native PLATFORM=$(PLATFORM)	 
 	xbuild ExtrEMeMT.sln  /p:Platform="x64" /p:Configuration="Release"
 
 
