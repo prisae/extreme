@@ -62,22 +62,11 @@ namespace ExtremeMt
                 var omegaModel = OmegaModelBuilder.BuildOmegaModel(model, frequency);
                 _profiler.ClearAllRecords();
 
-                //using (var rc = _solver.Solve(omegaModel))
-				using (var rc = _solver.SolveWithoutGather(omegaModel))
+                using (var rc = _solver.Solve(omegaModel))
                 {
 					if (!_solver.IsParallel || _mpi.IsMaster) {
 						ExportProfiling (model, frequency);
-					}
-					if (!_solver.IsParallel) {
 						Export (rc, frequency);
-					} else {
-						if (_solver.MpiRealPart != null) {
-							//for (int i = 0; i < _solver.MpiRealPart.Size; i++) {
-							//	if (_solver.MpiRealPart.Rank == i)
-								Export (rc, frequency, _solver.MpiRealPart.Rank);
-							//	_solver.MpiRealPart.Barrier ();
-							//}
-						}
 					}
 
                     ForwardLoggerHelper.WriteStatus(_logger, "Finish");
@@ -102,7 +91,7 @@ namespace ExtremeMt
             ForwardLoggerHelper.WriteStatus(_logger, $"MaxRepeatsNumber: {fs.MaxRepeatsNumber}");
         }
 
-		private void Export(ResultsContainer rc, double frequency, int flag=0)
+		private void Export(ResultsContainer rc, double frequency)
         {
             ForwardLoggerHelper.WriteStatus(_logger, "Exporting results...");
 
@@ -116,11 +105,10 @@ namespace ExtremeMt
             var exporter = new PlainTextExporter(rc, frequency);
 
             ForwardLoggerHelper.WriteStatus(_logger, "\t Export Raw fields");
-			fieldsFileName = fieldsFileName + "_" + flag;
             exporter.ExportRawFields(Path.Combine(resultPath, fieldsFileName),0);
 
-            //ForwardLoggerHelper.WriteStatus(_logger, "\t Export MT responses");
-            //exporter.ExportMtResponses(Path.Combine(resultPath, responsesFileName));
+            ForwardLoggerHelper.WriteStatus(_logger, "\t Export MT responses");
+            exporter.ExportMtResponses(Path.Combine(resultPath, responsesFileName));
         }
 
         private void ExportProfiling(CartesianModel model, double frequency)
