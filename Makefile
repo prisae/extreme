@@ -4,13 +4,14 @@ DST=bin
 
 FWD_PATH=./EndUser/ExtremeMt/bin/x64/Release
 
-
+ifndef PLATFORM
+PLATFORM=GNU
+endif
 
 user: 
-
 	mkdir -p ${DST}
-	$(MAKE) -C Native  
-	xbuild extrEMe.sln  /p:Platform="x64" /p:Configuration="Release"
+	$(MAKE) -C Native PLATFORM=$(PLATFORM)	 
+	xbuild ExtrEMeMT.sln  /p:Platform="x64" /p:Configuration="Release"
 
 
 	cp $(FWD_PATH)/*.exe $(DST)
