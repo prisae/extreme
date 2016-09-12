@@ -313,7 +313,7 @@ namespace Extreme.Cartesian.Green.Scalar.Impl
         {
             var tau = ne.r2 - ne.r1;
             var n = ne.r;
-            var dn1 = (double)_model.GetLayerDepth(n + 1);
+			var dn1 = (double)(_model.GetLayerDepth(n + 1)-_model.GetLayerDepth(n));
 
             var psi1 = new Complex[_currentLength];
 
