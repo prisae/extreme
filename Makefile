@@ -21,7 +21,7 @@ user:
 
 clean: 
 	$(MAKE) -C Native clean 
-	xbuild extrEMe.sln  /t:Clean /p:Platform="x64" /p:Configuration="Release"
+	xbuild ExtrEMeMT.sln   /t:Clean /p:Platform="x64" /p:Configuration="Release"
 
 	rm $(FWD_PATH)/*.dll*
 	rm $(INV_PATH)/*.dll*
