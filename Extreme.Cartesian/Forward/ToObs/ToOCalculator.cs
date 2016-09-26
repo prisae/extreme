@@ -1,4 +1,3 @@
-//Copyright (c) 2016 by ETH Zurich, Alexey Geraskin, Mikhail Kruglyakov, and Alexey Kuvshinov
 ﻿using System;
 using System.Numerics;
 using Extreme.Cartesian.Core;
@@ -39,7 +38,8 @@ namespace Extreme.Cartesian.Forward
             Pool.ExecuteBackward(backward);
 
             var scalar = new Complex(1 / ((double)Model.Nx * (double)Model.Ny * 4), 0);
-            Zscal(3 * dst.Nx * 2 * dst.Ny * 2 * dst.Nz, scalar, backward.Buffer2Ptr);
+			var len = backward.BufferLength;
+            Zscal(len, scalar, backward.Buffer2Ptr);
 
             ExtractData(backward.Buffer2Ptr, dst);
         }
