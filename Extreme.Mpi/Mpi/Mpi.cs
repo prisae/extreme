@@ -1,4 +1,3 @@
-//Copyright (c) 2016 by ETH Zurich, Alexey Geraskin, Mikhail Kruglyakov, and Alexey Kuvshinov
 ﻿using System;
 using System.Numerics;
 using System.Text;
@@ -8,9 +7,6 @@ using UNM = Extreme.Parallel.UnsafeNativeMethods;
 using System.ComponentModel.Design;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.ConstrainedExecution;
-using System.Xml.Schema;
-using System.Data.SqlClient;
-using System.Runtime.InteropServices;
 
 namespace Extreme.Parallel
 {
@@ -18,50 +14,70 @@ namespace Extreme.Parallel
     {
         public readonly int Master = 0;
 
-        private static readonly IntPtr CommWorld = GetCommWorld();
+		private static readonly IntPtr CommWorld; //= GetCommWorld();
 
-		private static readonly IntPtr CommNull =GetCommNull();
+		private static readonly IntPtr CommNull;// =GetCommNull();
 
-        public static readonly IntPtr Int = GetMpiInt();
-        public static readonly IntPtr Float = GetMpiFloat();
-        public static readonly IntPtr Double = GetMpiDouble();
-        public static readonly IntPtr Complex = GetMpiDoubleComplex();
-        public static readonly int AnySource = GetMpiAnySource();
-		public static readonly IntPtr InPlace=GetMpiInPlace();
-        public static readonly IntPtr MpiOpSumm = GetMpiOpSum();
-
+		public static readonly IntPtr Int; 
+		public static readonly IntPtr Float; 
+		public static readonly IntPtr Double;
+		public static readonly IntPtr Complex;
+		public static readonly int AnySource; 
+		public static readonly IntPtr InPlace;
+		public static readonly IntPtr MpiOpSumm;
+		private static readonly bool _mpiexists=true;
 
         private readonly int _rank = 0;
         private readonly int _size = 1;
-        private Mpi()
-        {
-            UnsafeNativeMethods.Init();
-
-
+        private Mpi() {
+			
 			IntPtr comm;
-			Communicator = CommWorld;
+			if (_mpiexists) {
+				Communicator = CommWorld;
 
-			int rank;
-			int size;
+				int rank;
+				int size;
 
-			UnsafeNativeMethods.GetCommRank (Communicator,&rank);
-			UnsafeNativeMethods.GetCommSize (Communicator,&size);
-			_rank = rank;
-			_size = size;
+				UnsafeNativeMethods.GetCommRank (Communicator, &rank);
+				UnsafeNativeMethods.GetCommSize (Communicator, &size);
+				_rank = rank;
+				_size = size;
+			} else {
+				_rank = 0;
+				_size = 1;
+			}
 		}
+
 
 
         private static bool _initialized = false;
 
+		static Mpi(){
+			try{
+				UnsafeNativeMethods.Init();
+				CommWorld = GetCommWorld();
+				CommNull =GetCommNull();
+				Int = GetMpiInt();
+				Float = GetMpiFloat();
+				Double = GetMpiDouble();
+				Complex = GetMpiDoubleComplex();
+				AnySource = GetMpiAnySource();
+				InPlace=GetMpiInPlace();
+				MpiOpSumm = GetMpiOpSum();
+				_initialized = true;
+			}catch (DllNotFoundException){
+				_mpiexists=false;
+			}
+		}
+
+
         public static Mpi Init()
         {
-            if (_initialized)
-                throw new InvalidOperationException("Mpi service is already initialized");
-
+			
             try
             {
-                return new Mpi();
-            }
+				return new Mpi();
+			}
             finally
             {
                 _initialized = true;
@@ -106,7 +122,7 @@ namespace Extreme.Parallel
 		}
 
 
-        public bool IsParallel => Size > 1;
+		public bool IsParallel => Size > 1;
         public int Size => _size;
         public int Rank => _rank;
         public bool IsMaster => _rank == Master;
@@ -135,42 +151,111 @@ namespace Extreme.Parallel
 
 		public Mpi Dup(){
 			IntPtr comm;
-
-			UNM.CommDup (this.Communicator, &comm);
-			return new Mpi (comm);
+			if (_mpiexists) {
+				UNM.CommDup (this.Communicator, &comm);
+				return new Mpi (comm);
+			} else {
+				return new Mpi();
+			}
 		}
 
         public Complex AllReduce(Complex value)
         {
             Complex result;
-			UnsafeNativeMethods.AllReduce(&value, &result, 1, Complex, Communicator);
-
-            return result;
+			if (_mpiexists) {
+				UnsafeNativeMethods.AllReduce(&value, &result, 2, Double, Communicator);
+			} else {
+				result = value;
+			}
+           	return result;
         }
+
+		public void AllReduceInPlace(Complex[] values)
+		{
+			fixed(Complex* ptr=&values[0]){
+				UnsafeNativeMethods.AllReduceInPlace(ptr, 2*values.Length, Double, Communicator);
+			}
+
+
+		}
+
+
 
         public double AllReduce(double value)
         {
             double result;
-			UnsafeNativeMethods.AllReduce(&value, &result, 1, Double, Communicator);
+			if (_mpiexists) {
+				UnsafeNativeMethods.AllReduce (&value, &result, 1, Double, Communicator);
+			} else {
+				result = value;
+			}
             return result;
         }
 
 		public int AllReduce(int value)
 		{
 			int result;
-			UnsafeNativeMethods.AllReduce(&value, &result, 1, Int, Communicator);
+			Console.WriteLine("int");
+			if (_mpiexists) {
+				UnsafeNativeMethods.AllReduce(&value, &result, 1, Int, Communicator);
+			} else {
+				result = value;
+			}
 			return result;
 		}
 
 
         public void Reduce(double* value, double* result, int length)
-        {
-			if (result == value && IsMaster) {
-				UnsafeNativeMethods.Reduce ((void*)InPlace, result, length, Double, Communicator);
+        { 
+			if (_mpiexists) {
+				if (result == value && IsMaster) {
+					UnsafeNativeMethods.Reduce ((void*)InPlace, result, length, Double, Communicator);
+				} else {
+					UnsafeNativeMethods.Reduce (value, result, length, Double, Communicator);
+				}
 			} else {
-				UnsafeNativeMethods.Reduce (value, result, length, Double, Communicator);
+				if (result == value) {
+					return;
+				} else {
+					for (int i = 0; i < length; i++) {
+						result [i] = value [i];
+					}
+				}
 			}
         }
+		public void Reduce(double[] value, double[] result)
+		{
+			if (_mpiexists) {
+				fixed(double* pv=&value[0], ptr=&result[0]) {
+					if (pv == ptr && IsMaster) {
+						UnsafeNativeMethods.Reduce ((void*)InPlace, ptr, value.Length, Double, Communicator);
+					} else {
+						UnsafeNativeMethods.Reduce (pv, ptr, value.Length, Double, Communicator);
+					}
+				}
+			} else {
+				if (result == value) {
+					return;
+				} else {
+					for (int i = 0; i < result.Length; i++) {
+						result [i] = value [i];
+					}
+				}
+			}
+		}
+
+
+		public double Reduce(double value)
+		{
+			double result = value;
+			if (_mpiexists)
+				UnsafeNativeMethods.Reduce (&value, &result,1, Double, Communicator);
+			return result;
+		}
+
+
+
+
 
 		public void LogicalReduce(double* value, double* result, int length)
 		{
@@ -198,11 +283,17 @@ namespace Extreme.Parallel
 		public void Barrier()
 		=> WithErrorHandling(UnsafeNativeMethods.Barrier(Communicator));
 
-        public int BroadCast(int root, int value)
+        public int BroadCast(int root, int value=0)
         {
-			Bcast(&value, 1, Int, root, Communicator);
-           return value;
+			var tmp = value;
+			Bcast(&tmp, 1, Int, root, Communicator);
+           return tmp;
         }
+
+
+
+
+
 
         public void AllGatherV(Complex* src, int sendSize, Complex* dst, int[] rCounts, int[] rDispl)
         {
@@ -251,6 +342,33 @@ namespace Extreme.Parallel
 			Bcast(values, length, Int, root, Communicator);
 		}
 
+		public int MasterBroadCast(int value=0)
+		{
+			var tmp = value;
+			if (_mpiexists)
+				Bcast(&tmp, 1, Int, Master, Communicator);
+			return tmp;
+		}
+
+
+
+		public void MasterBroadCast(int[,] data)
+		{
+			var len = data.Length;
+			fixed(int* ptr=&data[0,0]) {
+				Bcast (ptr, len, Int, Master, Communicator);
+			}
+
+		}
+
+		public void MasterBroadCast(double[,] data)
+		{
+			var len = data.Length;
+			fixed(double* ptr=&data[0,0]) {
+				Bcast (ptr, len, Double, Master, Communicator);
+			}
+
+		}
 
 
         public int Send(void* data, int count, IntPtr datatype, int dest, int tag)
@@ -278,50 +396,25 @@ namespace Extreme.Parallel
 	
         public void Gather(Complex* dst, Complex* src, int dstSize, int srcSize)
         {
-			UNM.Gather(src, srcSize, dst, dstSize, Master, Communicator);
+			if (_mpiexists) {
+				UNM.Gather (src, srcSize, dst, dstSize, Master, Communicator);
+			} else {
+				if (src != dst) {
+					for (int i = 0; i < srcSize; i++)
+						dst [i] = src [i];
+				}
+			}
         }
 
         public void Gather(Complex[] dst, Complex src)
         {
-            fixed (Complex* dstPtr = &dst[0])
-				UNM.Gather(&src, 1, dstPtr, 1, Master, Communicator);
-        }
-
-
-		public void Scatter(int[,,] senddata, int[,,] recvdata )
-		{
-			var len = recvdata.Length;
-
-			fixed (int* sendPtr = &senddata[0,0,0])
-				fixed(int* recvPtr=&recvdata[0,0,0] ){
-					UNM.Scatter (sendPtr, recvPtr, len, Int,Master, Communicator);
-				}
-		}
-
-		public void SendRecvChain(int[,] senddata, int[,] recvdata,int tag,int cl=-1 ,bool reverse=false )
-		{
-			var len = recvdata.Length;
-			var chain_len=cl<0?Size:cl;
-
-		//	Console.WriteLine ($"{chain_len} {Rank}");
-			int dst = (Rank + 1) % chain_len;
-			int src = (Rank - 1);
-			if (src < 0)
-				src = chain_len - 1;
-			
-			if (reverse) {
-				int tmp = src;
-				src = dst;
-				dst = tmp;
+			if (_mpiexists){
+            	fixed (Complex* dstPtr = &dst[0])
+					UNM.Gather(&src, 1, dstPtr, 1, Master, Communicator);
+			} else {
+				dst [0] = src;
 			}
-		//	Console.WriteLine ($"{src} {dst}");
-
-			fixed (int* sendPtr = &senddata[0,0])
-				fixed(int* recvPtr=&recvdata[0,0] ){
-					UNM.SendRecv (sendPtr, recvPtr, len, src, dst, tag, Int, Communicator);
-				}
 		}
-
 
         public void AllToAll(Complex* buffer, int size)
 		=> AllToAllDoubleComplexInPlace(buffer, size, Communicator);
@@ -340,14 +433,17 @@ namespace Extreme.Parallel
         public void Dispose()
         {
            // FinalizeMpi();
-			if (Communicator == CommWorld)
-				Finalize ();
-			Free ();
+			if (_mpiexists) {
+				if (Communicator == CommWorld)
+					Finalize ();
+					Free ();
+			}
         }
 
 		private static void Finalize()
 		{
-			FinalizeMpi ();
+			if (_mpiexists)
+				FinalizeMpi ();
 		}
     }
 }

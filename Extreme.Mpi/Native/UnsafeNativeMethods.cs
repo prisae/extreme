@@ -1,4 +1,3 @@
-//Copyright (c) 2016 by ETH Zurich, Alexey Geraskin, Mikhail Kruglyakov, and Alexey Kuvshinov
 ﻿using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -29,6 +28,10 @@ namespace Extreme.Parallel
 
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "AllReduce")]
         public static extern unsafe int AllReduce(void* sendbuf, void* recvbuf, int count, IntPtr datatype, IntPtr comm);
+
+		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "AllReduceInPlace")]
+		public static extern unsafe int AllReduceInPlace(void* buf,  int count, IntPtr datatype, IntPtr comm);
+
 
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Reduce")]
         public static extern unsafe int Reduce(void* sendbuf, void* recvbuf, int count, IntPtr datatype, IntPtr comm);
@@ -84,13 +87,6 @@ namespace Extreme.Parallel
 
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Bcast")]
         public static extern unsafe int Bcast(void* buffer, int count, IntPtr datatype, int root, IntPtr comm);
-
-		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Scatter")]
-		public static extern unsafe int Scatter(void* sendbuf,void* recvbuf, int count, IntPtr datatype, int root, IntPtr comm);
-
-		[DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SendRecv")]
-		public static extern unsafe int SendRecv(void* sendbuf,void* recvbuf ,int count,int src, int dest, int tag,IntPtr datatype,  IntPtr comm);
-
 
         [DllImport(MpiWrapper, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Barrier")]
         public static extern int Barrier(IntPtr comm);

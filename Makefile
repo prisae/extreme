@@ -23,10 +23,6 @@ clean:
 	$(MAKE) -C Native clean 
 	xbuild ExtrEMeMT.sln   /t:Clean /p:Platform="x64" /p:Configuration="Release"
 
-	rm $(FWD_PATH)/*.dll*
-	rm $(INV_PATH)/*.dll*
-	rm $(FWD_PATH)/*.exe*
-	rm $(INV_PATH)/*.exe*
-	rm $(FWD2INV_PATH)/*.exe*
-	rm $(FWD2INV_PATH)/*.dll* 
+	rm -f $(FWD_PATH)/*.dll*
+	rm -f $(FWD_PATH)/*.exe*
 

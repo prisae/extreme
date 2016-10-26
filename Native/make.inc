@@ -14,8 +14,10 @@ BLAS_TYPE=OPENBLAS
 BLAS_INC=$(HOME)/lib/OpenBLAS/include
 BLAS_LIB=$(HOME)/lib/OpenBLAS/lib/ -lopenblas_seq_i4
 
-MPI_TYPE=OpenMPI
+ifdef MPI_VERSION
+MPI_TYPE=$(MPI_VERSION)
 MPICC=mpicc
+endif
 endif
 
 ifeq ($(PLATFORM), INTEL)
@@ -25,8 +27,10 @@ C_FLAGS= -O3 -fPIC -shared -std=c99
 
 BLAS_TYPE=MKL
 
-MPI_TYPE=OpenMPI
+ifdef MPI_VERSION
+MPI_TYPE=$(MPI_VERSION)
 MPICC=mpicc
+endif
 endif
 ####################################################################
 
