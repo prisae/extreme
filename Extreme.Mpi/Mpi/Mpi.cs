@@ -195,7 +195,6 @@ namespace Extreme.Parallel
 		public int AllReduce(int value)
 		{
 			int result;
-			Console.WriteLine("int");
 			if (_mpiexists) {
 				UnsafeNativeMethods.AllReduce(&value, &result, 1, Int, Communicator);
 			} else {
