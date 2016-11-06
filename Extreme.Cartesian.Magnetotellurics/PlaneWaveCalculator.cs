@@ -1,4 +1,3 @@
-//Copyright (c) 2016 by ETH Zurich, Alexey Geraskin, Mikhail Kruglyakov, and Alexey Kuvshinov
 ﻿using System.Numerics;
 using Extreme.Cartesian.Green.Scalar;
 using Extreme.Cartesian.Green.Scalar.Impl;
@@ -9,7 +8,7 @@ namespace Extreme.Cartesian.Magnetotellurics
     public static class PlaneWaveCalculator
     {
         private const double Mu0 = (4.0 * System.Math.PI * 1.0E-07);
-        public static Complex CalculateFieldE(OmegaModel model, decimal recieverDepth)
+        public static Complex CalculateFieldE(OmegaModel model, decimal recieverDepth, decimal recieverThick=0)
         {
             // c.CorrBackgroundTr is always layer with air boundary
             var c = PrepareContainer(model, recieverDepth);
@@ -25,8 +24,16 @@ namespace Extreme.Cartesian.Magnetotellurics
 
             var zr = (double)recieverDepth;
             var a = c.A[c.CorrBackgroundRc, c.CorrBackgroundTr] / c.A[c.CorrBackgroundTr, c.CorrBackgroundTr];
-
-            var upper = Complex.Exp(ikr * zr) + c.Q[c.CorrBackgroundRc] * Complex.Exp(ikr * (2 * dr1 - zr));
+			Complex upper;
+			if (recieverThick == 0)
+				upper = Complex.Exp (ikr * zr) + c.Q [c.CorrBackgroundRc] * Complex.Exp (ikr * (2 * dr1 - zr));
+			else {
+				var z1 = zr - (double)recieverThick / 2;
+				var z2 = zr + (double)recieverThick / 2;
+				var u1=Complex.Exp (ikr * z1) - c.Q [c.CorrBackgroundRc] * Complex.Exp (ikr * (2 * dr1 - z1));
+				var u2=Complex.Exp (ikr * z2) - c.Q [c.CorrBackgroundRc] * Complex.Exp (ikr * (2 * dr1 - z2));
+				upper = (u2 - u1) / (z2 - z1) / ikr;
+			}
             var lower = 1 + c.Q[c.CorrBackgroundTr] * Complex.Exp(ik1 * (2 * d2));
 
             return a * (upper / lower);

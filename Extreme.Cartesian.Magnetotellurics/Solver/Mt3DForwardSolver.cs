@@ -1,4 +1,3 @@
-//Copyright (c) 2016 by ETH Zurich, Alexey Geraskin, Mikhail Kruglyakov, and Alexey Kuvshinov
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -167,21 +166,14 @@ namespace Extreme.Cartesian.Magnetotellurics
 
         private ResultsContainer GatherSolutionLocally()
         {
-			var nx = Model.Anomaly.LocalSize.Nx;
-			int nx_offset = 0;
-			if (IsParallel) {
-				nx = Model.Anomaly.LocalSize.Nx;
-				nx_offset = Mpi.CalcLocalHalfNxStart (Model.Nx);
-			}
-			var rc = new ResultsContainer(Model.LateralDimensions,nx,nx_offset);
-		//	if (nx > 0) {          
-				foreach (var observationLevel in _observationLevels) {
-					var all = GatherAllFieldsAtLevelLocally (observationLevel, _eFields, _hFields);
-					rc.Add (all);
+            var rc = new ResultsContainer(Model.LateralDimensions);
+          
+            foreach (var observationLevel in _observationLevels)
+            {
+                var all = GatherAllFieldsAtLevelLocally(observationLevel, _eFields, _hFields);
+                rc.Add(all);
                 
-				}
-	//		}
-
+            }
 
             _eFields.Clear();
             _hFields.Clear();
@@ -279,7 +271,7 @@ namespace Extreme.Cartesian.Magnetotellurics
         private static Complex CalculateEFieldForPlaneWaveOnAnomalies(OmegaModel model, IAnomalyLayer layer)
         {
             var reciever = Receiver.NewVolumetric(layer.Depth, layer.Thickness);
-            return PlaneWaveCalculator.CalculateFieldE(model, reciever.GetWorkingDepth());
+			return PlaneWaveCalculator.CalculateFieldE(model, reciever.GetWorkingDepth(),layer.Thickness);
         }
 
         #endregion
